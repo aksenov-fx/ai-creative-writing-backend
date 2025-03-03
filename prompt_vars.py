@@ -12,7 +12,7 @@ Avoid cliches and sentimental terms like responsibility, trust, care, accomplish
 
 user_preprompt = '''
 Instructions:
-Write the next part of the book based on the below events
+Write the next part of the story based on the below events
 Maintain the same writing style
 
 '''

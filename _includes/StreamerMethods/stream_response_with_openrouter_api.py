@@ -66,7 +66,7 @@ def stream_response_with_openrouter_api(self, messages: List[Dict[str, str]],
                 except json.JSONDecodeError:
                     continue
 
-        self.write_file(config.history_path, f"\n\n---\n\n")
+        self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
         
     except KeyboardInterrupt:
         print('\nProgram terminated by user')

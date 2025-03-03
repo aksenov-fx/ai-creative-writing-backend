@@ -48,7 +48,7 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
                 # print(delta.content, end='', flush=True)
                 # sys.stdout.flush()
 
-        self.write_file(config.history_path, f"\n\n---\n\n")
+        self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
             
     except KeyboardInterrupt:
         print('\nProgram terminated by user')
