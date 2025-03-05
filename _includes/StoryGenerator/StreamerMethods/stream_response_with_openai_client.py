@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 def stream_response_with_openai_client(self, messages: List[Dict[str, str]], 
                     config,
                     model: str) -> None:
-    
+
     try:
 
         client = openai.OpenAI(base_url=self.endpoint, api_key=self.api_key)
@@ -29,11 +29,15 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
         for chunk in response:
             delta = chunk.choices[0].delta
             
+            if config.interrupt_flag:
+                config.interrupt_flag = False
+                return
+
             # Handle reasoning content if present
             if hasattr(delta, 'reasoning') and delta.reasoning:
                 reasoning_seen = True
                 if first_reasoning:
-                    self.write_file(config.history_path, "<think>\n")
+                    self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
                     first_reasoning = False
                 self.write_file(config.history_path, delta.reasoning)
                 # print(delta.reasoning_content, end='', flush=True)

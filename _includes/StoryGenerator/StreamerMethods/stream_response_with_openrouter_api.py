@@ -36,6 +36,11 @@ def stream_response_with_openrouter_api(self, messages: List[Dict[str, str]],
         reasoning_seen = False
 
         for line in response.iter_lines():
+
+            if config.interrupt_flag:
+                config.interrupt_flag = False
+                return
+            
             if line:
                 # Remove 'data: ' prefix and handle SSE format
                 line = line.decode('utf-8')
@@ -50,7 +55,7 @@ def stream_response_with_openrouter_api(self, messages: List[Dict[str, str]],
                     if content := chunk.get('choices', [{}])[0].get('delta', {}).get('reasoning'):
                         reasoning_seen = True
                         if first_reasoning:
-                            self.write_file(config.history_path, "<think>\n")
+                            self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
                             first_reasoning = False
                         self.write_file(config.history_path, content)
 

@@ -1,5 +1,6 @@
-from _includes.StreamerMethods.stream_response_with_openrouter_api import stream_response_with_openrouter_api
-from _includes.StreamerMethods.stream_response_with_openai_client import stream_response_with_openai_client
+from ..StoryGenerator.StreamerMethods.stream_response_with_openrouter_api import stream_response_with_openrouter_api
+from ..StoryGenerator.StreamerMethods.stream_response_with_openai_client import stream_response_with_openai_client
+from ..chat_settings import config
 
 class Streamer:
 
@@ -12,7 +13,7 @@ class Streamer:
         with open(filepath, mode, encoding='utf-8') as f:
             f.write(content)
 
-    def stream_response(self, messages, config, model):
+    def stream_response(self, messages, model):
         if config.client_type == "openai":
             stream_response_with_openai_client(self, messages, config, model)
         elif config.client_type == "http":

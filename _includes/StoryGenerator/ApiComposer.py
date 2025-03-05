@@ -1,22 +1,33 @@
 from typing import Optional, List, Dict, Any
+from ..chat_settings import config
 
+class ChatHistory:
+
+    @staticmethod
+    def read() -> str:
+        with open(config.history_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    
 class ApiComposer:
-    def estimate_tokens(self, text: str) -> int:
+
+    @staticmethod
+    def estimate_tokens(text: str) -> int:
         return len(text) // 4
         
-    def trim_content(self, content: str, max_tokens: int) -> str:
+    @staticmethod
+    def trim_content(content: str, max_tokens: int) -> str:
         paragraphs = content.split('\n\n')
-        current_tokens = self.estimate_tokens(content)
+        current_tokens = ApiComposer.estimate_tokens(content)
         
         while current_tokens > max_tokens and len(paragraphs) > 1:
             paragraphs.pop(0)
             content = '\n\n'.join(paragraphs)
-            current_tokens = self.estimate_tokens(content)
+            current_tokens = ApiComposer.estimate_tokens(content)
             
         return content
-        
-    def compose_messages(self, config, 
-                        history: Optional[str] = None,
+    
+    @staticmethod
+    def compose_messages(history: Optional[str] = None,
                         assistant_response: Optional[str] = None) -> List[Dict[str, str]]:
         messages = []
 
@@ -32,7 +43,7 @@ class ApiComposer:
         if history and config.user_prompt:
             messages.append({
                 "role": "user",
-                "content": f"{config.user_preprompt}{config.user_prompt}{config.user_postprompt}".strip()
+                "content": f"{config.user_prompt}".strip()
         })
         
         if assistant_response:
