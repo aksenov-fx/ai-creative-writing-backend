@@ -46,9 +46,12 @@ def compose_api_request(history_content, assistant_response):
 
 # Chat
 def chat(endpoint: dict, model: str) -> None:
-
+    
     history_content, assistant_response = process_history()
+    if not model['outputs_thinking']:
+        assistant_response = ChatHistory.format_history(assistant_response)
+
     messages = compose_api_request(history_content, assistant_response)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    streamer.stream_response(messages, model)
+    streamer.stream_response(messages, model['name'])

@@ -12,14 +12,19 @@ class ChatUI:
         self.ui_thread = None
 
     def create_window(self):
-        def write_scene():
+        def write_scene1():
             config.interrupt_flag = False
-            write_thread = threading.Thread(target=Chat.write_scene, args=(chat_endpoints.model,))
+            write_thread = threading.Thread(target=Chat.write_scene, args=(chat_endpoints.models['deepseek'],))
+            write_thread.start()
+
+        def write_scene2():
+            config.interrupt_flag = False
+            write_thread = threading.Thread(target=Chat.write_scene, args=(chat_endpoints.models['qwen'],))
             write_thread.start()
 
         def custom_prompt():
             config.interrupt_flag = False
-            write_thread = threading.Thread(target=Chat.custom_prompt, args=(chat_endpoints.model,))
+            write_thread = threading.Thread(target=Chat.custom_prompt, args=(chat_endpoints.models['deepseek'],))
             write_thread.start()
             
         def remove_last():
@@ -36,7 +41,7 @@ class ChatUI:
         
         window = tk.Tk()
         window.title("Chat") 
-        window.geometry("200x300+95+350")
+        window.geometry("200x330+95+350")
         
         # Dark theme colors
         bg_color = "#2e2e2e"
@@ -47,8 +52,9 @@ class ChatUI:
         window.configure(bg=bg_color)
         
         button_configs = [
-            ("Write scene", write_scene),
-            ("Custom Prompt", custom_prompt),
+            ("Write scene (Ds)", write_scene1),
+            ("Write scene (Qwen)", write_scene2),
+            ("Custom Prompt (Ds)", custom_prompt),
             ("Stop Writing", interrupt_write),
             ("Remove Last Response", remove_last),
             ("Insert Response", insert_response), 

@@ -7,11 +7,11 @@ from . import chat_endpoints as chat_endpoints
 
 class Chat:
     @staticmethod
-    def write_scene(model=chat_endpoints.model):
+    def write_scene(model):
         if config.user_prompt:
             config.user_prompt = f"{config.user_preprompt}{config.user_prompt}{config.user_postprompt}"
         chat(chat_endpoints.endpoint, model)
 
     @staticmethod
-    def custom_prompt(model=chat_endpoints.model):
+    def custom_prompt(model):
         chat(chat_endpoints.endpoint, model)

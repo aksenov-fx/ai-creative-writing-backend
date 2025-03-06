@@ -21,9 +21,8 @@ Maintain the same writing style
 
 user_postprompt = '''
 
-End of the scene - stop here
-Do not conclude the scene - leave the room for continuation
-Do not describe any further events after this point - just stop here
+Stop here
+Do not describe any further events after this point
 '''
 
 # ------------------------------------------- #

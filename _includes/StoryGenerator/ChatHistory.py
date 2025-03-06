@@ -50,7 +50,7 @@ class ChatHistory:
     def format_history(history_content: str) -> str:
         import re
     
-        pattern = r'\n<think>.*?</think>'
+        pattern = r'<think>.*?</think>'
 
         cleaned_content = re.sub(pattern, '', history_content, flags=re.DOTALL)
         cleaned_content = re.sub(r'\n{3,}', '\n\n', cleaned_content)

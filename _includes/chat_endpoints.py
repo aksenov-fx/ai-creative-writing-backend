@@ -13,7 +13,16 @@ endpoint = {
     'api_key': get_api_key("./_includes/api_key.txt")
 }
 
-model = 'deepseek/deepseek-r1:free'
+models = {
+    'deepseek': {
+        'name': 'deepseek/deepseek-r1:free',
+        'outputs_thinking': True
+    },
+    'qwen': {
+        'name': 'qwen/qwen-2.5-72b-instruct',
+        'outputs_thinking': False
+    }
+}
 
 # ---                    --- #
 
