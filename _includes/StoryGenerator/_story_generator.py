@@ -48,7 +48,7 @@ def compose_api_request(history_content, assistant_response):
 def chat(endpoint: dict, model: str) -> None:
     
     history_content, assistant_response = process_history()
-    if not model['outputs_thinking']:
+    if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.format_history(assistant_response)
 
     messages = compose_api_request(history_content, assistant_response)
