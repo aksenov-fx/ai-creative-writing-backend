@@ -25,21 +25,14 @@ class ApiComposer:
             messages.append({"role": role, "content": content.strip()})
 
     @staticmethod
-    def compose_messages(history: Optional[str] = None,
-                        assistant_response: Optional[str] = None) -> List[Dict[str, str]]:
+    def compose_messages(history, assistant_response,
+                        first_prompt, user_prompt) -> List[Dict[str, str]]:
         messages = []
 
         ApiComposer.append_message(messages, "system", config.system_prompt)
-
-        if config.has_separator:
-            ApiComposer.append_message(messages, "user", config.first_prompt)
-            ApiComposer.append_message(messages, "assistant", history)
-            ApiComposer.append_message(messages, "user", config.user_prompt)
-        else:
-            ApiComposer.append_message(messages, "user", config.first_prompt + config.user_prompt)
-            ApiComposer.append_message(messages, "assistant", history)
-
+        ApiComposer.append_message(messages, "user", first_prompt)
+        ApiComposer.append_message(messages, "assistant", history)
+        ApiComposer.append_message(messages, "user", user_prompt)
         ApiComposer.append_message(messages, "assistant", assistant_response)
-
 
         return messages

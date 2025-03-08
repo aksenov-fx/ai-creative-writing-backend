@@ -2,6 +2,7 @@ from . import prompt_vars
 from .StoryGenerator._story_generator import chat
 from .chat_settings import config
 from . import chat_endpoints as chat_endpoints
+from .StoryGenerator.ChatHistory import ChatHistory
 
 # --- Chat methods --- #
 # Define custom promts here
@@ -22,10 +23,16 @@ class Chat:
     @staticmethod
     def write_scene(model):
         Chat.validate_prompts()
-        config.user_prompt = f"{prompt_vars.user_preprompt}{config.user_prompt}{prompt_vars.user_postprompt}"
-        chat(chat_endpoints.endpoint, model)
+
+        if ChatHistory.has_separator():
+            user_prompt = f"{prompt_vars.user_preprompt}{config.user_prompt}{prompt_vars.user_postprompt}"
+            chat(chat_endpoints.endpoint, model, config.first_prompt, user_prompt)
+        else:
+            user_prompt = config.user_prompt + prompt_vars.user_postprompt
+            first_prompt = config.first_prompt + user_prompt
+            chat(chat_endpoints.endpoint, model, first_prompt, None)
 
     @staticmethod
     def custom_prompt(model):
         Chat.validate_prompts()
-        chat(chat_endpoints.endpoint, model)
+        chat(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)

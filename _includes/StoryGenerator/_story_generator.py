@@ -1,8 +1,8 @@
-from _includes.StoryGenerator.ApiComposer import ApiComposer
-from _includes.StoryGenerator.ChatHistory import ChatHistory
-from _includes.StoryGenerator.Streamer import Streamer
+from .ApiComposer import ApiComposer
+from .ChatHistory import ChatHistory
+from .Streamer import Streamer
 
-from _includes.chat_settings import config
+from ..chat_settings import config
 
 def process_history():
 
@@ -11,9 +11,6 @@ def process_history():
 
     # Exclude first paragraphs to match input length with max_tokens
     history_content = ApiComposer.trim_content(history_content, config.max_tokens)
-
-    # Check separator
-    config.has_separator = ChatHistory.has_separator(history_content.splitlines())
 
     # Remove '### Reasoning' headers
     history_content = ChatHistory.remove_reasoning_header(history_content)
@@ -29,10 +26,10 @@ def process_history():
 
     return history_content, assistant_response
 
-def compose_api_request(history_content, assistant_response):
+def compose_api_request(history_content, assistant_response, first_prompt, user_prompt):
 
     messages = ApiComposer.compose_messages(
-        history_content, assistant_response
+        history_content, assistant_response, first_prompt, user_prompt
     )
     
     if config.print_messages:
@@ -40,7 +37,7 @@ def compose_api_request(history_content, assistant_response):
 
     return messages
 
-def chat(endpoint: dict, model: str) -> None:
+def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
     history_content, assistant_response = process_history()
 
@@ -48,7 +45,7 @@ def chat(endpoint: dict, model: str) -> None:
     if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.format_history(assistant_response)
 
-    messages = compose_api_request(history_content, assistant_response)
+    messages = compose_api_request(history_content, assistant_response, first_prompt, user_prompt)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    streamer.stream_response(messages, model['name'])
+    #streamer.stream_response(messages, model['name'])

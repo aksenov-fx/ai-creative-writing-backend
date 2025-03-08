@@ -13,7 +13,10 @@ class ChatHistory:
             f.write(content)
     
     @staticmethod
-    def has_separator(lines: list[str]) -> bool:
+    def has_separator(content=None) -> bool:
+        if content is None:
+            content = ChatHistory.read()
+        lines = content.splitlines()
         return any(line.strip() == config.separator for line in lines)
     
     @staticmethod
@@ -22,8 +25,7 @@ class ChatHistory:
         content = content.strip()
         lines = content.splitlines()
 
-        has_separator = ChatHistory.has_separator(lines)
-        if not has_separator:
+        if not ChatHistory.has_separator(content):
             ChatHistory.write_history('')
             return
 
@@ -46,7 +48,7 @@ class ChatHistory:
     def parse_assistant_response(history_content) -> tuple[str, str]:
         lines = history_content.splitlines()
 
-        has_separator = ChatHistory.has_separator(lines)
+        has_separator = ChatHistory.has_separator(history_content)
         if not has_separator or lines[-1].strip() == config.separator:
             return history_content, None
         
