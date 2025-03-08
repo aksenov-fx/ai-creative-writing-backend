@@ -5,8 +5,6 @@ from pathlib import Path
 class ChatConfig:
     system_prompt: str
     first_prompt: str
-    user_preprompt: str 
-    user_postprompt: str 
     user_prompt: str
     assistant_response: str
     model: dict

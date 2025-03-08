@@ -8,15 +8,11 @@ config = ChatConfig(
     # Prompt vars
         system_prompt=None,
         first_prompt=None,
-        #Text that will preceed each user_prompt
-        user_preprompt=prompt_vars.user_preprompt, 
-        #Text that will be appended to each user_prompt
-        user_postprompt=prompt_vars.user_postprompt, 
         user_prompt=None,
         assistant_response=None,
-        model=None,
 
     # Prompt parameters
+        model=None,
         temperature=0.8,
         
         # max_tokens for both input and output
@@ -26,11 +22,11 @@ config = ChatConfig(
     # Story path and response separator
         history_path="story.md",
         separator='----',
-        has_separator=False,
 
     # Technical 
         print_messages=True, # Print conversation history in cell outputs
         client_type="openai", # openai or http
+        has_separator=False,
         interrupt_flag = False,
 
     #Reasoning settings
