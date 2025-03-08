@@ -14,11 +14,11 @@ endpoint = {
 }
 
 models = {
-    'deepseek': {
+    'Deepseek R1': {
         'name': 'deepseek/deepseek-r1:free',
         'outputs_thinking': True
     },
-    'qwen': {
+    'Qwen 72b': {
         'name': 'qwen/qwen-2.5-72b-instruct',
         'outputs_thinking': False
     }

@@ -1,5 +1,6 @@
 import tkinter as tk
 import threading
+from tkinter import ttk
 
 from .chat_methods import Chat
 from .chat_settings import config
@@ -14,17 +15,12 @@ class ChatUI:
     def create_window(self):
         def write_scene1():
             config.interrupt_flag = False
-            write_thread = threading.Thread(target=Chat.write_scene, args=(chat_endpoints.models['deepseek'],))
-            write_thread.start()
-
-        def write_scene2():
-            config.interrupt_flag = False
-            write_thread = threading.Thread(target=Chat.write_scene, args=(chat_endpoints.models['qwen'],))
+            write_thread = threading.Thread(target=Chat.write_scene, args=(config.model,))
             write_thread.start()
 
         def custom_prompt():
             config.interrupt_flag = False
-            write_thread = threading.Thread(target=Chat.custom_prompt, args=(chat_endpoints.models['deepseek'],))
+            write_thread = threading.Thread(target=Chat.custom_prompt, args=(config.model,))
             write_thread.start()
             
         def remove_last():
@@ -39,9 +35,13 @@ class ChatUI:
         def interrupt_write():
             config.interrupt_flag = True  
         
+        def on_model_selected(event):
+            selected_model = model_var.get()
+            config.model = chat_endpoints.models[selected_model]
+        
         window = tk.Tk()
         window.title("Chat") 
-        window.geometry("200x330+95+350")
+        window.geometry("200x320+95+350")
         
         # Dark theme colors
         bg_color = "#2e2e2e"
@@ -52,9 +52,8 @@ class ChatUI:
         window.configure(bg=bg_color)
         
         button_configs = [
-            ("Write scene (Ds)", write_scene1),
-            ("Write scene (Qwen)", write_scene2),
-            ("Custom Prompt (Ds)", custom_prompt),
+            ("Write scene", write_scene1),
+            ("Custom Prompt", custom_prompt),
             ("Stop Writing", interrupt_write),
             ("Remove Last Response", remove_last),
             ("Insert Response", insert_response), 
@@ -73,7 +72,22 @@ class ChatUI:
                 relief="flat",
                 padx=10
             )
-            button.pack(pady=15)
+            button.pack(pady=10)
+        
+        # Model selector - now at the bottom of the window
+        model_frame = tk.Frame(window, bg=bg_color)
+        model_frame.pack(pady=10, fill=tk.X, padx=10, side=tk.BOTTOM)
+        
+        model_var = tk.StringVar()
+        model_var.set(next(iter(chat_endpoints.models.keys())))  # Default to first model
+        
+        model_dropdown = ttk.Combobox(model_frame, textvariable=model_var, state="readonly")
+        model_dropdown["values"] = list(chat_endpoints.models.keys())
+        model_dropdown.pack(fill=tk.X)
+        model_dropdown.bind("<<ComboboxSelected>>", on_model_selected)
+        
+        # Set initial model
+        config.model = chat_endpoints.models[model_var.get()]
         
         def on_closing():
             window.destroy()
@@ -88,18 +102,6 @@ class ChatUI:
             self.ui_thread.start()
         else:
             print("UI is already running")
-
-# Simulate a long-running task that checks the interrupt flag (for debugging)
-    def long_running_task(self):
-        import time
-        config.interrupt_flag = False
-        for i in range(10):  
-            if config.interrupt_flag:
-                print("Task interrupted!")
-                return
-            print(f"Working... {i+1}/10")
-            time.sleep(1)
-        print("Task completed!")
 
 # Create an instance of the UI
 Chat_UI = ChatUI()

@@ -12,6 +12,9 @@ def process_history():
     # Exclude first paragraphs to match input length with max_tokens
     history_content = ApiComposer.trim_content(history_content, config.max_tokens)
 
+    # Check separator
+    config.has_separator = ChatHistory.has_separator(history_content.splitlines())
+
     # Remove '### Reasoning' headers
     history_content = ChatHistory.remove_reasoning_header(history_content)
 
@@ -21,18 +24,11 @@ def process_history():
     else:
         assistant_response = None
 
-    if not assistant_response:
-        assistant_response = config.assistant_response
-
-    if assistant_response and not config.user_prompt:
-        raise ValueError("Set user_prompt or remove assistant response")
-
     # Remove reasoning, separators and extra empyty lines
     history_content = ChatHistory.format_history(history_content)
 
     return history_content, assistant_response
 
-# Compose/print api request
 def compose_api_request(history_content, assistant_response):
 
     messages = ApiComposer.compose_messages(
@@ -44,10 +40,11 @@ def compose_api_request(history_content, assistant_response):
 
     return messages
 
-# Chat
 def chat(endpoint: dict, model: str) -> None:
     
     history_content, assistant_response = process_history()
+
+    # Remove thinking tokens from assistant_response
     if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.format_history(assistant_response)
 

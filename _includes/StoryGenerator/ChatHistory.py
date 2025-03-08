@@ -1,37 +1,53 @@
 from ..chat_settings import config
 
 class ChatHistory:
-
+    
     @staticmethod
     def read() -> str:
         with open(config.history_path, 'r', encoding='utf-8') as f:
-            return f.read().strip()
+            return f.read()
+            
+    @staticmethod
+    def write_history(content: str) -> None:
+        with open(config.history_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+    
+    @staticmethod
+    def has_separator(lines: list[str]) -> bool:
+        return any(line.strip() == config.separator for line in lines)
     
     @staticmethod
     def remove_last_response() -> None:
-        with open(config.history_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        content = ChatHistory.read()
+        content = content.strip()
+        lines = content.splitlines()
+
+        has_separator = ChatHistory.has_separator(lines)
+        if not has_separator:
+            ChatHistory.write_history('')
+            return
+
+        # Remove last line if last line is a separator
+        if lines and lines[-1] == config.separator:
+            lines[-1] = ''
+            content = '\n'.join(lines).strip()
+
+        #Remove text after the last separator
         if (pos := content.rfind(config.separator)) != -1:
-            with open(config.history_path, 'w', encoding='utf-8') as f:
-                f.write(content[:pos + len(config.separator)] + '\n\n')
+            ChatHistory.write_history(content[:pos + len(config.separator)] + '\n\n')
     
     @staticmethod
     def insert(text: str) -> None:
-        text = text.strip()
-        with open(config.history_path, 'r', encoding='utf-8') as f:
-            existing_content = f.read()
-        with open(config.history_path, 'w', encoding='utf-8') as f:
-            f.write(existing_content + text + '\n\n')
+        text = text
+        existing_content = ChatHistory.read()
+        ChatHistory.write_history(existing_content + text + '\n\n')
 
     @staticmethod
     def parse_assistant_response(history_content) -> tuple[str, str]:
         lines = history_content.splitlines()
-        has_separator = any(line.strip() == config.separator for line in lines)
-        
-        if not has_separator:
-            return '', history_content
-            
-        if lines[-1].strip() == config.separator:
+
+        has_separator = ChatHistory.has_separator(lines)
+        if not has_separator or lines[-1].strip() == config.separator:
             return history_content, None
         
         parts = history_content.split(f'\n{config.separator}\n')

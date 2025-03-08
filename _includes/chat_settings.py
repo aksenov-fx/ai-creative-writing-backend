@@ -14,6 +14,7 @@ config = ChatConfig(
         user_postprompt=prompt_vars.user_postprompt, 
         user_prompt=None,
         assistant_response=None,
+        model=None,
 
     # Prompt parameters
         temperature=0.8,
@@ -25,6 +26,7 @@ config = ChatConfig(
     # Story path and response separator
         history_path="story.md",
         separator='----',
+        has_separator=False,
 
     # Technical 
         print_messages=True, # Print conversation history in cell outputs

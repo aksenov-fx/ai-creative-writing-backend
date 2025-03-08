@@ -1,13 +1,6 @@
 from typing import Optional, List, Dict, Any
 from ..chat_settings import config
 
-class ChatHistory:
-
-    @staticmethod
-    def read() -> str:
-        with open(config.history_path, 'r', encoding='utf-8') as f:
-            return f.read().strip()
-    
 class ApiComposer:
 
     @staticmethod
@@ -27,26 +20,26 @@ class ApiComposer:
         return content
     
     @staticmethod
+    def append_message(messages: List[Dict[str, str]], role: str, content: Optional[str]) -> None:
+        if content:
+            messages.append({"role": role, "content": content.strip()})
+
+    @staticmethod
     def compose_messages(history: Optional[str] = None,
                         assistant_response: Optional[str] = None) -> List[Dict[str, str]]:
         messages = []
 
-        if config.system_prompt:
-            messages.append({"role": "system", "content": config.system_prompt})
+        ApiComposer.append_message(messages, "system", config.system_prompt)
 
-        if config.first_prompt:
-            messages.append({"role": "user", "content": config.first_prompt})
+        if config.has_separator:
+            ApiComposer.append_message(messages, "user", config.first_prompt)
+            ApiComposer.append_message(messages, "assistant", history)
+            ApiComposer.append_message(messages, "user", config.user_prompt)
+        else:
+            ApiComposer.append_message(messages, "user", config.first_prompt + config.user_prompt)
+            ApiComposer.append_message(messages, "assistant", history)
 
-        if history:
-            messages.append({"role": "assistant", "content": history})
+        ApiComposer.append_message(messages, "assistant", assistant_response)
 
-        if history and config.user_prompt:
-            messages.append({
-                "role": "user",
-                "content": f"{config.user_prompt}".strip()
-        })
-        
-        if assistant_response:
-            messages.append({"role": "assistant", "content": assistant_response})
-        
+
         return messages

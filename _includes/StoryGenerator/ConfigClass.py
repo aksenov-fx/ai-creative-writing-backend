@@ -9,6 +9,7 @@ class ChatConfig:
     user_postprompt: str 
     user_prompt: str
     assistant_response: str
+    model: dict
     temperature: float
     max_tokens: int
     history_path: Path
@@ -17,4 +18,5 @@ class ChatConfig:
     include_reasoning: bool
     reasoning_header: str
     separator: str
+    has_separator: bool
     interrupt_flag: bool

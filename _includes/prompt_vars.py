@@ -14,13 +14,11 @@ user_preprompt = '''
 Instructions:
 Write the next part of the story based on the below events
 Maintain the same writing style
-
 '''
 
 # ------------------------------------------- #
 
 user_postprompt = '''
-
 Stop here
 Do not describe any further events after this point
 '''
