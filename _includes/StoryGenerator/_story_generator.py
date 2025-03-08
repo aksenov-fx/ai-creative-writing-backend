@@ -48,4 +48,4 @@ def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> Non
     messages = compose_api_request(history_content, assistant_response, first_prompt, user_prompt)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    #streamer.stream_response(messages, model['name'])
+    streamer.stream_response(messages, model['name'])
