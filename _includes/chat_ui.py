@@ -13,7 +13,7 @@ class ChatUI:
         self.ui_thread = None
 
     def create_window(self):
-        def write_scene1():
+        def write_scene():
             config.interrupt_flag = False
             write_thread = threading.Thread(target=Chat.write_scene, args=(config.model,))
             write_thread.start()
@@ -26,12 +26,6 @@ class ChatUI:
         def remove_last():
             ChatHistory.remove_last_response()
             
-        def insert_response():
-            ChatHistory.insert(config.assistant_response)
-            
-        def clear_response():
-            config.assistant_response = None
-
         def interrupt_write():
             config.interrupt_flag = True  
         
@@ -41,7 +35,7 @@ class ChatUI:
         
         window = tk.Tk()
         window.title("Chat") 
-        window.geometry("200x320+95+350")
+        window.geometry("200x250+95+350")
         
         # Dark theme colors
         bg_color = "#2e2e2e"
@@ -52,12 +46,10 @@ class ChatUI:
         window.configure(bg=bg_color)
         
         button_configs = [
-            ("Write scene", write_scene1),
+            ("Write scene", write_scene),
             ("Custom Prompt", custom_prompt),
             ("Stop Writing", interrupt_write),
-            ("Remove Last Response", remove_last),
-            ("Insert Response", insert_response), 
-            ("Clear Response", clear_response)
+            ("Remove Last Response", remove_last)
         ]
         
         for text, command in button_configs:
