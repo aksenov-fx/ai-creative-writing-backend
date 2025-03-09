@@ -2,7 +2,7 @@ VS code/Jupyter Notebooks for creative writing with AI. They allow to:
 - Tune/inject reasoning for thinking models like Deepseek  
 - Define the beginning of the next response  
 - Continue unfinished responses  
-- Use VS Code and its plugins to work with text
+- Use VS Code and its plugins to work with the text
 
 If you do not need these particular features, please consider using Novelcrafter instead.  
 
@@ -17,3 +17,7 @@ If you do not need these particular features, please consider using Novelcrafter
 - Edit chat_settings according to your liking  
 - Edit chat_endpoints to add providers/models  
 - Edit chat_methods to add custom prompts
+
+---
+Try in VS Code online:  
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=941547309&skip_quickstart=true)
