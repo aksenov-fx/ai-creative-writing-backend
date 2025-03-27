@@ -21,18 +21,17 @@ class ChatHistory:
     
     @staticmethod
     def remove_last_response() -> None:
-        content = ChatHistory.read()
-        content = content.strip()
+        content = ChatHistory.read().strip()
         lines = content.splitlines()
-
-        if not ChatHistory.has_separator(content):
-            ChatHistory.write_history('')
-            return
 
         # Remove last line if last line is a separator
         if lines and lines[-1] == config.separator:
             lines[-1] = ''
             content = '\n'.join(lines).strip()
+
+        if not ChatHistory.has_separator(content):
+            ChatHistory.write_history('')
+            return
 
         #Remove text after the last separator
         if (pos := content.rfind(config.separator)) != -1:

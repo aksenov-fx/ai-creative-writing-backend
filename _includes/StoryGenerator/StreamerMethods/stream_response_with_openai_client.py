@@ -40,17 +40,13 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
                     self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
                     first_reasoning = False
                 self.write_file(config.history_path, delta.reasoning)
-                # print(delta.reasoning_content, end='', flush=True)
-                # sys.stdout.flush()
             
-            # Handle regular content if present
+            # Handle regular content
             if hasattr(delta, 'content') and delta.content:
                 if reasoning_seen and not reasoning_is_complete:
                     self.write_file(config.history_path, "</think>\n\n")
                     reasoning_is_complete = True
                 self.write_file(config.history_path, delta.content)
-                # print(delta.content, end='', flush=True)
-                # sys.stdout.flush()
 
         self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
             
