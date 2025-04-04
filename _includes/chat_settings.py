@@ -35,4 +35,7 @@ config = ChatConfig(
         # Note: some providers do not allow to define reasoning. These providers can be excluded in openrouter web ui settings
         include_reasoning = True,
         reasoning_header = '### Reasoning', # allows to fold reasoning with code folding
+        print_reasoning = False,
+        print_output = False,
+        part_to_rewrite = 0
 )

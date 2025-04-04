@@ -3,6 +3,7 @@ from .StoryGenerator._story_generator import chat
 from .chat_settings import config
 from . import chat_endpoints as chat_endpoints
 from .StoryGenerator.ChatHistory import ChatHistory
+from .StoryGenerator._story_rewriter import rewrite_part
 
 # --- Chat methods --- #
 # Define custom promts here
@@ -36,3 +37,9 @@ class Chat:
     def custom_prompt(model):
         Chat.validate_prompts()
         chat(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)
+
+    @staticmethod
+    def rewrite(model, part):
+        Chat.validate_prompts()
+        config.part_to_rewrite = part
+        rewrite_part(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)

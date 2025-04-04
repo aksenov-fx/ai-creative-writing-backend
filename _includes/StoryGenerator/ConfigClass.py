@@ -17,3 +17,6 @@ class ChatConfig:
     reasoning_header: str
     separator: str
     interrupt_flag: bool
+    print_reasoning: bool
+    print_output: bool
+    part_to_rewrite: int

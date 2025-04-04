@@ -18,8 +18,19 @@ models = {
         'name': 'deepseek/deepseek-r1:free',
         'outputs_thinking': True
     },
+
     'Qwen 72b': {
         'name': 'qwen/qwen-2.5-72b-instruct',
+        'outputs_thinking': False
+    },
+
+    'Qwen 32b': {
+        'name': 'qwen/qwq-32b:free',
+        'outputs_thinking': False
+    },
+
+    'Deepseek V3': {
+        'name': 'deepseek/deepseek-chat-v3-0324:free',
         'outputs_thinking': False
     }
 }

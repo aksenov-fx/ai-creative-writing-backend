@@ -9,12 +9,15 @@ class Streamer:
         self.endpoint = endpoint
         self.api_key = api_key
     
-    def write_file(self, filepath, content, mode='a'):
-        with open(filepath, mode, encoding='utf-8') as f:
+    def write_file(self, filepath, content, rewriting=False):
+        if rewriting:
+            return
+
+        with open(filepath, 'a', encoding='utf-8') as f:
             f.write(content)
 
-    def stream_response(self, messages, model):
+    def stream_response(self, messages, model, rewriting=False):
         if config.client_type == "openai":
-            stream_response_with_openai_client(self, messages, config, model)
+            return stream_response_with_openai_client(self, messages, config, model, rewriting)
         elif config.client_type == "http":
-            stream_response_with_openrouter_api(self, messages, config, model)
+            return stream_response_with_openrouter_api(self, messages, config, model)
