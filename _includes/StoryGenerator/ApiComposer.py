@@ -29,10 +29,10 @@ class ApiComposer:
                         first_prompt, user_prompt) -> List[Dict[str, str]]:
         messages = []
 
-        ApiComposer.append_message(messages, "system", config.system_prompt)
-        ApiComposer.append_message(messages, "user", first_prompt)
-        ApiComposer.append_message(messages, "assistant", history)
-        ApiComposer.append_message(messages, "user", user_prompt)
-        ApiComposer.append_message(messages, "assistant", assistant_response)
+        ApiComposer.append_message(messages, "system",       config.system_prompt)
+        ApiComposer.append_message(messages, "user",         first_prompt)
+        ApiComposer.append_message(messages, "assistant",    history)
+        ApiComposer.append_message(messages, "user",         user_prompt)
+        ApiComposer.append_message(messages, "assistant",    assistant_response)
 
         return messages

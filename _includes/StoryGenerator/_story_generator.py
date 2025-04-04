@@ -21,7 +21,11 @@ def process_history():
     else:
         assistant_response = None
 
-    # Remove reasoning, separators and extra empyty lines
+    # Remove reasoning tokens
+    if ChatHistory.has_separator():
+        history_content = ChatHistory.remove_reasoning_tokens(history_content)
+
+    # Remove separators and extra empyty lines
     history_content = ChatHistory.format_history(history_content)
 
     return history_content, assistant_response
@@ -43,7 +47,7 @@ def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> Non
 
     # Remove thinking tokens from assistant_response
     if assistant_response and not model['outputs_thinking']:
-        assistant_response = ChatHistory.format_history(assistant_response)
+        assistant_response = ChatHistory.remove_reasoning_tokens(assistant_response)
 
     messages = compose_api_request(history_content, assistant_response, first_prompt, user_prompt)
 

@@ -12,11 +12,8 @@ Create vivid settings through specific, unexpected details
 
 Avoid cliches and sentimental terms like responsibility, trust, care, accomplishment etc.
 Avoid purple prose and florid descriptions
-Avoid filler sentences.
-Avoid atmospheric descriptions disconnected from character experience
-Avoid tropes like: "Outside, the first stars pierced the cloud-velvet sky."
-Avoid tropes like: "Somewhere, a creek churned with tomorrow’s silt."
-Avoid tropes like: "The room held its breath"
+Avoid filler sentences like: "The room held its breath"
+Avoid atmospheric descriptions disconnected from character experience, like: "Somewhere, a creek churned with tomorrow’s silt."
 '''
 
 # ------------------------------------------- #

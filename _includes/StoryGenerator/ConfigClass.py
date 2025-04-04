@@ -16,5 +16,4 @@ class ChatConfig:
     include_reasoning: bool
     reasoning_header: str
     separator: str
-    has_separator: bool
     interrupt_flag: bool

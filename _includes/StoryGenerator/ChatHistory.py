@@ -64,7 +64,7 @@ class ChatHistory:
             if line != config.reasoning_header).strip()
     
     @staticmethod
-    def format_history(history_content: str) -> str:
+    def remove_reasoning_tokens(history_content: str) -> str:
         import re
     
         pattern = r'<think>.*?</think>'
@@ -72,9 +72,14 @@ class ChatHistory:
         cleaned_content = re.sub(pattern, '', history_content, flags=re.DOTALL)
         cleaned_content = re.sub(r'\n{3,}', '\n\n', cleaned_content)
         
+        return cleaned_content
+
+    @staticmethod
+    def format_history(history_content: str) -> str:
+
         cleaned_content = '\n\n'.join(
             block.strip() 
-            for block in cleaned_content.split(config.separator) 
+            for block in history_content.split(config.separator) 
             if block.strip()
         )
 

@@ -26,7 +26,6 @@ config = ChatConfig(
     # Technical 
         print_messages=True, # Print conversation history in cell outputs
         client_type="openai", # openai or http
-        has_separator=False,
         interrupt_flag = False,
 
     #Reasoning settings
