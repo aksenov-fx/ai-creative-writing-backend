@@ -34,5 +34,8 @@ class ApiComposer:
         ApiComposer.append_message(messages, "assistant",    history)
         ApiComposer.append_message(messages, "user",         user_prompt)
         ApiComposer.append_message(messages, "assistant",    assistant_response)
-
+        
+        if config.print_messages:
+            for message in messages: print(message)
+            
         return messages

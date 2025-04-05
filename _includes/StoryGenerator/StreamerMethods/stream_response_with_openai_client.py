@@ -25,7 +25,7 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
         first_reasoning = False if "<think>" in messages[-1]['content'] else True
         reasoning_is_complete = True if "</think>" in messages[-1]['content'] else False
         reasoning_seen = False
-        complete_response = ''  # Initialize the complete_response variable here
+        complete_response = ''
 
         for chunk in response:
             delta = chunk.choices[0].delta
@@ -36,16 +36,18 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
 
             # Handle reasoning content if present
             if hasattr(delta, 'reasoning') and delta.reasoning:
+                
+                if config.write_reasoning:
+                    reasoning_seen = True
+                    if first_reasoning:
+                        self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
+                        first_reasoning = False
 
-                reasoning_seen = True
-                if first_reasoning:
-                    self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
-                    first_reasoning = False
+                    self.write_file(config.history_path, delta.reasoning, rewriting)
 
-                self.write_file(config.history_path, delta.reasoning, rewriting)
-
-                if config.print_reasoning or rewriting:
-                    print(delta.reasoning.replace('.', '.\n'), end='', flush=True)
+                if config.print_reasoning:
+                    #print(delta.reasoning.replace('.', '.\n'), end='', flush=True)
+                    print(delta.reasoning, end='', flush=True)
                     sys.stdout.flush()
 
             # Handle regular content
@@ -57,17 +59,17 @@ def stream_response_with_openai_client(self, messages: List[Dict[str, str]],
 
                 self.write_file(config.history_path, delta.content, rewriting)
                 
-                if config.print_output or rewriting:
-                    print(delta.content.replace('.', '.\n'), end='', flush=True)
+                if config.print_output:
+                    # Print each sentence from a new line
+                    print(delta.content.replace('.', '.\n'), end='', flush=True) 
                     sys.stdout.flush()
 
                 complete_response += delta.content
 
-        if not rewriting:
-            self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
+        self.write_file(config.history_path, f"\n\n{config.separator}\n\n", rewriting)
         
         return complete_response
-            
+        
     except KeyboardInterrupt:
         print('\nProgram terminated by user')
         sys.exit(0)

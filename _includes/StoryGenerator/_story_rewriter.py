@@ -9,6 +9,9 @@ def process_history():
     # Read history
     history_content = ChatHistory.read()
 
+    # Exclude first paragraphs to match input length with max_tokens
+    history_content = ApiComposer.trim_content(history_content, config.max_tokens)
+
     # Remove '### Reasoning' headers
     history_content = ChatHistory.remove_reasoning_header(history_content)
 
@@ -30,31 +33,16 @@ def process_history():
 
     return history_content, part_to_rewrite_content
 
-def compose_api_request(history_content, assistant_response, first_prompt, user_prompt):
-
-    messages = ApiComposer.compose_messages(
-        history_content, assistant_response, first_prompt, user_prompt
-    )
-    
-    if config.print_messages:
-        for message in messages: print(message)
-
-    return messages
-
 def rewrite_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
+    # Compose request
     history_content, part_to_rewrite_content = process_history()
     user_prompt = user_prompt + part_to_rewrite_content
+    messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
 
-    messages = compose_api_request(history_content, None, first_prompt, user_prompt)
-
+    # Get rewritten part
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
     complete_response = streamer.stream_response(messages, model['name'], True)
-    complete_response = '\n\n' + complete_response + '\n\n'
 
-    history_content = ChatHistory.read()
-    history_split = history_content.split(config.separator)
-    history_split[config.part_to_rewrite-1] = complete_response
-    history_content = config.separator.join(history_split)
-
-    ChatHistory.write_history(history_content)
+    # Replace old part with rewritten part
+    ChatHistory.replace_history_part(complete_response)

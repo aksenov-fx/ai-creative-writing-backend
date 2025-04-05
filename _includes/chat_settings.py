@@ -24,18 +24,21 @@ config = ChatConfig(
         separator='----',
 
     # Technical 
-        print_messages=True, # Print conversation history in cell outputs
         client_type="openai", # openai or http
         interrupt_flag = False,
+        part_to_rewrite = 0,
+
+    # Cell output settings
+        print_messages=True, # Print conversation history in cell outputs
+        print_output = False, # Stream response to cell outputs
 
     #Reasoning settings
-        # Output model reasoning to md file
+        # Include model reasoning in API response        
         # Note: old reasoning will be removed automatically from the request - it does not have to be removed from the file
         # Note: different inference providers output reasoning differently, which may result in <think> tags missing in the output
         # Note: some providers do not allow to define reasoning. These providers can be excluded in openrouter web ui settings
         include_reasoning = True,
-        reasoning_header = '### Reasoning', # allows to fold reasoning with code folding
-        print_reasoning = False,
-        print_output = False,
-        part_to_rewrite = 0
+        write_reasoning = True, # Write reasoning to md file
+        reasoning_header = '### Reasoning', # Allows to fold reasoning with code folding
+        print_reasoning = False # Print reasoning in cell outputs
 )

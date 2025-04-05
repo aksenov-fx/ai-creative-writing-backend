@@ -20,3 +20,4 @@ class ChatConfig:
     print_reasoning: bool
     print_output: bool
     part_to_rewrite: int
+    write_reasoning: bool

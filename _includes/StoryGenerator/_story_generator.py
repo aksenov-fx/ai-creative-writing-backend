@@ -30,17 +30,6 @@ def process_history():
 
     return history_content, assistant_response
 
-def compose_api_request(history_content, assistant_response, first_prompt, user_prompt):
-
-    messages = ApiComposer.compose_messages(
-        history_content, assistant_response, first_prompt, user_prompt
-    )
-    
-    if config.print_messages:
-        for message in messages: print(message)
-
-    return messages
-
 def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
     history_content, assistant_response = process_history()
@@ -49,7 +38,7 @@ def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> Non
     if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.remove_reasoning_tokens(assistant_response)
 
-    messages = compose_api_request(history_content, assistant_response, first_prompt, user_prompt)
+    messages = ApiComposer.compose_messages(history_content, assistant_response, first_prompt, user_prompt)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
     streamer.stream_response(messages, model['name'])
