@@ -43,7 +43,9 @@ class Chat:
         Chat.validate_prompts()
         config.part_to_rewrite = part
         
+        prompt = prompt_vars.rewrite_preprompt + config.user_prompt + prompt_vars.rewrite_postprompt
+
         if part == 1:
-            rewrite_part(chat_endpoints.endpoint, model, '', '')
+            rewrite_part(chat_endpoints.endpoint, model, None, config.first_prompt + prompt)
         else:
-            rewrite_part(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)
+            rewrite_part(chat_endpoints.endpoint, model, config.first_prompt, prompt)

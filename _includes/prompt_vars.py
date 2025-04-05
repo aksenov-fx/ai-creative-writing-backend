@@ -1,4 +1,8 @@
 
+write = 'Please write a story according to the following guidelines'
+
+# ------------------------------------------- #
+
 guidelines = '''
 Make your writing verbose
 Fill in the gaps to make smooth transitions between scenes
@@ -45,3 +49,20 @@ monolouge='''
 Focus on monolouge in the next scene instead of descriptions
 Use direct speech, write a first-person monolouge
 '''
+
+# ------------------------------------------- #
+
+rewrite_preprompt = '''
+Rewrite a part of the story below according to guidelines:
+'''
+
+# ------------------------------------------- #
+
+rewrite_postprompt = '''Leave the part heading and the rest of the story unchanged.
+Return only the rewritten part.
+Do not return any comments.
+
+Part to rewrite:
+'''
+
+# ------------------------------------------- #

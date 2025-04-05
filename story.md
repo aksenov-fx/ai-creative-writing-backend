@@ -15,3 +15,9 @@ Inside, Grandmother hummed—a tune like dry leaves skittering over cobblestones
 
 ----
 
+### Part 3
+
+Red Hood’s fingers traced the basket’s spine, still warm where dough had nestied against it. "But the path’s shorter through the hollow," she murmured, her words dissolving into the steam curling from a kettle on the hearth.  
+
+----
+

@@ -35,11 +35,17 @@ def process_history():
 
 def rewrite_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
-    # Compose request
+    # Get history
     history_content, part_to_rewrite_content = process_history()
+    
+    # Compose request
     user_prompt = user_prompt + part_to_rewrite_content
-    messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
-
+    
+    if config.part_to_rewrite == 1:
+        messages = ApiComposer.compose_messages(None, None, first_prompt, user_prompt)
+    else:
+        messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
+    
     # Get rewritten part
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
     complete_response = streamer.stream_response(messages, model['name'], True)
