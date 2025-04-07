@@ -53,16 +53,19 @@ Use direct speech, write a first-person monolouge
 # ------------------------------------------- #
 
 rewrite_preprompt = '''
-Rewrite a part of the story below according to guidelines:
+Change the following story part according to guidelines:
 '''
 
 # ------------------------------------------- #
 
-rewrite_postprompt = '''Leave the part heading and the rest of the story unchanged.
-Return only the rewritten part.
+rewrite_postprompt = '''
+Make the above changes only
+Preserve the original text when possible
+Do not change sentences that do not meet changing requirements
+Leave the part heading, if it's present.
 Do not return any comments.
 
-Part to rewrite:
+Text to change:
 '''
 
 # ------------------------------------------- #
