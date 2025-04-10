@@ -52,13 +52,13 @@ Use direct speech, write a first-person monolouge
 
 # ------------------------------------------- #
 
-rewrite_preprompt = '''
+change_part_preprompt = '''
 Change the following story part according to guidelines:
 '''
 
 # ------------------------------------------- #
 
-rewrite_postprompt = '''
+refine_postprompt = '''
 Make the above changes only
 Preserve the original text when possible
 Do not change sentences that do not meet changing requirements
@@ -67,5 +67,9 @@ Do not return any comments.
 
 Text to change:
 '''
+
+# ------------------------------------------- #
+
+rewrite_postprompt = 'Text to change:'
 
 # ------------------------------------------- #

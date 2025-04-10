@@ -92,12 +92,23 @@ class ChatHistory:
         new_part = '\n\n' + new_part + '\n\n'
 
         splitter = '</think>'
-        if splitter in history_split[config.part_to_rewrite-1]:
-            think_part, _ = history_split[config.part_to_rewrite-1].split(splitter, 1)
-            history_split[config.part_to_rewrite-1] = think_part + splitter + new_part
+        if splitter in history_split[config.part_number-1]:
+            think_part, _ = history_split[config.part_number-1].split(splitter, 1)
+            history_split[config.part_number-1] = think_part + splitter + new_part
         else:
-            history_split[config.part_to_rewrite-1] = new_part
+            history_split[config.part_number-1] = new_part
             
+        history_content = config.separator.join(history_split)
+
+        ChatHistory.write_history(history_content)
+
+    @staticmethod
+    def add_part(new_part) -> str:
+        history_content = ChatHistory.read()
+        history_split = history_content.split(config.separator)
+        new_part = '\n\n' + new_part + '\n\n'
+
+        history_split.insert(config.part_number, new_part)
         history_content = config.separator.join(history_split)
 
         ChatHistory.write_history(history_content)
