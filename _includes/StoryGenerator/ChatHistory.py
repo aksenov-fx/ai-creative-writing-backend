@@ -112,3 +112,10 @@ class ChatHistory:
         history_content = config.separator.join(history_split)
 
         ChatHistory.write_history(history_content)
+        
+    @staticmethod
+    def remove_reasoning():
+        history_content = ChatHistory.read()
+        history_content = ChatHistory.remove_reasoning_header(history_content)
+        history_content = ChatHistory.remove_reasoning_tokens(history_content)
+        ChatHistory.write_history(history_content)

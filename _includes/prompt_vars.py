@@ -47,7 +47,7 @@ Use direct speech
 
 monolouge='''
 Focus on monolouge in the next scene instead of descriptions
-Use direct speech, write a first-person monolouge
+Use direct speech and quotations
 '''
 
 # ------------------------------------------- #
