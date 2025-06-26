@@ -10,6 +10,7 @@ config = ChatConfig(
         first_prompt=None,
         user_prompt=None,
         assistant_response=None,
+        abbreviations=None,
 
     # Prompt parameters
         model=None,

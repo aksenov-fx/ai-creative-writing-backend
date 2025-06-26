@@ -1,6 +1,7 @@
 from .ApiComposer import ApiComposer
 from .ChatHistory import ChatHistory
 from .Streamer import Streamer
+from .miscellaneous import expand_abbreviations
 
 from ..chat_settings import config
 
@@ -38,6 +39,7 @@ def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> Non
     if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.remove_reasoning_tokens(assistant_response)
 
+    user_prompt = expand_abbreviations(user_prompt)
     messages = ApiComposer.compose_messages(history_content, assistant_response, first_prompt, user_prompt)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    

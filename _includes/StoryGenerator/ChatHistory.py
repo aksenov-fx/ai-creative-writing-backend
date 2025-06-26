@@ -118,4 +118,5 @@ class ChatHistory:
         history_content = ChatHistory.read()
         history_content = ChatHistory.remove_reasoning_header(history_content)
         history_content = ChatHistory.remove_reasoning_tokens(history_content)
+        history_content = history_content + '\n\n'
         ChatHistory.write_history(history_content)

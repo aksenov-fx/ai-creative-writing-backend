@@ -1,5 +1,6 @@
 from .ApiComposer import ApiComposer
 from .ChatHistory import ChatHistory
+from .miscellaneous import expand_abbreviations
 from .Streamer import Streamer
 
 from ..chat_settings import config
@@ -48,8 +49,8 @@ def change_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str,
         messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
 
     # Get changed part
-    streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    complete_response = streamer.stream_response(messages, model['name'], True)
+    streamer = Streamer(endpoint['url'], endpoint['api_key'], True)    
+    complete_response = streamer.stream_response(messages, model['name'])
 
     # Replace old part with changed part
     ChatHistory.replace_history_part(complete_response)
@@ -59,11 +60,12 @@ def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) ->
     # Get history
     history_content, _ = process_history()
 
+    user_prompt = expand_abbreviations(user_prompt)
     messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
 
     # Get new part
-    streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    complete_response = streamer.stream_response(messages, model['name'], True)
+    streamer = Streamer(endpoint['url'], endpoint['api_key'], True)    
+    complete_response = streamer.stream_response(messages, model['name'])
 
     # Add new part
     ChatHistory.add_part(complete_response)
