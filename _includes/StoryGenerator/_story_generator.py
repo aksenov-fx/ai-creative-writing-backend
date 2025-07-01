@@ -49,4 +49,4 @@ def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> Non
     messages = ApiComposer.compose_messages(user_prompt, assistant_response, None, None)
 
     streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    #streamer.stream_response(messages, model['name'])
+    streamer.stream_response(messages, model['name'])
