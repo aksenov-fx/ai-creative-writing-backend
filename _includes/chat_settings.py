@@ -19,15 +19,16 @@ config = ChatConfig(
         # max_tokens for both input and output
         # If input exceeds max_tokens, the first paragraphs will be excluded form input until input matches max_tokens
         max_tokens=100000, 
+        use_summary=True, # Summarized parts will be appended to prompt from summary. Non-summarized parts will be appended as they are.
 
     # Story path and response separator
         history_path="story.md",
         separator='----',
 
     # Technical 
-        client_type="openai", # openai or http
         interrupt_flag = False,
         part_number = 0,
+        write_interval=1.0, # Write to file every second
 
     # Cell output settings
         print_messages=True, # Print conversation history in cell outputs

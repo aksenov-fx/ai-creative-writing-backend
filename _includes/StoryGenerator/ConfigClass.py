@@ -12,7 +12,6 @@ class ChatConfig:
     max_tokens: int
     history_path: Path
     print_messages: bool
-    client_type: str
     include_reasoning: bool
     reasoning_header: str
     separator: str
@@ -22,3 +21,5 @@ class ChatConfig:
     part_number: int
     write_reasoning: bool
     abbreviations: str
+    write_interval: float
+    use_summary: bool

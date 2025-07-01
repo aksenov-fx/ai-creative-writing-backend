@@ -1,17 +1,17 @@
 from .ApiComposer import ApiComposer
 from .ChatHistory import ChatHistory
-from .miscellaneous import expand_abbreviations
 from .Streamer import Streamer
+from .miscellaneous import expand_abbreviations
 
 from ..chat_settings import config
 
 def process_history():
 
     # Read history
-    history_content = ChatHistory.read()
-
-    # Exclude first paragraphs to match input length with max_tokens
-    history_content = ApiComposer.trim_content(history_content, config.max_tokens)
+    if config.use_summary:
+        history_content = ChatHistory.merge_story_with_summary()
+    else:
+        history_content = ChatHistory.read()
 
     # Remove '### Reasoning' headers
     history_content = ChatHistory.remove_reasoning_header(history_content)
@@ -32,40 +32,37 @@ def process_history():
     # Remove separators and extra empyty lines
     history_content = ChatHistory.format_history(history_content)
 
+    # Exclude first paragraphs to match input length with max_tokens
+    history_content = ApiComposer.trim_content(history_content, config.max_tokens)
+
     return history_content, part_number_content
 
 def change_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str, rewrite: bool) -> None:
     
-    # Get history
     history_content, part_number_content = process_history()
+    history_content = "\nHere's the story so far:\n\n" + history_content
+    user_prompt = expand_abbreviations(user_prompt)
 
-    # Compose request
     if rewrite:
         user_prompt = user_prompt + part_number_content
     
-    if config.part_number == 1:
-        messages = ApiComposer.compose_messages(None, None, first_prompt, user_prompt)
-    else:
-        messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
+    user_prompt = first_prompt + history_content + user_prompt
+    messages = ApiComposer.compose_messages(user_prompt, None, None, None)
 
-    # Get changed part
     streamer = Streamer(endpoint['url'], endpoint['api_key'], True)    
-    complete_response = streamer.stream_response(messages, model['name'])
-
-    # Replace old part with changed part
-    ChatHistory.replace_history_part(complete_response)
+    streamer.stream_response(messages, model['name'])
 
 def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
-    # Get history
+    ChatHistory.add_part("")
+    config.part_number += 1
+
     history_content, _ = process_history()
-
+    history_content = "\nHere's the story so far:\n\n" + history_content
     user_prompt = expand_abbreviations(user_prompt)
-    messages = ApiComposer.compose_messages(history_content, None, first_prompt, user_prompt)
 
-    # Get new part
+    user_prompt = first_prompt + history_content + user_prompt
+    messages = ApiComposer.compose_messages(user_prompt, None, None, None)
+
     streamer = Streamer(endpoint['url'], endpoint['api_key'], True)    
-    complete_response = streamer.stream_response(messages, model['name'])
-
-    # Add new part
-    ChatHistory.add_part(complete_response)
+    streamer.stream_response(messages, model['name'])

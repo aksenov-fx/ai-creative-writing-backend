@@ -1,7 +1,10 @@
 import openai
 import sys
+import time
+import threading
 from typing import Optional, List, Dict, Any
 from ..chat_settings import config
+from .ChatHistory import ChatHistory
 
 class Streamer:
 
@@ -11,13 +14,33 @@ class Streamer:
         self.endpoint = endpoint
         self.api_key = api_key
         self.rewriting = rewriting
+        self.token_buffer = ""
+        self.complete_response = ""
+        self.last_write_time = time.time()
+        self.buffer_lock = threading.Lock()
     
     def write_file(self, filepath, content):
         if self.rewriting:
-            return
+            ChatHistory.replace_history_part(self.complete_response)
+        else:
+            with open(filepath, 'a', encoding='utf-8') as f: f.write(content)
 
-        with open(filepath, 'a', encoding='utf-8') as f:
-            f.write(content)
+    def buffer_and_write(self, filepath, content):
+        with self.buffer_lock:
+            self.token_buffer += content
+            current_time = time.time()
+            
+            if current_time - self.last_write_time >= config.write_interval:
+                self.write_file(filepath, self.token_buffer)
+                self.token_buffer = ""
+                self.last_write_time = current_time
+
+    def flush_buffer(self, filepath):
+        with self.buffer_lock:
+            if self.token_buffer:
+                self.write_file(filepath, self.token_buffer)
+                self.token_buffer = ""
+                self.last_write_time = time.time()
 
     def stream_response(self, messages: List[Dict[str, str]], 
                                         model: str) -> None:
@@ -39,10 +62,10 @@ class Streamer:
             first_reasoning = False if "<think>" in messages[-1]['content'] else True
             reasoning_is_complete = True if "</think>" in messages[-1]['content'] else False
             reasoning_seen = False
-            complete_response = ''
 
             for chunk in response:
                 delta = chunk.choices[0].delta
+                self.complete_response += delta.content
                 
                 if config.interrupt_flag:
                     config.interrupt_flag = False
@@ -57,10 +80,9 @@ class Streamer:
                             self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
                             first_reasoning = False
 
-                        self.write_file(config.history_path, delta.reasoning)
+                        self.buffer_and_write(config.history_path, delta.reasoning)
 
                     if config.print_reasoning:
-                        #print(delta.reasoning.replace('.', '.\n'), end='', flush=True)
                         print(delta.reasoning, end='', flush=True)
                         sys.stdout.flush()
 
@@ -68,21 +90,21 @@ class Streamer:
                 if hasattr(delta, 'content') and delta.content:
 
                     if reasoning_seen and not reasoning_is_complete:
+                        self.flush_buffer(config.history_path)
                         self.write_file(config.history_path, "</think>\n\n")
                         reasoning_is_complete = True
 
-                    self.write_file(config.history_path, delta.content)
+                    self.buffer_and_write(config.history_path, delta.content)
                     
                     if config.print_output:
                         # Print each sentence from a new line
                         print(delta.content.replace('.', '.\n'), end='', flush=True) 
                         sys.stdout.flush()
 
-                    complete_response += delta.content
-
+            self.flush_buffer(config.history_path)
             self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
             
-            return complete_response
+            return self.complete_response
             
         except KeyboardInterrupt:
             print('\nProgram terminated by user')

@@ -60,9 +60,19 @@ class ChatUI:
             thread = threading.Thread(target=Chat.add_part, args=(config.model, part_value))
             thread.start()
         
+        def summarize():
+            config.interrupt_flag = False
+            write_thread = threading.Thread(target=Chat.summarize, args=(config.model,))
+            write_thread.start()
+
+        def update_summary():
+            config.interrupt_flag = False
+            write_thread = threading.Thread(target=Chat.update_summary, args=(config.model,))
+            write_thread.start()
+
         window = tk.Tk()
         window.title("Chat") 
-        window.geometry("200x500+95+350")
+        window.geometry("200x550+95+350")
         
         # Dark theme colors
         bg_color = "#2e2e2e"
@@ -82,6 +92,8 @@ class ChatUI:
             ("Refine", refine),
             ("Rewrite", rewrite),
             ("Regenerate", regenerate),
+            ("Summarize Story", summarize),
+            ("Update Summary", update_summary),
             ("Add Part", add_part),
             ("Stop Writing", interrupt_write),
             ("Remove Reasoning", remove_reasoning),

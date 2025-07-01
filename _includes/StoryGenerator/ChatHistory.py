@@ -1,3 +1,4 @@
+import os
 from ..chat_settings import config
 
 class ChatHistory:
@@ -5,13 +6,19 @@ class ChatHistory:
     @staticmethod
     def read() -> str:
         with open(config.history_path, 'r', encoding='utf-8') as f:
-            return f.read()
-            
+            content = f.read()
+            return content if content is not None else ""
+    
     @staticmethod
     def write_history(content: str) -> None:
         with open(config.history_path, 'w', encoding='utf-8') as f:
             f.write(content)
-    
+
+    @staticmethod
+    def append_history(content: str) -> None:
+        with open(config.history_path, 'a', encoding='utf-8') as f:
+            f.write(content)
+
     @staticmethod
     def has_separator(content=None) -> bool:
         if content is None:
@@ -19,6 +26,49 @@ class ChatHistory:
         lines = content.splitlines()
         return any(line.strip() == config.separator for line in lines)
     
+    @staticmethod
+    def insert_separator():
+        history_content = ChatHistory.read()
+        lines = history_content.strip().splitlines()
+        if lines[-1] != config.separator:
+            ChatHistory.append_history(f"\n\n{config.separator}\n\n")
+
+    @staticmethod
+    def count_parts(content=None) -> int:
+        if content is None:
+            content = ChatHistory.read()
+        lines = content.splitlines()
+        return sum(1 for line in lines if line.strip() == config.separator)
+
+    @staticmethod
+    def switch_to_summary():
+        config.history_path = config.history_path.replace('.md', '_summary.md')
+
+    @staticmethod
+    def switch_to_story():
+        config.history_path = config.history_path.replace('_summary', '')
+
+    @staticmethod
+    def merge_story_with_summary():
+
+        history_content = ChatHistory.read()
+        history_split = history_content.split(config.separator)
+
+        ChatHistory.switch_to_summary()
+        if not os.path.exists(config.history_path):
+            ChatHistory.switch_to_story()
+            return history_content
+        
+        summary_content = ChatHistory.read()
+        number_of_summary_parts = ChatHistory.count_parts()
+
+        history_content = config.separator.join(history_split[number_of_summary_parts:])
+        history_content = summary_content + history_content
+
+        ChatHistory.switch_to_story()
+
+        return history_content
+
     @staticmethod
     def remove_last_response() -> None:
         content = ChatHistory.read().strip()
@@ -36,12 +86,6 @@ class ChatHistory:
         #Remove text after the last separator
         if (pos := content.rfind(config.separator)) != -1:
             ChatHistory.write_history(content[:pos + len(config.separator)] + '\n\n')
-    
-    @staticmethod
-    def insert(text: str) -> None:
-        text = text
-        existing_content = ChatHistory.read()
-        ChatHistory.write_history(existing_content + text + '\n\n')
 
     @staticmethod
     def parse_assistant_response(history_content) -> tuple[str, str]:

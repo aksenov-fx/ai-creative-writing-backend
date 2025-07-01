@@ -7,7 +7,7 @@ def expand_abbreviations(user_prompt):
         return user_prompt
 
     case_insensitive_mapping = {k.lower(): v for k, v in config.abbreviations.items()}
-    pattern = r'\b([a-zA-Z]+)(?=[:, .?!])'
+    pattern = r"\b([a-zA-Z]+)(?=[:, .?!'])"
     
     def replace_match(match):
         abbreviation = match.group(1)

@@ -24,8 +24,7 @@ Avoid atmospheric descriptions disconnected from character experience, like: "So
 
 user_preprompt = '''
 Instructions:
-Write the next part of the story based on the below events
-Maintain the same writing style
+Write the next part of the story based on the below events:
 '''
 
 # ------------------------------------------- #
@@ -73,3 +72,13 @@ Text to change:
 rewrite_postprompt = 'Text to change:'
 
 # ------------------------------------------- #
+
+summarize_preprompt = '''
+Summarize the following story part as a numbered list of events.
+Put each event on a new line.
+Keep the part headings
+Do not group events by scenes
+Include main plot events only
+Exclude events that are not relevant to the plot
+Do not insert summary introductions or conclusions - just the list of events
+'''
