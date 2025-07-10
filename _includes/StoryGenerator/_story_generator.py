@@ -1,52 +1,110 @@
+import shutil, os
+
 from .ApiComposer import ApiComposer
-from .ChatHistory import ChatHistory
 from .Streamer import Streamer
-from .miscellaneous import expand_abbreviations
+from .ChatHistory import ChatHistory
 
 from ..chat_settings import config
 
-def process_history():
+### Chat
 
-    # Read history
-    if config.use_summary:
-        history_content = ChatHistory.merge_story_with_summary()
-    else:
-        history_content = ChatHistory.read()
+def chat(endpoint: dict, 
+         model: str, 
+         first_prompt: str, 
+         history_content: str, 
+         user_prompt: str, 
+         assistant_response: str = None, 
+         part_number_content: str = "", 
+         rewrite: bool = False) -> None:
 
-    # Remove '### Reasoning' headers
-    history_content = ChatHistory.remove_reasoning_header(history_content)
+    summary_prefix = "Here's the summary of the events so far:\n"
+    history_content = summary_prefix + history_content if history_content else ""
 
-    # Parse assistant response to continue last response
-    if history_content:
-        history_content, assistant_response = ChatHistory.parse_assistant_response(history_content)
-    else:
-        assistant_response = None
+    user_prompt = ChatHistory.expand_abbreviations(user_prompt)
+    user_prompt = first_prompt + history_content + "\n\nInstructions:" + user_prompt + part_number_content.strip()
 
-    # Remove reasoning tokens
-    if ChatHistory.has_separator():
-        history_content = ChatHistory.remove_reasoning_tokens(history_content)
+    messages = ApiComposer.compose_messages(user_prompt, assistant_response)
 
-    # Remove separators and extra empyty lines
-    history_content = ChatHistory.format_history(history_content)
+    streamer = Streamer(endpoint['url'], endpoint['api_key'], rewrite)
 
-    # Exclude first paragraphs to match input length with max_tokens
-    history_content = ApiComposer.trim_content(history_content, config.max_tokens)
+    if not config.debug:
+        streamer.stream_response(messages, model['name'])
 
-    return history_content, assistant_response
+### Generator
 
-def chat(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+def generate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
     
-    history_content, assistant_response = process_history()
+    history_content, _, assistant_response = ChatHistory.process_history()
 
     # Remove thinking tokens from assistant_response
     if assistant_response and not model['outputs_thinking']:
         assistant_response = ChatHistory.remove_reasoning_tokens(assistant_response)
 
-    history_content = "\nHere's the story so far:\n\n" + history_content if history_content else ""
-    user_prompt = expand_abbreviations(user_prompt)
-    user_prompt = first_prompt + history_content + user_prompt
+    chat(endpoint, model, first_prompt, history_content, user_prompt, assistant_response)
 
-    messages = ApiComposer.compose_messages(user_prompt, assistant_response, None, None)
+### Changer
 
-    streamer = Streamer(endpoint['url'], endpoint['api_key'])    
-    streamer.stream_response(messages, model['name'])
+def rewrite(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+    history_content, part_number_content, _ = ChatHistory.process_history()
+    chat(endpoint, model, first_prompt, history_content, user_prompt, part_number_content=part_number_content, rewrite=True)
+
+def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+    history_content, _, _ = ChatHistory.process_history()
+    chat(endpoint, model, first_prompt, history_content, user_prompt, rewrite=True)
+
+def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+
+    history_content, _, _ = ChatHistory.process_history()
+
+    ChatHistory.add_part("")
+    config.part_number += 1
+
+    chat(endpoint, model, first_prompt, history_content, user_prompt, rewrite=True)
+
+### Summarizer
+
+def summarize_part(endpoint: dict, model: str, user_prompt: str, part_number: int) -> None:
+
+    config.part_number = part_number + 1
+    print(config.part_number)
+
+    history_content, part_number_content, _ = ChatHistory.process_history()
+    ChatHistory.switch_to_summary()
+    chat(endpoint, model, "", history_content, user_prompt, part_number_content=part_number_content, rewrite=True)
+    
+def summarize_all(endpoint: dict, model: str, user_prompt: str) -> None:
+
+    dest_path = config.history_path.replace('.md', '_summary.md')
+    if os.path.exists(dest_path):
+        raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
+
+    shutil.copy(config.history_path, dest_path)
+    ChatHistory.switch_to_summary()
+
+    ChatHistory.insert_separator()
+    number_of_parts = ChatHistory.count_parts()
+
+    for part_number in range(number_of_parts):
+        summarize_part(endpoint, model, user_prompt, part_number)
+
+    ChatHistory.switch_to_story()
+
+def update_summary(endpoint: dict, model: str, user_prompt: str) -> None:
+
+    ChatHistory.insert_separator()
+    history_content = ChatHistory.read()
+    history_split = history_content.split(config.separator)
+    number_of_story_parts = ChatHistory.count_parts()
+
+    ChatHistory.switch_to_summary()
+    number_of_summary_parts = ChatHistory.count_parts()
+    missing_parts = history_split[number_of_summary_parts:-1]
+
+    for part in missing_parts:
+        ChatHistory.append_history(part.strip())
+        ChatHistory.insert_separator()
+    
+    for part_number in range(number_of_summary_parts, number_of_story_parts):
+        summarize_part(endpoint, model, user_prompt, part_number)
+
+    ChatHistory.switch_to_story()

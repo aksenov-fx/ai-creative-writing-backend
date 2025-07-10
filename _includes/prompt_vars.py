@@ -23,7 +23,6 @@ Avoid atmospheric descriptions disconnected from character experience, like: "So
 # ------------------------------------------- #
 
 user_preprompt = '''
-Instructions:
 Write the next part of the story based on the below events:
 '''
 
@@ -37,7 +36,6 @@ Do not describe any further events after this point
 # ------------------------------------------- #
 
 dialogue='''
-Instruction
 Focus on dialogue in the next scene instead of descriptions
 Use direct speech
 '''
@@ -51,12 +49,6 @@ Use direct speech and quotations
 
 # ------------------------------------------- #
 
-change_part_preprompt = '''
-Change the following story part according to guidelines:
-'''
-
-# ------------------------------------------- #
-
 refine_postprompt = '''
 Make the above changes only
 Preserve the original text when possible
@@ -64,7 +56,7 @@ Do not change sentences that do not meet changing requirements
 Leave the part heading, if it's present.
 Do not return any comments.
 
-Text to change:
+Part to change:
 '''
 
 # ------------------------------------------- #
@@ -81,4 +73,6 @@ Do not group events by scenes
 Include main plot events only
 Exclude events that are not relevant to the plot
 Do not insert summary introductions or conclusions - just the list of events
+
+Part text:
 '''

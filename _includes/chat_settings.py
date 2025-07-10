@@ -29,6 +29,7 @@ config = ChatConfig(
         interrupt_flag = False,
         part_number = 0,
         write_interval=1.0, # Write to file every second
+        debug=False,
 
     # Cell output settings
         print_messages=True, # Print conversation history in cell outputs

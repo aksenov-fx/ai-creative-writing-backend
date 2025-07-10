@@ -1,4 +1,5 @@
 import os
+from .ApiComposer import ApiComposer
 from ..chat_settings import config
 
 class ChatHistory:
@@ -42,7 +43,8 @@ class ChatHistory:
 
     @staticmethod
     def switch_to_summary():
-        config.history_path = config.history_path.replace('.md', '_summary.md')
+        if '_summary.md' not in config.history_path:
+            config.history_path = config.history_path.replace('.md', '_summary.md')
 
     @staticmethod
     def switch_to_story():
@@ -164,3 +166,54 @@ class ChatHistory:
         history_content = ChatHistory.remove_reasoning_tokens(history_content)
         history_content = history_content + '\n\n'
         ChatHistory.write_history(history_content)
+
+    @staticmethod
+    def expand_abbreviations(user_prompt):
+        import re
+        
+        if config.abbreviations is None:
+            return user_prompt
+
+        case_insensitive_mapping = {k.lower(): v for k, v in config.abbreviations.items()}
+        pattern = r"\b([a-zA-Z]+)(?=[:, .?!'])"
+        
+        def replace_match(match):
+            abbreviation = match.group(1)
+            if abbreviation.lower() in case_insensitive_mapping:
+                return case_insensitive_mapping[abbreviation.lower()]
+            return abbreviation
+        
+        result = re.sub(pattern, replace_match, user_prompt)
+        return result
+
+    @staticmethod
+    def process_history():
+
+        # Read history
+        if config.use_summary:
+            history_content = ChatHistory.merge_story_with_summary()
+        else:
+            history_content = ChatHistory.read()
+
+        # Remove '### Reasoning' headers
+        history_content = ChatHistory.remove_reasoning_header(history_content)
+
+        # Parse assistant response to continue last response
+        history_content, assistant_response = ChatHistory.parse_assistant_response(history_content)
+
+        # Remove reasoning tokens
+        history_content = ChatHistory.remove_reasoning_tokens(history_content)
+
+        # Cut history
+        history_split = history_content.split(config.separator)
+
+        history_content = config.separator.join(history_split[:config.part_number-1])
+        part_number_content = history_split[config.part_number-1]
+
+        # Remove separators and extra empyty lines
+        history_content = ChatHistory.format_history(history_content)
+
+        # Exclude first paragraphs to match input length with max_tokens
+        history_content = ApiComposer.trim_content(history_content, config.max_tokens)
+
+        return history_content, part_number_content, assistant_response

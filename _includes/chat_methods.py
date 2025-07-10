@@ -1,11 +1,12 @@
 from . import prompt_vars
-from .StoryGenerator._story_generator import chat
-from .chat_settings import config
 from . import chat_endpoints as chat_endpoints
-from .StoryGenerator.ChatHistory import ChatHistory
-from .StoryGenerator._story_changer import change_part as story_changer_change_part
-from .StoryGenerator._story_changer import add_part as story_changer_add_part
-from .StoryGenerator._story_summarizer import summarize_all, update_summary
+from .chat_settings import config
+
+from .StoryGenerator._story_generator import generate
+from .StoryGenerator._story_generator import rewrite as story_changer_change_part
+from .StoryGenerator._story_generator import regenerate as story_changer_regenerate
+from .StoryGenerator._story_generator import add_part as story_changer_add_part
+from .StoryGenerator._story_generator import summarize_all, update_summary
 
 # --- Chat methods --- #
 # Define custom promts here
@@ -28,33 +29,35 @@ class Chat:
 
         Chat.validate_prompts()
         user_prompt = prompt_vars.user_preprompt + config.user_prompt + prompt_vars.user_postprompt
-        chat(chat_endpoints.endpoint, model, config.first_prompt, user_prompt)
+        generate(chat_endpoints.endpoint, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def custom_prompt(model):
         Chat.validate_prompts()
-        chat(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)
+        generate(chat_endpoints.endpoint, model, config.first_prompt, config.user_prompt)
     
     @staticmethod
-    def change_part(model, part, prompt, rewrite):
+    def change_part(model, part, prompt):
         Chat.validate_prompts()
         config.part_number = part
-        story_changer_change_part(chat_endpoints.endpoint, model, config.first_prompt, prompt, rewrite)
+        story_changer_change_part(chat_endpoints.endpoint, model, config.first_prompt, prompt)
 
     @staticmethod
     def refine(model, part):
-        prompt = prompt_vars.change_part_preprompt + config.user_prompt + prompt_vars.refine_postprompt
-        Chat.change_part(model, part, prompt, True)
+        prompt = config.user_prompt + prompt_vars.refine_postprompt
+        Chat.change_part(model, part, prompt)
     
     @staticmethod
     def rewrite(model, part):
-        prompt = prompt_vars.change_part_preprompt + config.user_prompt + prompt_vars.rewrite_postprompt
-        Chat.change_part(model, part, prompt, True)
+        prompt = config.user_prompt + prompt_vars.rewrite_postprompt
+        Chat.change_part(model, part, prompt)
 
     @staticmethod
     def regenenerate(model, part):
         user_prompt = prompt_vars.user_preprompt + config.user_prompt + prompt_vars.user_postprompt
-        Chat.change_part(model, part, user_prompt, False)
+        Chat.validate_prompts()
+        config.part_number = part
+        story_changer_regenerate(chat_endpoints.endpoint, model, config.first_prompt, user_prompt, True)
 
     @staticmethod
     def add_part(model, part):

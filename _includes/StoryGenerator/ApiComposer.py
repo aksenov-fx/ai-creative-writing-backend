@@ -1,3 +1,5 @@
+import json
+
 from typing import Optional, List, Dict, Any
 from ..chat_settings import config
 
@@ -20,22 +22,25 @@ class ApiComposer:
         return content
     
     @staticmethod
+    def print_with_newlines(obj):
+        json_str = json.dumps(obj, indent=2, ensure_ascii=False)
+        formatted_str = json_str.replace('\\n', '\n')
+        print(formatted_str)
+
+    @staticmethod
     def append_message(messages: List[Dict[str, str]], role: str, content: Optional[str]) -> None:
         if content:
             messages.append({"role": role, "content": content.strip()})
 
     @staticmethod
-    def compose_messages(history, assistant_response,
-                        first_prompt, user_prompt) -> List[Dict[str, str]]:
+    def compose_messages(user_prompt, assistant_response) -> List[Dict[str, str]]:
         messages = []
 
         ApiComposer.append_message(messages, "system",       config.system_prompt)
-        ApiComposer.append_message(messages, "user",         first_prompt)
-        ApiComposer.append_message(messages, "assistant",    history)
         ApiComposer.append_message(messages, "user",         user_prompt)
         ApiComposer.append_message(messages, "assistant",    assistant_response)
-        
+    
         if config.print_messages:
-            for message in messages: print(message)
+            ApiComposer.print_with_newlines(messages)
             
         return messages

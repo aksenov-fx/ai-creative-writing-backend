@@ -23,3 +23,4 @@ class ChatConfig:
     abbreviations: str
     write_interval: float
     use_summary: bool
+    debug: bool
