@@ -1,6 +1,6 @@
 import os
 from .ApiComposer import ApiComposer
-from ..chat_settings import config
+from ..settings import config
 
 class ChatHistory:
     

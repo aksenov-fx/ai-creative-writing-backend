@@ -2,8 +2,9 @@ import openai
 import sys
 import time
 import threading
-from typing import Optional, List, Dict, Any
-from ..chat_settings import config
+from typing import List, Dict
+
+from ..settings import config
 from .ChatHistory import ChatHistory
 
 class Streamer:

@@ -1,7 +1,7 @@
 import json
 
 from typing import Optional, List, Dict, Any
-from ..chat_settings import config
+from ..settings import config
 
 class ApiComposer:
 

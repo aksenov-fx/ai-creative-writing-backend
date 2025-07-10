@@ -1,5 +1,5 @@
 from .StoryGenerator.ConfigClass import ChatConfig
-from . import prompt_vars as prompt_vars
+from . import vars as vars
 
 # --- Chat settings --- #
 
