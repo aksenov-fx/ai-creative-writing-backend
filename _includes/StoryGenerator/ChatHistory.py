@@ -66,7 +66,7 @@ class ChatHistory:
 
         history_content = config.separator.join(history_split[number_of_summary_parts:])
         history_content = summary_content + history_content
-
+        
         ChatHistory.switch_to_story()
 
         return history_content
@@ -187,7 +187,9 @@ class ChatHistory:
         return result
 
     @staticmethod
-    def process_history():
+    def process_history(rewrite: bool = False):
+
+        part_number_content = ""
 
         # Read history
         if config.use_summary:
@@ -205,10 +207,10 @@ class ChatHistory:
         history_content = ChatHistory.remove_reasoning_tokens(history_content)
 
         # Cut history
-        history_split = history_content.split(config.separator)
-
-        history_content = config.separator.join(history_split[:config.part_number-1])
-        part_number_content = history_split[config.part_number-1]
+        if rewrite:
+            history_split = history_content.split(config.separator)
+            history_content = config.separator.join(history_split[:config.part_number-1])
+            part_number_content = history_split[config.part_number-1]
 
         # Remove separators and extra empyty lines
         history_content = ChatHistory.format_history(history_content)

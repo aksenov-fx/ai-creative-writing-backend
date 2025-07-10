@@ -50,18 +50,18 @@ class StoryGenerator:
 
     @staticmethod
     def rewrite(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        history_content, part_number_content, _ = ChatHistory.process_history()
+        history_content, part_number_content, _ = ChatHistory.process_history(rewrite=True)
         StoryGenerator.chat(endpoint, model, first_prompt, history_content, user_prompt, part_number_content=part_number_content, rewrite=True)
 
     @staticmethod
     def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        history_content, _, _ = ChatHistory.process_history()
+        history_content, _, _ = ChatHistory.process_history(rewrite=True)
         StoryGenerator.chat(endpoint, model, first_prompt, history_content, user_prompt, rewrite=True)
 
     @staticmethod
     def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
 
-        history_content, _, _ = ChatHistory.process_history()
+        history_content, _, _ = ChatHistory.process_history(rewrite=True)
 
         ChatHistory.add_part("")
         config.part_number += 1
@@ -76,7 +76,7 @@ class StoryGenerator:
         config.part_number = part_number + 1
         print(config.part_number)
 
-        history_content, part_number_content, _ = ChatHistory.process_history()
+        history_content, part_number_content, _ = ChatHistory.process_history(rewrite=True)
         ChatHistory.switch_to_summary()
         StoryGenerator.chat(endpoint, model, "", history_content, user_prompt, part_number_content=part_number_content, rewrite=True)
         
