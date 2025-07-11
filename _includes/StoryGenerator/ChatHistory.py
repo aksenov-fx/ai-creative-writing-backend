@@ -1,4 +1,4 @@
-import os
+import os, re
 from .ApiComposer import ApiComposer
 from ..settings import config
 
@@ -169,19 +169,20 @@ class ChatHistory:
 
     @staticmethod
     def expand_abbreviations(user_prompt):
-        import re
         
         if config.abbreviations is None:
             return user_prompt
 
         case_insensitive_mapping = {k.lower(): v for k, v in config.abbreviations.items()}
-        pattern = r"\b([a-zA-Z]+)(?=[:, .?!'])"
+        # Match letters preceded by whitespace or start, followed by delimiters or end
+        pattern = r"(^|\s)([a-zA-Z]+)(?=[:, .?!'\s]|$)"
         
         def replace_match(match):
-            abbreviation = match.group(1)
+            prefix = match.group(1)
+            abbreviation = match.group(2)
             if abbreviation.lower() in case_insensitive_mapping:
-                return case_insensitive_mapping[abbreviation.lower()]
-            return abbreviation
+                return prefix + case_insensitive_mapping[abbreviation.lower()]
+            return match.group(0)
         
         result = re.sub(pattern, replace_match, user_prompt)
         return result
