@@ -5,7 +5,8 @@ from ..settings import config
 class ChatHistory:
     
     @staticmethod
-    def read(path=config.history_path) -> str:
+    def read(path=None) -> str:
+        path = config.history_path if path is None else path
         with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
             return content if content is not None else ""

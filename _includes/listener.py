@@ -1,5 +1,6 @@
 import os
 import socketserver
+import threading
 
 from .methods import Chat
 from .settings import config, update_config_from_json
@@ -73,6 +74,10 @@ class PathHandler(socketserver.BaseRequestHandler):
 if not config.create_listener:
     exit()
 
-with socketserver.ThreadingTCPServer(('localhost', 9993), PathHandler) as server:
-    print("Server listening on port 9993")
-    server.serve_forever()
+def start_server():
+    with socketserver.ThreadingTCPServer(('localhost', 9993), PathHandler) as server:
+        print("Server listening on port 9993")
+        server.serve_forever()
+
+server_thread = threading.Thread(target=start_server, daemon=True)
+server_thread.start()
