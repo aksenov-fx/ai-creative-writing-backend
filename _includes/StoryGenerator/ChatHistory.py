@@ -5,8 +5,8 @@ from ..settings import config
 class ChatHistory:
     
     @staticmethod
-    def read() -> str:
-        with open(config.history_path, 'r', encoding='utf-8') as f:
+    def read(path=config.history_path) -> str:
+        with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
             return content if content is not None else ""
     
@@ -187,6 +187,13 @@ class ChatHistory:
         result = re.sub(pattern, replace_match, user_prompt)
         return result
 
+    @staticmethod
+    def set_prompt(path, part_number):
+        path = path + '/prompts.md'
+        promts = ChatHistory.read(path)
+        promts_split = promts.split(config.separator)
+        config.user_prompt = promts_split[part_number].strip()
+    
     @staticmethod
     def process_history(rewrite: bool = False):
 

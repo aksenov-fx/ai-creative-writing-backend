@@ -35,7 +35,7 @@ class Chat:
     def change_part(model, part, prompt):
         Chat.validate_prompts()
         config.part_number = part
-        StoryGenerator.story_changer_change_part(endpoints.endpoint, model, config.first_prompt, prompt)
+        StoryGenerator.rewrite(endpoints.endpoint, model, config.first_prompt, prompt)
 
     @staticmethod
     def refine(model, part):
