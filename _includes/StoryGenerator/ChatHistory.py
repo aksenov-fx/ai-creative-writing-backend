@@ -17,8 +17,9 @@ class ChatHistory:
             f.write(content)
 
     @staticmethod
-    def append_history(content: str) -> None:
-        with open(config.history_path, 'a', encoding='utf-8') as f:
+    def append_history(content: str, path=None) -> None:
+        path = config.history_path if path is None else path
+        with open(path, 'a', encoding='utf-8') as f:
             f.write(content)
 
     @staticmethod
@@ -29,11 +30,11 @@ class ChatHistory:
         return any(line.strip() == config.separator for line in lines)
     
     @staticmethod
-    def insert_separator():
-        history_content = ChatHistory.read()
+    def insert_separator(path=None):
+        history_content = ChatHistory.read(path)
         lines = history_content.strip().splitlines()
         if lines[-1] != config.separator:
-            ChatHistory.append_history(f"\n\n{config.separator}\n\n")
+            ChatHistory.append_history(f"\n\n{config.separator}\n\n", path)
 
     @staticmethod
     def count_parts(content=None) -> int:
@@ -175,14 +176,23 @@ class ChatHistory:
             return user_prompt
 
         case_insensitive_mapping = {k.lower(): v for k, v in config.abbreviations.items()}
-        # Match letters preceded by whitespace or start, followed by delimiters or end
-        pattern = r"(^|\s)([a-zA-Z]+)(?=[:, .?!'\s]|$)"
+        # Match words with letters/underscores preceded by @ or whitespace/start, followed by delimiters or end
+        pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
         
         def replace_match(match):
             prefix = match.group(1)
             abbreviation = match.group(2)
-            if abbreviation.lower() in case_insensitive_mapping:
-                return prefix + case_insensitive_mapping[abbreviation.lower()]
+            # For @ prefix, include it in the abbreviation lookup
+            if prefix == "#":
+                lookup_key = ("#" + abbreviation).lower()
+            else:
+                lookup_key = abbreviation.lower()
+                
+            if lookup_key in case_insensitive_mapping:
+                if prefix == "#":
+                    return case_insensitive_mapping[lookup_key]
+                else:
+                    return prefix + case_insensitive_mapping[lookup_key]
             return match.group(0)
         
         result = re.sub(pattern, replace_match, user_prompt)
@@ -194,6 +204,7 @@ class ChatHistory:
         promts = ChatHistory.read(path)
         promts_split = promts.split(config.separator)
         config.user_prompt = promts_split[part_number].strip()
+        ChatHistory.insert_separator(path)
     
     @staticmethod
     def process_history(rewrite: bool = False):

@@ -1,34 +1,17 @@
-# --- Endpoint and model --- #
-
-# Multiple endpoints and models can be defined
+import yaml
 
 def get_api_key(filename):
     with open(filename, 'r') as file:
         return file.read().strip()
 
-# ---                    --- #
+def load_models_from_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        models = yaml.safe_load(file)
+    return models
 
 endpoint = {
     'url': 'https://openrouter.ai/api/v1',
     'api_key': get_api_key("./_includes/api_key.txt")
 }
 
-models = {
-    'Deepseek R1': {
-        'name': 'deepseek/deepseek-r1:free',
-        'outputs_thinking': True
-    },
-
-    'Qwen 72b': {
-        'name': 'qwen/qwen-2.5-72b-instruct',
-        'outputs_thinking': False
-    },
-
-    'Deepseek V3': {
-        'name': 'deepseek/deepseek-chat-v3-0324:free',
-        'outputs_thinking': False
-    }
-}
-
-# ---                    --- #
-
+models = load_models_from_file('_includes/endpoints.yaml')

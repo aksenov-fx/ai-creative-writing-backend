@@ -3,6 +3,7 @@ import shutil, os
 from .ApiComposer import ApiComposer
 from .Streamer import Streamer
 from .ChatHistory import ChatHistory
+from ..vars import vars
 
 from ..settings import config
 
@@ -20,11 +21,12 @@ class StoryGenerator:
             part_number_content: str = "", 
             rewrite: bool = False) -> None:
 
-        summary_prefix = "Here's the summary of the events so far:\n"
+        summary_prefix = "\n\nHere are the events so far:\n"
         history_content = summary_prefix + history_content if history_content else ""
 
+        first_prompt = ChatHistory.expand_abbreviations(first_prompt)
         user_prompt = ChatHistory.expand_abbreviations(user_prompt)
-        user_prompt = first_prompt + history_content + "\n\nInstructions:" + user_prompt + part_number_content.strip()
+        user_prompt = first_prompt + history_content + "\n\n" + user_prompt + "\n" + part_number_content.strip()
 
         messages = ApiComposer.compose_messages(user_prompt, assistant_response)
 
