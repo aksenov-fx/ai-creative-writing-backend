@@ -60,7 +60,6 @@ def process_request(folder_path, method_name, part_value, model_number=1):
     elif method_name == "set_model":
         model_number -= 1
         config.model = list(endpoints.models.values())[model_number]
-        ChatHistory.set_prompt(posix_folder_path, part_value)
 
     elif method_name == "enable_debug":
         config.debug = True
