@@ -1,6 +1,6 @@
 import os, re
 from .ApiComposer import ApiComposer
-from ..settings import config
+from _includes import config
 
 class ChatHistory:
     
@@ -75,6 +75,8 @@ class ChatHistory:
 
     @staticmethod
     def remove_last_response() -> None:
+        config.interrupt_flag = True
+
         content = ChatHistory.read().strip()
         lines = content.splitlines()
 

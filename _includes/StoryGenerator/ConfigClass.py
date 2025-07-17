@@ -24,4 +24,3 @@ class ChatConfig:
     write_interval: float
     use_summary: bool
     debug: bool
-    create_listener: bool

@@ -1,7 +1,7 @@
 import json
 
 from typing import Optional, List, Dict, Any
-from ..settings import config
+from _includes import config
 
 class ApiComposer:
 

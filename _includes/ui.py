@@ -2,10 +2,7 @@ import tkinter as tk
 import threading
 from tkinter import ttk
 
-from .methods import Chat
-from .settings import config
-from .StoryGenerator.ChatHistory import ChatHistory
-from . import endpoints as endpoints
+from _includes import Chat, ChatHistory, config, models
 
 class ChatUI:
     def __init__(self):
@@ -34,7 +31,7 @@ class ChatUI:
         
         def on_model_selected(event):
             selected_model = model_var.get()
-            config.model = endpoints.models[selected_model]
+            config.model = models[selected_model]
             
         def refine():
             config.interrupt_flag = False
@@ -134,15 +131,15 @@ class ChatUI:
         model_frame.pack(fill=tk.X)
         
         model_var = tk.StringVar()
-        model_var.set(next(iter(endpoints.models.keys())))  # Default to first model
+        model_var.set(next(iter(models.keys())))  # Default to first model
         
         model_dropdown = ttk.Combobox(model_frame, textvariable=model_var, state="readonly")
-        model_dropdown["values"] = list(endpoints.models.keys())
+        model_dropdown["values"] = list(models.keys())
         model_dropdown.pack(fill=tk.X)
         model_dropdown.bind("<<ComboboxSelected>>", on_model_selected)
         
         # Set initial model
-        config.model = endpoints.models[model_var.get()]
+        config.model = models[model_var.get()]
         
         def on_closing():
             window.destroy()
@@ -160,3 +157,4 @@ class ChatUI:
 
 # Create an instance of the UI
 Chat_UI = ChatUI()
+Chat_UI.start()

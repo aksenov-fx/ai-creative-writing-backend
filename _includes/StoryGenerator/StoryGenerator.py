@@ -1,11 +1,9 @@
 import shutil, os
 
 from .ApiComposer import ApiComposer
-from .Streamer import Streamer
 from .ChatHistory import ChatHistory
-from ..vars import vars
-
-from ..settings import config
+from .Streamer import Streamer
+from _includes import config
 
 ### Chat
 

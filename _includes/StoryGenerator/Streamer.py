@@ -4,7 +4,7 @@ import time
 import threading
 from typing import List, Dict
 
-from ..settings import config
+from _includes import config
 from .ChatHistory import ChatHistory
 
 class Streamer:
