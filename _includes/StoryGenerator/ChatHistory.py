@@ -64,8 +64,15 @@ class ChatHistory:
             return history_content
         
         summary_content = ChatHistory.read()
-        number_of_summary_parts = ChatHistory.count_parts()
+        number_of_history_parts = ChatHistory.count_parts(history_content)
+        number_of_summary_parts = ChatHistory.count_parts(summary_content)
 
+        # Keep the last part unsummarized
+        if number_of_history_parts == number_of_summary_parts:
+            summary_content = summary_content.split(config.separator)
+            summary_content = config.separator.join(summary_content[:-2])
+            number_of_summary_parts = ChatHistory.count_parts(summary_content) + 1
+        
         history_content = config.separator.join(history_split[number_of_summary_parts:])
         history_content = summary_content + history_content
         
@@ -209,12 +216,12 @@ class ChatHistory:
         ChatHistory.insert_separator(path)
     
     @staticmethod
-    def process_history(rewrite: bool = False):
+    def process_history(no_summary: bool = False, cut_history_to_part_number: bool = False, return_previous_part: bool = False):
 
         part_number_content = ""
 
         # Read history
-        if config.use_summary:
+        if config.use_summary and not no_summary:
             history_content = ChatHistory.merge_story_with_summary()
         else:
             history_content = ChatHistory.read()
@@ -229,10 +236,12 @@ class ChatHistory:
         history_content = ChatHistory.remove_reasoning_tokens(history_content)
 
         # Cut history
-        if rewrite:
+        if cut_history_to_part_number:
             history_split = history_content.split(config.separator)
             history_content = config.separator.join(history_split[:config.part_number-1])
             part_number_content = history_split[config.part_number-1]
+
+        if return_previous_part: history_content = history_split[config.part_number-2]
 
         # Remove separators and extra empyty lines
         history_content = ChatHistory.format_history(history_content)

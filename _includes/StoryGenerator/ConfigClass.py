@@ -23,4 +23,7 @@ class ChatConfig:
     abbreviations: str
     write_interval: float
     use_summary: bool
+    include_previous_part_when_summarizing: bool
+    include_previous_part_when_rewriting: bool
     debug: bool
+    history_prefix: str

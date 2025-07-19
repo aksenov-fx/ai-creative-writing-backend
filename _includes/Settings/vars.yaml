@@ -1,3 +1,6 @@
+instructions_preprompt: |
+  **Instructions**
+
 guidelines: |
   **Guidelines:**
   Make your writing verbose
@@ -25,23 +28,23 @@ user_postprompt: |
 # ------------ #
 
 refine_postprompt: |
-  Make the above changes only
+  Make these changes only
   Preserve the original text when possible
   Do not change sentences that do not meet changing requirements
   Leave the part heading, if it's present.
   Do not return any comments.
 
-  Part text to change:
+  Text to change:
 
 rewrite_postprompt: | 
-  Part text to change:
+  Text:
 
 # ------------ #
 
 summarize_preprompt: |
   Summarize the following story part as a numbered list of events.
   Put each event on a new line.
-  Keep the part headings
+  Keep the part heading if it's present.
   Do not group events by scenes
   Include main plot events only
   Exclude events that are not relevant to the plot
