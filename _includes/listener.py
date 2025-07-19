@@ -15,6 +15,8 @@ def _update_config(folder_path):
     config.first_prompt = open(f'{folder_path}/Settings/introduction.md', 'r').read()
 
     config.history_path = folder_path + '/' + config.history_path
+    config.summary_path = folder_path + '/' + config.summary_path
+
     config.interrupt_flag = False
 
 def process_request(folder_path, method_name, part_value, model_number=1):

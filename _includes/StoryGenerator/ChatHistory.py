@@ -5,27 +5,35 @@ from _includes import config
 class ChatHistory:
     
     @staticmethod
+    # Code like def read(path=config.history_path) works incorrectly,
+    # because path value will not change if history_path changes,
+    # hence this method
+    def get_path(path) -> str: 
+        return path or config.history_path
+
+    @staticmethod
     def read(path=None) -> str:
-        path = config.history_path if path is None else path
+        path = ChatHistory.get_path(path)
         with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
-            return content if content is not None else ""
+            return content or ""
     
     @staticmethod
-    def write_history(content: str) -> None:
-        with open(config.history_path, 'w', encoding='utf-8') as f:
+    def write_history(content: str, path=None) -> None:
+        path = ChatHistory.get_path(path)
+        with open(path, 'w', encoding='utf-8') as f:
             f.write(content)
 
     @staticmethod
     def append_history(content: str, path=None) -> None:
-        path = config.history_path if path is None else path
+        path = ChatHistory.get_path(path)
         with open(path, 'a', encoding='utf-8') as f:
             f.write(content)
 
     @staticmethod
-    def has_separator(content=None) -> bool:
+    def has_separator(content=None, path=None) -> bool:
         if content is None:
-            content = ChatHistory.read()
+            content = ChatHistory.read(path)
         lines = content.splitlines()
         return any(line.strip() == config.separator for line in lines)
     
@@ -37,46 +45,35 @@ class ChatHistory:
             ChatHistory.append_history(f"\n\n{config.separator}\n\n", path)
 
     @staticmethod
-    def count_parts(content=None) -> int:
+    def count_parts(content=None, path=None) -> int:
         if content is None:
-            content = ChatHistory.read()
+            content = ChatHistory.read(path)
         lines = content.splitlines()
         return sum(1 for line in lines if line.strip() == config.separator)
 
     @staticmethod
-    def switch_to_summary():
-        if '_summary.md' not in config.history_path:
-            config.history_path = config.history_path.replace('.md', '_summary.md')
-
-    @staticmethod
-    def switch_to_story():
-        config.history_path = config.history_path.replace('_summary', '')
-
-    @staticmethod
     def merge_story_with_summary():
 
-        history_content = ChatHistory.read()
-        history_split = history_content.split(config.separator)
+        history_content = ChatHistory.read(config.history_path)
 
-        ChatHistory.switch_to_summary()
-        if not os.path.exists(config.history_path):
-            ChatHistory.switch_to_story()
+        if not os.path.exists(config.summary_path):
             return history_content
         
-        summary_content = ChatHistory.read()
+        summary_content = ChatHistory.read(config.summary_path)
+
+        history_split = history_content.split(config.separator)
+        summary_split = summary_content.split(config.separator)
+        
         number_of_history_parts = ChatHistory.count_parts(history_content)
         number_of_summary_parts = ChatHistory.count_parts(summary_content)
 
         # Keep the last part unsummarized
         if number_of_history_parts == number_of_summary_parts:
-            summary_content = summary_content.split(config.separator)
-            summary_content = config.separator.join(summary_content[:-2])
-            number_of_summary_parts = ChatHistory.count_parts(summary_content) + 1
+            summary_content = config.separator.join(summary_split[:-2])
+            number_of_summary_parts = ChatHistory.count_parts(summary_content)
         
         history_content = config.separator.join(history_split[number_of_summary_parts:])
         history_content = summary_content + history_content
-        
-        ChatHistory.switch_to_story()
 
         return history_content
 
@@ -143,8 +140,8 @@ class ChatHistory:
         return cleaned_content
     
     @staticmethod
-    def replace_history_part(new_part) -> str:
-        history_content = ChatHistory.read()
+    def replace_history_part(new_part, path=None) -> str:
+        history_content = ChatHistory.read(path)
         history_split = history_content.split(config.separator)
         new_part = '\n\n' + new_part + '\n\n'
 
@@ -157,18 +154,18 @@ class ChatHistory:
             
         history_content = config.separator.join(history_split)
 
-        ChatHistory.write_history(history_content)
+        ChatHistory.write_history(history_content, path)
 
     @staticmethod
-    def add_part(new_part) -> str:
-        history_content = ChatHistory.read()
+    def add_part(new_part, path=None) -> str:
+        history_content = ChatHistory.read(path)
         history_split = history_content.split(config.separator)
         new_part = '\n\n' + new_part + '\n\n'
 
         history_split.insert(config.part_number, new_part)
         history_content = config.separator.join(history_split)
 
-        ChatHistory.write_history(history_content)
+        ChatHistory.write_history(history_content, path)
         
     @staticmethod
     def remove_reasoning():
@@ -216,7 +213,7 @@ class ChatHistory:
         ChatHistory.insert_separator(path)
     
     @staticmethod
-    def process_history(no_summary: bool = False, cut_history_to_part_number: bool = False, return_previous_part: bool = False):
+    def process_history(path=None, no_summary: bool = False, cut_history_to_part_number: bool = False, return_previous_part: bool = False):
 
         part_number_content = ""
 
@@ -224,7 +221,7 @@ class ChatHistory:
         if config.use_summary and not no_summary:
             history_content = ChatHistory.merge_story_with_summary()
         else:
-            history_content = ChatHistory.read()
+            history_content = ChatHistory.read(path)
 
         # Remove '### Reasoning' headers
         history_content = ChatHistory.remove_reasoning_header(history_content)
