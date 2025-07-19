@@ -4,14 +4,16 @@ import time
 import threading
 from typing import List, Dict
 
-from ..settings import config
+from _includes import config
 from .ChatHistory import ChatHistory
 
 class Streamer:
 
-    def __init__(self, endpoint: str,
+    def __init__(self, filepath: str,
+                 endpoint: str,
                  api_key: str,
                  rewriting: bool = False):
+        self.filepath = filepath
         self.endpoint = endpoint
         self.api_key = api_key
         self.rewriting = rewriting
@@ -22,7 +24,7 @@ class Streamer:
     
     def write_file(self, filepath, content):
         if self.rewriting:
-            ChatHistory.replace_history_part(self.complete_response)
+            ChatHistory.replace_history_part(self.complete_response, filepath)
         else:
             with open(filepath, 'a', encoding='utf-8') as f: f.write(content)
 
@@ -78,10 +80,10 @@ class Streamer:
                     if config.write_reasoning:
                         reasoning_seen = True
                         if first_reasoning:
-                            self.write_file(config.history_path, f"{config.reasoning_header}\n<think>\n")
+                            self.write_file(self.filepath, f"{config.reasoning_header}\n<think>\n")
                             first_reasoning = False
 
-                        self.buffer_and_write(config.history_path, delta.reasoning)
+                        self.buffer_and_write(self.filepath, delta.reasoning)
 
                     if config.print_reasoning:
                         print(delta.reasoning, end='', flush=True)
@@ -91,19 +93,19 @@ class Streamer:
                 if hasattr(delta, 'content') and delta.content:
 
                     if reasoning_seen and not reasoning_is_complete:
-                        self.flush_buffer(config.history_path)
-                        self.write_file(config.history_path, "</think>\n\n")
+                        self.flush_buffer(self.filepath)
+                        self.write_file(self.filepath, "</think>\n\n")
                         reasoning_is_complete = True
 
-                    self.buffer_and_write(config.history_path, delta.content)
+                    self.buffer_and_write(self.filepath, delta.content)
                     
                     if config.print_output:
                         # Print each sentence from a new line
                         print(delta.content.replace('.', '.\n'), end='', flush=True) 
                         sys.stdout.flush()
 
-            self.flush_buffer(config.history_path)
-            self.write_file(config.history_path, f"\n\n{config.separator}\n\n")
+            self.flush_buffer(self.filepath)
+            self.write_file(self.filepath, f"\n\n{config.separator}\n\n")
             
             return self.complete_response
             

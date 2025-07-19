@@ -1,5 +1,4 @@
+from .config import endpoints, models, vars, config
 from .methods import Chat
-from .settings import config
-from .endpoints import models
 from .StoryGenerator.ChatHistory import ChatHistory
-from . import vars as vars
+from .StoryGenerator.StoryGenerator import StoryGenerator

@@ -1,7 +1,5 @@
-from . import vars
-from . import endpoints as endpoints
+from _includes import config, endpoints, vars
 from .StoryGenerator.StoryGenerator import StoryGenerator
-from .settings import config
 
 # --- Chat methods --- #
 # Define custom promts here
@@ -21,53 +19,53 @@ class Chat:
 
     @staticmethod
     def write_scene(model):
-
         Chat.validate_prompts()
-        user_prompt = vars.user_preprompt + config.user_prompt + vars.user_postprompt
-        StoryGenerator.generate(endpoints.endpoint, model, config.first_prompt, user_prompt)
+        user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
+        StoryGenerator.generate(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def custom_prompt(model):
         Chat.validate_prompts()
-        StoryGenerator.generate(endpoints.endpoint, model, config.first_prompt, config.user_prompt)
+        user_prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt
+        StoryGenerator.generate(endpoints, model, config.first_prompt, user_prompt)
     
     @staticmethod
     def change_part(model, part, prompt):
         Chat.validate_prompts()
         config.part_number = part
-        StoryGenerator.rewrite(endpoints.endpoint, model, config.first_prompt, prompt)
+        StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
 
     @staticmethod
     def refine(model, part):
-        prompt = config.user_prompt + vars.refine_postprompt
+        prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n\n" + vars["refine_postprompt"]
         Chat.change_part(model, part, prompt)
     
     @staticmethod
     def rewrite(model, part):
-        prompt = config.user_prompt + vars.rewrite_postprompt
+        prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n" + vars["rewrite_postprompt"]
         Chat.change_part(model, part, prompt)
 
     @staticmethod
     def regenenerate(model, part):
-        user_prompt = vars.user_preprompt + config.user_prompt + vars.user_postprompt
+        user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
         Chat.validate_prompts()
         config.part_number = part
-        StoryGenerator.regenerate(endpoints.endpoint, model, config.first_prompt, user_prompt, True)
+        StoryGenerator.regenerate(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def add_part(model, part):
         Chat.validate_prompts()
         config.part_number = part
         
-        user_prompt = vars.user_preprompt + config.user_prompt + vars.user_postprompt
-        StoryGenerator.add_part(endpoints.endpoint, model, config.first_prompt, user_prompt)
+        user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
+        StoryGenerator.add_part(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def summarize(model):
-        prompt = vars.summarize_preprompt
-        StoryGenerator.summarize_all(endpoints.endpoint, model, prompt)
+        prompt = vars["instructions_preprompt"] + "\n" + vars["summarize_preprompt"]
+        StoryGenerator.summarize_all(endpoints, model, prompt)
 
     @staticmethod
     def update_summary(model):
-        prompt = vars.summarize_preprompt
-        StoryGenerator.update_summary(endpoints.endpoint, model, prompt)
+        prompt = vars["instructions_preprompt"] + "\n" + vars["summarize_preprompt"]
+        StoryGenerator.update_summary(endpoints, model, prompt)

@@ -1,0 +1,25 @@
+system_prompt: null
+first_prompt: null
+user_prompt: null
+assistant_response: null
+abbreviations: null
+model: null
+temperature: 0.8
+max_tokens: 100000
+use_summary: true
+include_previous_part_when_summarizing: True
+include_previous_part_when_rewriting: True
+history_path: "story.md"
+summary_path: "story_summary.md"
+separator: "----"
+interrupt_flag: false
+part_number: 0
+write_interval: 1.0
+debug: false
+print_messages: true
+print_output: false
+include_reasoning: true
+write_reasoning: true
+reasoning_header: "### Reasoning"
+history_prefix: "**Previous text parts for refence:**"
+print_reasoning: false
