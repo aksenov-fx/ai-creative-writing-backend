@@ -42,12 +42,9 @@ rewrite_postprompt: |
 # ------------ #
 
 summarize_preprompt: |
-  Summarize the following story part as a numbered list of events.
-  Put each event on a new line.
+  Make a summary of the following story part.
   Keep the part heading if it's present.
-  Do not group events by scenes
-  Include main plot events only
-  Exclude events that are not relevant to the plot
-  Do not insert summary introductions or conclusions - just the list of events
+  Exclude events, details and descriptions that are not relevant to the plot
+  Do not insert summary introductions or conclusions - just the summary text
 
   Part text:

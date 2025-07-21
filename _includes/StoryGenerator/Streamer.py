@@ -5,15 +5,15 @@ import threading
 from typing import List, Dict
 
 from _includes import config
-from .ChatHistory import ChatHistory
 
 class Streamer:
 
-    def __init__(self, filepath: str,
+    def __init__(self, history_object: str,
                  endpoint: str,
                  api_key: str,
                  rewriting: bool = False):
-        self.filepath = filepath
+        self.history_object = history_object
+        self.filepath = history_object.path
         self.endpoint = endpoint
         self.api_key = api_key
         self.rewriting = rewriting
@@ -24,7 +24,7 @@ class Streamer:
     
     def write_file(self, filepath, content):
         if self.rewriting:
-            ChatHistory.replace_history_part(self.complete_response, filepath)
+            self.history_object.replace_history_part(self.complete_response)
         else:
             with open(filepath, 'a', encoding='utf-8') as f: f.write(content)
 

@@ -11,6 +11,8 @@ include_previous_part_when_summarizing: True
 include_previous_part_when_rewriting: True
 history_path: "story.md"
 summary_path: "story_summary.md"
+prompts_path: "prompts.md"
+folder_path: ""
 separator: "----"
 interrupt_flag: false
 part_number: 0

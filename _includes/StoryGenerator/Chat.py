@@ -1,5 +1,6 @@
-from _includes import config, endpoints, vars
-from .StoryGenerator.StoryGenerator import StoryGenerator
+from _includes import config, endpoints, vars, history, prompts, summary
+from .StoryGenerator import StoryGenerator
+from .Utility import Utility
 
 # --- Chat methods --- #
 # Define custom promts here
@@ -10,62 +11,83 @@ class Chat:
     user_prompt_error = "config.user_prompt is not set. Please set it before writing a scene."
 
     @staticmethod
-    def validate_prompts():
-        if not config.first_prompt:
+    def initialize(validate=True):
+
+        Utility.reset_history()
+
+        if validate and not config.first_prompt:
             raise ValueError(Chat.first_prompt_error)
 
-        if not config.user_prompt:
+        if validate and not config.user_prompt:
             raise ValueError(Chat.user_prompt_error)
 
     @staticmethod
     def write_scene(model):
-        Chat.validate_prompts()
+        Chat.initialize()
         user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
         StoryGenerator.generate(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def custom_prompt(model):
-        Chat.validate_prompts()
+        Chat.initialize()
         user_prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt
         StoryGenerator.generate(endpoints, model, config.first_prompt, user_prompt)
     
     @staticmethod
-    def change_part(model, part, prompt):
-        Chat.validate_prompts()
-        config.part_number = part
-        StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
-
-    @staticmethod
     def refine(model, part):
+        Chat.initialize()
+        config.part_number = part
         prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n\n" + vars["refine_postprompt"]
-        Chat.change_part(model, part, prompt)
+        StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
     
     @staticmethod
     def rewrite(model, part):
+        Chat.initialize()
+        config.part_number = part
         prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n" + vars["rewrite_postprompt"]
-        Chat.change_part(model, part, prompt)
+        StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
 
     @staticmethod
     def regenenerate(model, part):
-        user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
-        Chat.validate_prompts()
+        Chat.initialize()
         config.part_number = part
+        user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
         StoryGenerator.regenerate(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def add_part(model, part):
-        Chat.validate_prompts()
+        Chat.initialize()
         config.part_number = part
-        
         user_prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + config.user_prompt + "\n\n" + vars["user_postprompt"]
         StoryGenerator.add_part(endpoints, model, config.first_prompt, user_prompt)
 
     @staticmethod
     def summarize(model):
+        Chat.initialize(validate=False)
         prompt = vars["instructions_preprompt"] + "\n" + vars["summarize_preprompt"]
         StoryGenerator.summarize_all(endpoints, model, prompt)
 
     @staticmethod
     def update_summary(model):
+        Chat.initialize(validate=False)
         prompt = vars["instructions_preprompt"] + "\n" + vars["summarize_preprompt"]
         StoryGenerator.update_summary(endpoints, model, prompt)
+
+    @staticmethod
+    def set_prompt(part_value):
+        Chat.initialize(validate=False)
+        part_value -= 1
+        user_prompt = prompts.return_part(part_value)
+        config.user_prompt = Utility.expand_abbreviations(user_prompt)
+        prompts.insert_separator()
+        print(config.user_prompt)
+
+    @staticmethod
+    def remove_last_response():
+        Chat.initialize(validate=False)
+        history.remove_last_response()
+
+    @staticmethod
+    def remove_reasoning():
+        Chat.initialize(validate=False)
+        history.remove_reasoning()

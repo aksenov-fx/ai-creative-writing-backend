@@ -10,7 +10,6 @@ class ChatConfig:
     model: dict
     temperature: float
     max_tokens: int
-    history_path: Path
     print_messages: bool
     include_reasoning: bool
     reasoning_header: str
@@ -23,7 +22,10 @@ class ChatConfig:
     abbreviations: str
     write_interval: float
     use_summary: bool
+    history_path: Path
     summary_path: Path
+    prompts_path: Path
+    folder_path: Path
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
     debug: bool

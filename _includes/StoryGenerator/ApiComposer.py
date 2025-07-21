@@ -6,22 +6,6 @@ from _includes import config
 class ApiComposer:
 
     @staticmethod
-    def estimate_tokens(text: str) -> int:
-        return len(text) // 4
-        
-    @staticmethod
-    def trim_content(content: str, max_tokens: int) -> str:
-        paragraphs = content.split('\n\n')
-        current_tokens = ApiComposer.estimate_tokens(content)
-        
-        while current_tokens > max_tokens and len(paragraphs) > 1:
-            paragraphs.pop(0)
-            content = '\n\n'.join(paragraphs)
-            current_tokens = ApiComposer.estimate_tokens(content)
-            
-        return content
-    
-    @staticmethod
     def print_with_newlines(obj):
         json_str = json.dumps(obj, indent=2, ensure_ascii=False)
         formatted_str = json_str.replace('\\n', '\n')
