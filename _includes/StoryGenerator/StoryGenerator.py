@@ -50,12 +50,26 @@ class StoryGenerator:
     @staticmethod
     def change_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
         
+        history.insert_separator()
+
         if config.include_previous_part_when_rewriting: 
             history.process_history(no_summary=True, cut_history_to_part_number=True, return_last_part=True)
         else:
             history.clear_history()
 
         StoryGenerator.chat(history, endpoint, model, "", user_prompt, part_number_content=history.part_number_content, rewrite=True)
+
+    @staticmethod
+    def change_parts(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+        
+        history.insert_separator()
+        number_of_parts = history.count_parts()
+        print(number_of_parts)
+        print(config.part_number)
+
+        for part_number in range(config.part_number, number_of_parts+1):
+            config.part_number = part_number
+            StoryGenerator.change_part(endpoint, model, "", user_prompt)
 
     @staticmethod
     def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:

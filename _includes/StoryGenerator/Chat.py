@@ -34,18 +34,18 @@ class Chat:
         StoryGenerator.generate(endpoints, model, config.first_prompt, user_prompt)
     
     @staticmethod
-    def refine(model, part):
-        Chat.initialize()
-        config.part_number = part
-        prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n\n" + vars["refine_postprompt"]
-        StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
-    
-    @staticmethod
     def rewrite(model, part):
         Chat.initialize()
         config.part_number = part
         prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n" + vars["rewrite_postprompt"]
         StoryGenerator.change_part(endpoints, model, config.first_prompt, prompt)
+
+    @staticmethod
+    def rewrite_parts(model, part):
+        Chat.initialize()
+        config.part_number = part
+        prompt = vars["instructions_preprompt"] + "\n" + config.user_prompt + "\n" + vars["rewrite_postprompt"]
+        StoryGenerator.change_parts(endpoints, model, config.first_prompt, prompt)
 
     @staticmethod
     def regenenerate(model, part):
@@ -76,11 +76,13 @@ class Chat:
     @staticmethod
     def set_prompt(part_value):
         Chat.initialize(validate=False)
+
         part_value -= 1
-        user_prompt = prompts.return_part(part_value)
-        config.user_prompt = Utility.expand_abbreviations(user_prompt)
         prompts.insert_separator()
-        print(config.user_prompt)
+        config.user_prompt = prompts.return_part(part_value)
+
+        prompt_to_print = Utility.expand_abbreviations(config.user_prompt)
+        print(prompt_to_print)
 
     @staticmethod
     def remove_last_response():

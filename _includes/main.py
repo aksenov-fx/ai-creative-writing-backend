@@ -29,11 +29,11 @@ def process_request(data):
     elif method_name == "interrupt_write":
         config.interrupt_flag = True
 
-    elif method_name == "refine":
-        Chat.refine(config.model, part_value)
-
     elif method_name == "rewrite":
         Chat.rewrite(config.model, part_value)
+
+    elif method_name == "rewrite_parts":
+        Chat.rewrite_parts(config.model, part_value)
 
     elif method_name == "regenerate":
         Chat.regenenerate(config.model, part_value)

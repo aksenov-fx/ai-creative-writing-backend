@@ -9,3 +9,10 @@
   Focus on monolouge in the next scene instead of descriptions
   Use direct speech and quotations
   Dialogue outline:
+
+refine: |
+  Make these changes only
+  Preserve the original text when possible
+  Do not change sentences that do not meet changing requirements
+  Leave the part heading, if it's present.
+  Do not return any comments.
