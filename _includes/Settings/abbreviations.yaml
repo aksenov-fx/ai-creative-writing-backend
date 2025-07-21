@@ -10,7 +10,7 @@
   Use direct speech and quotations
   Dialogue outline:
 
-refine: |
+"#refine": |
   Make these changes only
   Preserve the original text when possible
   Do not change sentences that do not meet changing requirements

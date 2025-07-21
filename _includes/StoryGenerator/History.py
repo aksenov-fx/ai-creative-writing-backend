@@ -4,6 +4,7 @@ class History:
     
     def __init__(self, path, config):
         self.config = config
+        self.separator = self.config.separator
         self.path = path
         self.content = self._read_file()
         self.assistant_response = None
@@ -42,28 +43,22 @@ class History:
 
     def insert_separator(self):
         lines = self.content.strip().splitlines()
-        if lines and lines[-1] != self.config.separator:
-            self.append_history(f"\n\n{self.config.separator}\n\n")
+        if lines and lines[-1] != self.separator:
+            self.append_history(f"\n\n{self.separator}\n\n")
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
 
-        content = self.content.strip()
-        lines = content.splitlines()
-
-        # Remove last line if last line is a separator
-        if lines and lines[-1] == self.config.separator:
-            lines[-1] = ''
-            content = '\n'.join(lines).strip()
-
-        if not any(line.strip() == self.config.separator for line in content.splitlines()):
+        if not self.has_separator():
             self.write_history('')
             return
+        
+        self.insert_separator()
+        history_split = self.split_history()
+        history_split.pop(-2)
 
-        # Remove text after the last separator
-        if (pos := content.rfind(self.config.separator)) != -1:
-            new_content = content[:pos + len(self.config.separator)] + '\n\n'
-            self.write_history(new_content)
+        history_content = self.join_history(history_split)
+        self.write_history(history_content)
 
     def replace_history_part(self, new_part) -> None:
         history_split = self.split_history()
@@ -76,7 +71,7 @@ class History:
         else:
             history_split[self.config.part_number-1] = new_part
             
-        history_content = self.config.separator.join(history_split)
+        history_content = self.join_history(history_split)
 
         self.write_history(history_content)
 
@@ -85,7 +80,7 @@ class History:
         new_part = '\n\n' + new_part + '\n\n'
 
         history_split.insert(self.config.part_number, new_part)
-        history_content = self.config.separator.join(history_split)
+        history_content = self.join_history(history_split)
         self.write_history(history_content)
         
     def remove_reasoning(self):
@@ -97,62 +92,64 @@ class History:
 # Return
 
     def split_history(self):
-        return self.content.split(self.config.separator)
+        return self.content.split(self.separator)
+    
+    def join_history(self, content):
+        return self.separator.join(content)
+
+    def lines(self):
+        return self.content.splitlines()
 
     def read(self) -> str:
         return self.content
     
     def has_separator(self) -> bool:
-        lines = self.content.splitlines()
-        return any(line.strip() == self.config.separator for line in lines)
+        return any(line.strip() == self.separator for line in self.lines())
 
     def count_parts(self) -> int:
-        lines = self.content.splitlines()
-        return sum(1 for line in lines if line.strip() == self.config.separator)
+        return sum(1 for line in self.lines() if line.strip() == self.separator)
 
     def return_part(self, part_number):
-        parts = self.content.split(self.config.separator)
+        parts = self.content.split(self.separator)
         return parts[part_number].strip()
 
 # Split
 
     def parse_assistant_response(self) -> None:
-        lines = self.content.splitlines()
 
-        has_separator = self.has_separator()
-        if not has_separator or lines[-1].strip() == self.config.separator:
+        if not self.has_separator() or self.lines()[-1].strip() == self.separator:
             self.assistant_response = None
             return
         
-        parts = self.content.split(f'\n{self.config.separator}\n')
-        self.content = f'\n{self.config.separator}\n'.join(parts[:-1]).strip()
+        parts = self.content.split(f'\n{self.separator}\n')
+        self.content = f'\n{self.separator}\n'.join(parts[:-1]).strip()
         self.assistant_response = parts[-1].strip()
 
     def merge_with_summary(self, summary):
 
-        if not summary.content: return
+        if not summary or not summary.content: return
         
         history_split = self.split_history()
-        summary_split = summary.content.split(self.config.separator)
+        summary_split = summary.content.split(self.separator)
         
         number_of_history_parts = self.count_parts()
         number_of_summary_parts = summary.count_parts()
 
         # Keep the last part unsummarized
         if number_of_history_parts == number_of_summary_parts:
-            summary_content = self.config.separator.join(summary_split[:-2])
+            summary_content = self.join_history(summary_split[:-2])
             number_of_summary_parts -= 1
         else:
             summary_content = summary.content
         
-        history_content = self.config.separator.join(history_split[number_of_summary_parts:])
+        history_content = self.join_history(history_split[number_of_summary_parts:])
         merged_history = summary_content + history_content
 
         self.content = merged_history
 
     def cut_history_to_part_number(self):
         history_split = self.split_history()
-        self.content = self.config.separator.join(history_split[:self.config.part_number-1])
+        self.content = self.join_history(history_split[:self.config.part_number-1])
         self.part_number_content = history_split[self.config.part_number-1]
 
     def return_last_part(self):
@@ -163,29 +160,25 @@ class History:
     def remove_reasoning_header(self) -> None:
         self.content = '\n'.join(
             line 
-            for line in self.content.splitlines() 
+            for line in self.lines() 
             if line != self.config.reasoning_header).strip()
     
-    def remove_reasoning_tokens(self) -> None:
+    def clean_reasoning_tokens(self, text: str) -> str:
         pattern = r'<think>.*?</think>'
-
-        cleaned_content = re.sub(pattern, '', self.content, flags=re.DOTALL)
+        cleaned_content = re.sub(pattern, '', text, flags=re.DOTALL)
         cleaned_content = re.sub(r'\n{3,}', '\n\n', cleaned_content)
-        
-        self.content = cleaned_content
+        return cleaned_content
+
+    def remove_reasoning_tokens(self) -> None:
+        self.content = self.clean_reasoning_tokens(self.content)
 
     def remove_reasoning_tokens_from_assistance_reponse(self) -> None:
-        pattern = r'<think>.*?</think>'
-
-        cleaned_content = re.sub(pattern, '', self.assistant_response, flags=re.DOTALL)
-        cleaned_content = re.sub(r'\n{3,}', '\n\n', cleaned_content)
-        
-        self.assistant_response = cleaned_content
+        self.assistant_response = self.clean_reasoning_tokens(self.assistant_response)
 
     def format_history(self) -> None:
         cleaned_content = '\n\n'.join(
             block.strip() 
-            for block in self.content.split(self.config.separator) 
+            for block in self.content.split(self.separator) 
             if block.strip()
         )
 

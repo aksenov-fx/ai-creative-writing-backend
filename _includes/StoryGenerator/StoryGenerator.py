@@ -79,10 +79,10 @@ class StoryGenerator:
     @staticmethod
     def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
 
-        history.process_history(cut_history_to_part_number=True)
-
         history.add_part("")
         config.part_number += 1
+
+        history.process_history(cut_history_to_part_number=True)
 
         StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
 
