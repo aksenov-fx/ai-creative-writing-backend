@@ -35,14 +35,23 @@ class StoryGenerator:
 
     @staticmethod
     def generate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        
         history.process_history(summary_object=summary)
-
-        # Remove thinking tokens from assistant_response
-        if history.assistant_response and not model['outputs_thinking']:
-            history.remove_reasoning_tokens_from_assistance_reponse()
-
         StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt)
+
+    @staticmethod
+    def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+        history.process_history(cut_history_to_part_number=True)
+        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
+
+    @staticmethod
+    def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+
+        history.add_part("")
+        config.part_number += 1
+
+        history.process_history(cut_history_to_part_number=True)
+
+        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
 
     ### Changer
 
@@ -69,21 +78,6 @@ class StoryGenerator:
         for part_number in range(config.part_number, number_of_parts+1):
             config.part_number = part_number
             StoryGenerator.change_part(endpoint, model, "", user_prompt)
-
-    @staticmethod
-    def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        history.process_history(cut_history_to_part_number=True)
-        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
-
-    @staticmethod
-    def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-
-        history.add_part("")
-        config.part_number += 1
-
-        history.process_history(cut_history_to_part_number=True)
-
-        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
 
     ### Summarizer
 

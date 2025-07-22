@@ -63,16 +63,8 @@ class History:
     def replace_history_part(self, new_part) -> None:
         history_split = self.split_history()
         new_part = '\n\n' + new_part + '\n\n'
-
-        splitter = '</think>'
-        if splitter in history_split[self.config.part_number-1]:
-            think_part, _ = history_split[self.config.part_number-1].split(splitter, 1)
-            history_split[self.config.part_number-1] = think_part + splitter + new_part
-        else:
-            history_split[self.config.part_number-1] = new_part
-            
+        history_split[self.config.part_number-1] = new_part
         history_content = self.join_history(history_split)
-
         self.write_history(history_content)
 
     def add_part(self, new_part) -> None:
@@ -83,12 +75,6 @@ class History:
         history_content = self.join_history(history_split)
         self.write_history(history_content)
         
-    def remove_reasoning(self):
-        self.remove_reasoning_header()
-        self.remove_reasoning_tokens()
-        self.content += '\n\n'
-        self.write_history(self.content)
-
 # Return
 
     def split_history(self):
@@ -156,23 +142,6 @@ class History:
         self.content = history_split[-1]
 
 # Parse
-    def remove_reasoning_header(self) -> None:
-        self.content = '\n'.join(
-            line 
-            for line in self.lines() 
-            if line != self.config.reasoning_header).strip()
-    
-    def clean_reasoning_tokens(self, text: str) -> str:
-        pattern = r'<think>.*?</think>'
-        cleaned_content = re.sub(pattern, '', text, flags=re.DOTALL)
-        cleaned_content = re.sub(r'\n{3,}', '\n\n', cleaned_content)
-        return cleaned_content
-
-    def remove_reasoning_tokens(self) -> None:
-        self.content = self.clean_reasoning_tokens(self.content)
-
-    def remove_reasoning_tokens_from_assistance_reponse(self) -> None:
-        self.assistant_response = self.clean_reasoning_tokens(self.assistant_response)
 
     def format_history(self) -> None:
         cleaned_content = '\n\n'.join(
@@ -202,9 +171,7 @@ class History:
     def process_history(self, summary_object=None, no_summary: bool = False, cut_history_to_part_number: bool = False, return_last_part: bool = False):
 
         if self.config.use_summary and not no_summary: self.merge_with_summary(summary_object)
-        self.remove_reasoning_header()
         self.parse_assistant_response()
-        self.remove_reasoning_tokens()
         if cut_history_to_part_number: self.cut_history_to_part_number()
         if return_last_part: self.return_last_part()
         self.format_history() # Remove separators and extra empyty lines

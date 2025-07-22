@@ -23,9 +23,6 @@ def process_request(data):
     elif method_name == "remove_last_response":
         Chat.remove_last_response()
 
-    elif method_name == "remove_reasoning":
-        Chat.remove_reasoning()
-
     elif method_name == "interrupt_write":
         config.interrupt_flag = True
 

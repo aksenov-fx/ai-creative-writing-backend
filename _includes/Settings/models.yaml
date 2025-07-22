@@ -1,11 +1,8 @@
 Deepseek R1:
   name: "deepseek/deepseek-r1:free"
-  outputs_thinking: true
 
 Qwen 72b:
   name: "qwen/qwen-2.5-72b-instruct"
-  outputs_thinking: false
 
 Deepseek V3:
   name: "deepseek/deepseek-chat-v3-0324:free"
-  outputs_thinking: false

@@ -88,8 +88,3 @@ class Chat:
     def remove_last_response():
         Chat.initialize(validate=False)
         history.remove_last_response()
-
-    @staticmethod
-    def remove_reasoning():
-        Chat.initialize(validate=False)
-        history.remove_reasoning()
