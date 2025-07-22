@@ -12,8 +12,7 @@ class Streamer:
                  endpoint: str,
                  api_key: str,
                  rewriting: bool = False):
-        self.history_object = history_object
-        self.filepath = history_object.path
+        self.history = history_object
         self.endpoint = endpoint
         self.api_key = api_key
         self.rewriting = rewriting
@@ -22,26 +21,26 @@ class Streamer:
         self.last_write_time = time.time()
         self.buffer_lock = threading.Lock()
     
-    def write_file(self, filepath, content):
+    def write_file(self, content):
         if self.rewriting:
-            self.history_object.replace_history_part(self.complete_response)
+            self.history.replace_history_part(self.complete_response)
         else:
-            with open(filepath, 'a', encoding='utf-8') as f: f.write(content)
+            self.history.append_history(content)
 
-    def buffer_and_write(self, filepath, content):
+    def buffer_and_write(self, content):
         with self.buffer_lock:
             self.token_buffer += content
             current_time = time.time()
             
             if current_time - self.last_write_time >= config.write_interval:
-                self.write_file(filepath, self.token_buffer)
+                self.write_file(self.token_buffer)
                 self.token_buffer = ""
                 self.last_write_time = current_time
 
-    def flush_buffer(self, filepath):
+    def flush_buffer(self):
         with self.buffer_lock:
             if self.token_buffer:
-                self.write_file(filepath, self.token_buffer)
+                self.write_file(self.token_buffer)
                 self.token_buffer = ""
                 self.last_write_time = time.time()
 
@@ -80,10 +79,10 @@ class Streamer:
                     if config.write_reasoning:
                         reasoning_seen = True
                         if first_reasoning:
-                            self.write_file(self.filepath, f"{config.reasoning_header}\n<think>\n")
+                            self.write_file(f"{config.reasoning_header}\n<think>\n")
                             first_reasoning = False
 
-                        self.buffer_and_write(self.filepath, delta.reasoning)
+                        self.buffer_and_write(delta.reasoning)
 
                     if config.print_reasoning:
                         print(delta.reasoning, end='', flush=True)
@@ -93,19 +92,19 @@ class Streamer:
                 if hasattr(delta, 'content') and delta.content:
 
                     if reasoning_seen and not reasoning_is_complete:
-                        self.flush_buffer(self.filepath)
-                        self.write_file(self.filepath, "</think>\n\n")
+                        self.flush_buffer()
+                        self.write_file("</think>\n\n")
                         reasoning_is_complete = True
 
-                    self.buffer_and_write(self.filepath, delta.content)
+                    self.buffer_and_write(delta.content)
                     
                     if config.print_output:
                         # Print each sentence from a new line
                         print(delta.content.replace('.', '.\n'), end='', flush=True) 
                         sys.stdout.flush()
 
-            self.flush_buffer(self.filepath)
-            self.write_file(self.filepath, f"\n\n{config.separator}\n\n")
+            self.flush_buffer()
+            self.write_file(f"\n\n{config.separator}\n\n")
             
             return self.complete_response
             

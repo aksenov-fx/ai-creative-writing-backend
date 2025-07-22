@@ -77,7 +77,7 @@ class History:
 
     def add_part(self, new_part) -> None:
         history_split = self.split_history()
-        new_part = '\n\n' + new_part + '\n\n'
+        new_part = '\n\n' + new_part.strip() + '\n\n'
 
         history_split.insert(self.config.part_number, new_part)
         history_content = self.join_history(history_split)
@@ -110,8 +110,7 @@ class History:
         return sum(1 for line in self.lines() if line.strip() == self.separator)
 
     def return_part(self, part_number):
-        parts = self.content.split(self.separator)
-        return parts[part_number].strip()
+        return self.split_history()[part_number].strip()
 
 # Split
 

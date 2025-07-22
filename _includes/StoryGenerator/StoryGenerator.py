@@ -30,7 +30,6 @@ class StoryGenerator:
         if not config.debug: 
             streamer = Streamer(history_object, endpoint['url'], endpoint['api_key'], rewrite)
             streamer.stream_response(messages, model['name'])
-            history_object.reset()
 
     ### Generator
 
@@ -118,7 +117,6 @@ class StoryGenerator:
     @staticmethod
     def update_summary(endpoint: dict, model: str, user_prompt: str) -> None:
 
-        summary.reset()
         summary.insert_separator()
         history_split = history.split_history()
         number_of_story_parts = history.count_parts()
