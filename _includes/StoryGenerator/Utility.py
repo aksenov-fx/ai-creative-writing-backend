@@ -44,11 +44,16 @@ class Utility:
 
     @staticmethod
     def reset_history():
-        from _includes import config, history, summary, prompts
+        from _includes import config, story, summary, prompts, story_parsed, summary_parsed
 
-        history.reset(new_path=config.folder_path + config.history_path)
-        summary.reset(new_path=config.folder_path + config.summary_path)
-        prompts.reset(new_path=config.folder_path + config.prompts_path)
+        folder = config.folder_path
+
+        story.refresh          (folder + config.history_path)
+        summary.refresh        (folder + config.summary_path)
+        prompts.refresh        (folder + config.prompts_path)
+
+        story_parsed.refresh   (folder + config.history_path)
+        summary_parsed.refresh (folder + config.summary_path)
         
     @staticmethod
     def expand_abbreviations(user_prompt):

@@ -4,6 +4,7 @@ user_prompt: null
 assistant_response: null
 abbreviations: null
 model: null
+endpoint: null
 temperature: 0.8
 max_tokens: 100000
 use_summary: true
@@ -15,7 +16,6 @@ prompts_path: "prompts.md"
 folder_path: ""
 separator: "----"
 interrupt_flag: false
-part_number: 0
 write_interval: 1.0
 debug: false
 print_messages: true

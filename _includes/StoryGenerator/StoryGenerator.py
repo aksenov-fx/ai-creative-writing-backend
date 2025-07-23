@@ -3,124 +3,110 @@ import shutil, os
 from .ApiComposer import ApiComposer
 from .Utility import Utility
 from .Streamer import Streamer
-from _includes import config, history, summary
+from _includes import config, story, summary, story_parsed, summary_parsed
+from .History import HistoryChanger, HistoryParser
 
 ### Chat
 
 class StoryGenerator:
 
     @staticmethod
-    def chat(history_object: str,
-            endpoint: dict, 
-            model: str, 
-            first_prompt: str, 
-            user_prompt: str, 
-            part_number_content: str = "", 
-            rewrite: bool = False) -> None:
+    def chat(history_object: HistoryChanger,
+             history_parsed: HistoryParser,
+             first_prompt: str, 
+             user_prompt: str, 
+             rewrite: bool = False,
+             part_number: int = 0) -> None:
 
-        history_content = "\n\n" + config.history_prefix + "\n" + history_object.content if history_object.content else ""
+        story_parsed.trim_content()
+        history_content = "\n\n" + config.history_prefix + "\n" + history_parsed.parsed if history_parsed.content else ""
 
         first_prompt = Utility.expand_abbreviations(first_prompt)
         user_prompt = Utility.expand_abbreviations(user_prompt)
-        user_prompt = first_prompt + history_content + "\n\n" + user_prompt + "\n" + part_number_content.strip()
+        user_prompt = first_prompt + history_content + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
 
-        messages = ApiComposer.compose_messages(user_prompt, history_object.assistant_response)
-        history_object.reset()
+        messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
+        story_parsed.refresh()
 
         if not config.debug: 
-            streamer = Streamer(history_object, endpoint['url'], endpoint['api_key'], rewrite)
-            streamer.stream_response(messages, model['name'])
+            streamer = Streamer(history_object, rewrite, part_number)
+            streamer.stream_response(messages)
 
     ### Generator
 
     @staticmethod
-    def generate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        history.process_history(summary_object=summary)
-        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt)
+    def generate(first_prompt: str, user_prompt: str) -> None:
+
+        story_parsed.merge_with_summary(summary)
+        story_parsed.parse_assistant_response()
+
+        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt)
 
     @staticmethod
-    def regenerate(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        history.process_history(cut_history_to_part_number=True)
-        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
+    def regenerate(first_prompt: str, user_prompt: str, part_number: int) -> None:
+
+        story_parsed.merge_with_summary(summary)
+        story_parsed.cut_history_to_part_number(part_number-1)
+
+        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt, rewrite=True, part_number=part_number)
 
     @staticmethod
-    def add_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+    def add_part(first_prompt: str, user_prompt: str, part_number: int) -> None:
 
-        history.add_part("")
-        config.part_number += 1
+        story.add_part("", part_number)
 
-        history.process_history(cut_history_to_part_number=True)
+        story_parsed.merge_with_summary(summary)
+        story_parsed.cut_history_to_part_number(part_number)
+        part_number += 1
 
-        StoryGenerator.chat(history, endpoint, model, first_prompt, user_prompt, rewrite=True)
+        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt, rewrite=True, part_number=part_number)
 
     ### Changer
 
     @staticmethod
-    def change_part(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
-        
-        history.insert_separator()
+    def change_part(first_prompt: str, user_prompt: str, part_number: int) -> None:
 
-        if config.include_previous_part_when_rewriting: 
-            history.process_history(no_summary=True, cut_history_to_part_number=True, return_last_part=True)
-        else:
-            history.clear_history()
-
-        StoryGenerator.chat(history, endpoint, model, "", user_prompt, part_number_content=history.part_number_content, rewrite=True)
+        story_parsed.cut(part_number)
+        StoryGenerator.chat(story, story_parsed, "", user_prompt, rewrite=True, part_number=part_number)
 
     @staticmethod
-    def change_parts(endpoint: dict, model: str, first_prompt: str, user_prompt: str) -> None:
+    def change_parts(first_prompt: str, user_prompt: str, part_number: int) -> None:
         
-        history.insert_separator()
-        number_of_parts = history.count_parts()
-        print(number_of_parts)
-        print(config.part_number)
+        print(f"Rewriting part {part_number}/{story.count-1}")
 
-        for part_number in range(config.part_number, number_of_parts+1):
-            config.part_number = part_number
-            StoryGenerator.change_part(endpoint, model, "", user_prompt)
+        for part in range(part_number, story.count):
+            StoryGenerator.change_part("", user_prompt, part)
 
     ### Summarizer
 
     @staticmethod
-    def summarize_part(endpoint: dict, model: str, user_prompt: str, part_number: int) -> None:
+    def summarize_part(user_prompt: str, part_number: int) -> None:
 
-        config.part_number = part_number + 1
-        print(config.part_number)
+        part_number += 1
+        print(f"Summarizing part {part_number}/{story.count-1}")
 
-        if config.include_previous_part_when_summarizing: 
-            summary.process_history(no_summary=True, cut_history_to_part_number=True, return_last_part=True)
-        else:
-            summary.clear_history()
+        summary_parsed.refresh()
+        summary_parsed.cut(part_number)
 
-        StoryGenerator.chat(summary, endpoint, model, "", user_prompt, part_number_content=summary.part_number_content, rewrite=True)
+        StoryGenerator.chat(summary, summary_parsed,  "", user_prompt, rewrite=True)
         
     @staticmethod
-    def summarize_all(endpoint: dict, model: str, user_prompt: str) -> None:
+    def summarize_all(user_prompt: str) -> None:
 
         if os.path.exists(summary.path):
             raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
-        shutil.copy(history.path, summary.path)
+        shutil.copy(story.path, summary.path)
 
-        summary.reset()
-        summary.insert_separator()
-        number_of_parts = summary.count_parts()
+        summary.refresh()
 
-        for part_number in range(number_of_parts):
-            StoryGenerator.summarize_part(endpoint, model, user_prompt, part_number)
+        for part_number in range(summary.count-1):
+            StoryGenerator.summarize_part(user_prompt, part_number)
 
     @staticmethod
-    def update_summary(endpoint: dict, model: str, user_prompt: str) -> None:
+    def update_summary(user_prompt: str) -> None:
+    
+        summary.parts[summary.count-1:story.count+1] = story.parts[summary.count-1:story.count+1]
+        summary.join_and_write()
 
-        summary.insert_separator()
-        history_split = history.split_history()
-        number_of_story_parts = history.count_parts()
-
-        number_of_summary_parts = summary.count_parts()
-        missing_parts = history_split[number_of_summary_parts:-1]
-        
-        for part in missing_parts:
-            summary.append_history(part.strip())
-            summary.insert_separator()
-        
-        for part_number in range(number_of_summary_parts, number_of_story_parts):
-            StoryGenerator.summarize_part(endpoint, model, user_prompt, part_number)
+        for part_number in range(summary.count-1, story.count):
+            StoryGenerator.summarize_part(user_prompt, part_number-1)

@@ -7,6 +7,7 @@ class ChatConfig:
     first_prompt: str
     user_prompt: str
     assistant_response: str
+    endpoint: dict
     model: dict
     temperature: float
     max_tokens: int
@@ -15,7 +16,6 @@ class ChatConfig:
     separator: str
     interrupt_flag: bool
     print_reasoning: bool
-    part_number: int
     abbreviations: str
     write_interval: float
     use_summary: bool

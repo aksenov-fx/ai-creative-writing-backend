@@ -1,178 +1,166 @@
-import re
-
-class History:
+class HistoryMixin:
     
-    def __init__(self, path, config):
+    def __init__(self, path):
+        from ..config import config
+
+        self.path = path
         self.config = config
         self.separator = self.config.separator
-        self.path = path
-        self.content = self._read_file()
-        self.assistant_response = None
+
+        self.content = self._read_file().strip()
+        self.parts = self.split_history()
+        self.lines = self.content.splitlines()
+        self.count = len(self.parts)
+        self.assistant_response = ""
         self.part_number_content = ""
-    
+
     def _read_file(self) -> str:
-        try:
-            with open(self.path, 'r', encoding='utf-8') as f:
-                return f.read() or ""
-        except FileNotFoundError:
+        try: 
+            with open(self.path, 'r', encoding='utf-8') as f: return f.read() or ""
+        except FileNotFoundError: 
             return ""
     
-    def reset(self, new_path=None):
-        if new_path:
-            self.path = new_path
-        self.content = self._read_file()
-        self.assistant_response = None
-        self.part_number_content = None
+    def refresh(self, new_path=None):
+        if new_path: self.path = new_path
+        self.__init__(self.path)
     
-    def clear_history(self):
-        self.content = ""
+# Return
+
+    def split_history(self):
+        parts = self.content.split(self.separator)
+        parts = [part.strip() for part in parts]
+        return parts
+    
+    def join_parts(self, content):
+        return f"\n\n{self.separator}\n\n".join(content)
+
+    def has_separator(self) -> bool:
+        return self.separator in self.lines
+
+    def return_part(self, part_number):
+        return self.parts[part_number].strip()
+
+class HistoryChanger(HistoryMixin):
 
 # Write
 
     def write_history(self, content: str = None) -> None:
-        self.content = content
-        with open(self.path, 'w', encoding='utf-8') as f:
-            f.write(content)
+        open(self.path, 'w', encoding='utf-8').write(content)
+        self.refresh()
 
     def append_history(self, content: str) -> None:
-        self.content += content
-        with open(self.path, 'a', encoding='utf-8') as f:
-            f.write(content)
+        open(self.path, 'a', encoding='utf-8').write(content)
+        self.refresh()
+        
+    def join_and_write(self):
+        self.write_history(self.join_parts(self.parts))
+        self.refresh()
 
 # Change
 
-    def insert_separator(self):
-        lines = self.content.strip().splitlines()
-        if lines and lines[-1] != self.separator:
-            self.append_history(f"\n\n{self.separator}\n\n")
+    def fix_separator(self):
+        if self.lines[-1] != self.separator:
+            self.parts.append("")
+            self.join_and_write()
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
 
-        if not self.has_separator():
-            self.write_history('')
-            return
-        
-        self.insert_separator()
-        history_split = self.split_history()
-        history_split.pop(-2)
+        if self.lines[-1] == self.separator: self.parts.pop(-2)
+        else: self.parts[-1] = ""
 
-        history_content = self.join_history(history_split)
-        self.write_history(history_content)
+        self.join_and_write()
 
-    def replace_history_part(self, new_part) -> None:
-        history_split = self.split_history()
-        new_part = '\n\n' + new_part + '\n\n'
-        history_split[self.config.part_number-1] = new_part
-        history_content = self.join_history(history_split)
-        self.write_history(history_content)
+    def replace_history_part(self, new_part, part_number) -> None:
+        self.parts[part_number-1] = new_part.strip()
+        self.join_and_write()
 
-    def add_part(self, new_part) -> None:
-        history_split = self.split_history()
-        new_part = '\n\n' + new_part.strip() + '\n\n'
+    def add_part(self, new_part, part_number) -> None:
+        self.parts.insert(part_number, new_part.strip())
+        self.join_and_write()
 
-        history_split.insert(self.config.part_number, new_part)
-        history_content = self.join_history(history_split)
-        self.write_history(history_content)
-        
-# Return
+class HistoryParser(HistoryMixin):
 
-    def split_history(self):
-        return self.content.split(self.separator)
-    
-    def join_history(self, content):
-        return self.separator.join(content)
+    def update(self, parts):
+        self.parts = parts
+        self.content = self.join_parts(self.parts).strip()
+        self.parsed = "\n\n".join(self.parts).strip()
+        self.lines = self.content.splitlines()
+        self.count = len(self.parts)
 
-    def lines(self):
-        return self.content.splitlines()
-
-    def read(self) -> str:
-        return self.content
-    
-    def has_separator(self) -> bool:
-        return any(line.strip() == self.separator for line in self.lines())
-
-    def count_parts(self) -> int:
-        return sum(1 for line in self.lines() if line.strip() == self.separator)
-
-    def return_part(self, part_number):
-        return self.split_history()[part_number].strip()
+    def clear_history(self):
+        self.content = ""
 
 # Split
 
     def parse_assistant_response(self) -> None:
 
-        if not self.has_separator() or self.lines()[-1].strip() == self.separator:
-            self.assistant_response = None
-            return
+        if self.lines[-1].strip() == self.separator: return
         
-        parts = self.content.split(f'\n{self.separator}\n')
-        self.content = f'\n{self.separator}\n'.join(parts[:-1]).strip()
-        self.assistant_response = parts[-1].strip()
+        self.assistant_response = self.parts[-1]
+        self.parts = self.parts[:-1]
+
+        self.update(self.parts)
+        return self
 
     def merge_with_summary(self, summary):
 
         if not summary or not summary.content: return
-        
-        history_split = self.split_history()
-        summary_split = summary.content.split(self.separator)
-        
-        number_of_history_parts = self.count_parts()
-        number_of_summary_parts = summary.count_parts()
+        if not self.config.use_summary: return
 
         # Keep the last part unsummarized
-        if number_of_history_parts == number_of_summary_parts:
-            summary_content = self.join_history(summary_split[:-2])
-            number_of_summary_parts -= 1
+        if self.count == summary.count:
+            self.parts[:-2] = summary.parts[:-2]
         else:
-            summary_content = summary.content
-        
-        history_content = self.join_history(history_split[number_of_summary_parts:])
-        merged_history = summary_content + history_content
+            self.parts[:len(summary.parts)] = summary.parts
+            
+        self.update(self.parts)
+        return self
 
-        self.content = merged_history
+    def cut_history_to_part_number(self, part_number):
+        self.update(self.parts[:part_number])
+        return self
 
-    def cut_history_to_part_number(self):
-        history_split = self.split_history()
-        self.content = self.join_history(history_split[:self.config.part_number-1])
-        self.part_number_content = history_split[self.config.part_number-1]
+    def set_part_number_content(self, part_number):
+        self.part_number_content = self.parts[part_number-1]
+        return self
 
-    def return_last_part(self):
-        history_split = self.split_history()
-        self.content = history_split[-1]
+    def set_to_previous_part(self):
+        self.update(self.parts[-2:-1])
+        return self
 
-# Parse
+    def cut(self, part_number):
+        if self.config.include_previous_part_when_rewriting: 
+            (self
+            .cut_history_to_part_number(part_number)
+            .set_part_number_content(part_number)
+            .set_to_previous_part())
+        else:
+            self.clear_history()
 
-    def format_history(self) -> None:
-        cleaned_content = '\n\n'.join(
-            block.strip() 
-            for block in self.content.split(self.separator) 
-            if block.strip()
-        )
-
-        self.content = cleaned_content
+# Trim
 
     def estimate_tokens(self) -> int:
         return len(self.content) // 4
         
     def trim_content(self) -> str:
-        content = self.content
         paragraphs = self.content.split('\n\n')
         current_tokens = self.estimate_tokens()
         
         while current_tokens > self.config.max_tokens and len(paragraphs) > 1:
             paragraphs.pop(0)
-            content = '\n\n'.join(paragraphs)
-            current_tokens = self.estimate_tokens(content)
+            self.content = '\n\n'.join(paragraphs)
+            current_tokens = self.estimate_tokens(self.content)
+            
+        return self
 
-        self.content = content
+# Process 
 
-# Process
-    def process_history(self, summary_object=None, no_summary: bool = False, cut_history_to_part_number: bool = False, return_last_part: bool = False):
+# Order of operations
 
-        if self.config.use_summary and not no_summary: self.merge_with_summary(summary_object)
-        self.parse_assistant_response()
-        if cut_history_to_part_number: self.cut_history_to_part_number()
-        if return_last_part: self.return_last_part()
-        self.format_history() # Remove separators and extra empyty lines
-        self.trim_content() # Exclude first paragraphs to match input length with max_tokens
+# self.merge_with_summary(summary_object)
+# self.parse_assistant_response()
+# set_part_number_content
+# cut_history_to_part_number
+# return_last_part
+# self.trim_content() 

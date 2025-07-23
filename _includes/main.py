@@ -15,10 +15,10 @@ def process_request(data):
     print("\nMethod: " + method_name + "\n")
     
     if method_name == "write_scene":
-        Chat.write_scene(config.model)
+        Chat.write_scene()
 
     elif method_name == "custom_prompt":
-        Chat.custom_prompt(config.model)
+        Chat.custom_prompt()
 
     elif method_name == "remove_last_response":
         Chat.remove_last_response()
@@ -27,28 +27,28 @@ def process_request(data):
         config.interrupt_flag = True
 
     elif method_name == "rewrite":
-        Chat.rewrite(config.model, part_value)
+        Chat.rewrite(part_value)
 
     elif method_name == "rewrite_parts":
-        Chat.rewrite_parts(config.model, part_value)
+        Chat.rewrite_parts(part_value)
 
     elif method_name == "regenerate":
-        Chat.regenenerate(config.model, part_value)
+        Chat.regenenerate(part_value)
 
     elif method_name == "add_part":
-        Chat.add_part(config.model, part_value)
+        Chat.add_part(part_value)
 
     elif method_name == "summarize":
-        Chat.summarize(config.model)
+        Chat.summarize()
 
     elif method_name == "update_summary":
-        Chat.update_summary(config.model)
+        Chat.update_summary()
 
     elif method_name == "set_prompt":
         Chat.set_prompt(part_value)
 
     elif method_name == "set_model":
-        config.model = list(models.values())[model_number -1]
+         config.model = list(models.values())[model_number -1]
 
     elif method_name == "enable_debug":
         config.debug = True

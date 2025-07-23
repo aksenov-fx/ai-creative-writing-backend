@@ -9,13 +9,13 @@ from _includes import config
 class Streamer:
 
     def __init__(self, history_object: str,
-                 endpoint: str,
-                 api_key: str,
-                 rewriting: bool = False):
+                 rewriting: bool = False,
+                 part_number: int = 0):
         self.history = history_object
-        self.endpoint = endpoint
-        self.api_key = api_key
+        self.endpoint = config.endpoint['url']
+        self.api_key = config.endpoint['api_key']
         self.rewriting = rewriting
+        self.part_number = part_number
         self.token_buffer = ""
         self.complete_response = ""
         self.last_write_time = time.time()
@@ -23,7 +23,7 @@ class Streamer:
     
     def write_file(self, content):
         if self.rewriting:
-            self.history.replace_history_part(self.complete_response)
+            self.history.replace_history_part(self.complete_response, self.part_number)
         else:
             self.history.append_history(content)
 
@@ -44,13 +44,13 @@ class Streamer:
                 self.token_buffer = ""
                 self.last_write_time = time.time()
 
-    def stream_response(self, messages: List[Dict[str, str]], model: str) -> None:
+    def stream_response(self, messages: List[Dict[str, str]]) -> None:
 
         try:
             client = openai.OpenAI(base_url=self.endpoint, api_key=self.api_key)
 
             response = client.chat.completions.create(
-                model=model,
+                model=config.model['name'],
                 messages=messages,
                 stream=True,
                 max_tokens=config.max_tokens,
@@ -76,12 +76,10 @@ class Streamer:
                     self.buffer_and_write(delta.content)
                     
             self.flush_buffer()
-            self.history.insert_separator()
+            self.history.fix_separator()
             
             return self.complete_response
             
         except KeyboardInterrupt:
             print('\nProgram terminated by user')
             sys.exit(0)
-        except Exception as e:
-            print(f"Error during streaming: {e}")
