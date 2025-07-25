@@ -7,12 +7,13 @@ class HistoryMixin:
         self.config = config
         self.separator = self.config.separator
 
-        self.content = self._read_file().strip()
+        self.content = self._read_file()
         self.parts = self.split_history()
-        self.lines = self.content.splitlines()
+        self.parsed = "\n\n".join(self.parts)
         self.count = len(self.parts)
         self.assistant_response = ""
         self.part_number_content = ""
+        self.removed_parts = 0
 
     def _read_file(self) -> str:
         try: 
@@ -24,6 +25,12 @@ class HistoryMixin:
         if new_path: self.path = new_path
         self.__init__(self.path)
     
+    def update(self, parts):
+        self.parts = parts
+        self.content = self.join_parts(self.parts)
+        self.parsed = "\n\n".join(self.parts)
+        self.count = len(self.parts)
+
 # Return
 
     def split_history(self):
@@ -32,10 +39,10 @@ class HistoryMixin:
         return parts
     
     def join_parts(self, content):
-        return f"\n\n{self.separator}\n\n".join(content)
+        return f"\n{self.separator}\n".join(content)
 
     def has_separator(self) -> bool:
-        return self.separator in self.lines
+        return self.separator in self.content
 
     def return_part(self, part_number):
         return self.parts[part_number].strip()
@@ -44,29 +51,26 @@ class HistoryChanger(HistoryMixin):
 
 # Write
 
-    def write_history(self, content: str = None) -> None:
-        open(self.path, 'w', encoding='utf-8').write(content)
-        self.refresh()
+    def join_and_write(self):
+        self.update(self.parts)
+        open(self.path, 'w', encoding='utf-8').write(self.content)
 
     def append_history(self, content: str) -> None:
+        self.parts[-1] += content
+        self.update(self.parts)
         open(self.path, 'a', encoding='utf-8').write(content)
-        self.refresh()
-        
-    def join_and_write(self):
-        self.write_history(self.join_parts(self.parts))
-        self.refresh()
 
 # Change
 
     def fix_separator(self):
-        if self.lines[-1] != self.separator:
+        if self.parts[-1] != "":
             self.parts.append("")
             self.join_and_write()
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
 
-        if self.lines[-1] == self.separator: self.parts.pop(-2)
+        if self.parts[-1] == '': self.parts.pop(-2)
         else: self.parts[-1] = ""
 
         self.join_and_write()
@@ -81,13 +85,6 @@ class HistoryChanger(HistoryMixin):
 
 class HistoryParser(HistoryMixin):
 
-    def update(self, parts):
-        self.parts = parts
-        self.content = self.join_parts(self.parts).strip()
-        self.parsed = "\n\n".join(self.parts).strip()
-        self.lines = self.content.splitlines()
-        self.count = len(self.parts)
-
     def clear_history(self):
         self.content = ""
 
@@ -95,12 +92,10 @@ class HistoryParser(HistoryMixin):
 
     def parse_assistant_response(self) -> None:
 
-        if self.lines[-1].strip() == self.separator: return
-        
-        self.assistant_response = self.parts[-1]
-        self.parts = self.parts[:-1]
-
+        if self.parts[-1] == '': return
+        self.assistant_response = self.parts.pop()
         self.update(self.parts)
+
         return self
 
     def merge_with_summary(self, summary):
@@ -141,17 +136,17 @@ class HistoryParser(HistoryMixin):
 # Trim
 
     def estimate_tokens(self) -> int:
-        return len(self.content) // 4
+        return len(self.parsed) // 4
         
     def trim_content(self) -> str:
-        paragraphs = self.content.split('\n\n')
         current_tokens = self.estimate_tokens()
         
-        while current_tokens > self.config.max_tokens and len(paragraphs) > 1:
-            paragraphs.pop(0)
-            self.content = '\n\n'.join(paragraphs)
-            current_tokens = self.estimate_tokens(self.content)
-            
+        while current_tokens > self.config.max_tokens and self.count > 0:
+            self.parts.pop(0)
+            self.update(self.parts)
+            self.removed_parts += 1
+            current_tokens = self.estimate_tokens()
+        
         return self
 
 # Process 

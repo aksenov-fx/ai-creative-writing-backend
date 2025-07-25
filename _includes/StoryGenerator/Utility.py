@@ -1,4 +1,4 @@
-import yaml, os, re
+import yaml, os, re, json
 
 class Utility:
 
@@ -17,6 +17,12 @@ class Utility:
         for key, value in yaml_data.items():
             if hasattr(config_instance, key):
                 setattr(config_instance, key, value)
+
+    @staticmethod
+    def print_with_newlines(obj):
+        json_str = json.dumps(obj, indent=2, ensure_ascii=False)
+        formatted_str = json_str.replace('\\n', '\n')
+        print(formatted_str)
 
     @staticmethod
     def process_tcp_data(data):

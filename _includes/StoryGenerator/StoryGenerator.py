@@ -18,15 +18,17 @@ class StoryGenerator:
              rewrite: bool = False,
              part_number: int = 0) -> None:
 
-        story_parsed.trim_content()
-        history_content = "\n\n" + config.history_prefix + "\n" + history_parsed.parsed if history_parsed.content else ""
+        history_parsed.trim_content()
+        history_content = "\n\n" + config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
 
         first_prompt = Utility.expand_abbreviations(first_prompt)
         user_prompt = Utility.expand_abbreviations(user_prompt)
         user_prompt = first_prompt + history_content + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
 
         messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
-        story_parsed.refresh()
+        if history_parsed.removed_parts: print(f"\nRemoved {history_parsed.removed_parts} text parts to fit the token limit.")
+
+        history_parsed.refresh()
 
         if not config.debug: 
             streamer = Streamer(history_object, rewrite, part_number)

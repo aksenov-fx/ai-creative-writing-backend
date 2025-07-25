@@ -1,15 +1,8 @@
-import json
-
 from typing import Optional, List, Dict, Any
 from _includes import config
+from .Utility import Utility
 
 class ApiComposer:
-
-    @staticmethod
-    def print_with_newlines(obj):
-        json_str = json.dumps(obj, indent=2, ensure_ascii=False)
-        formatted_str = json_str.replace('\\n', '\n')
-        print(formatted_str)
 
     @staticmethod
     def append_message(messages: List[Dict[str, str]], role: str, content: Optional[str]) -> None:
@@ -25,6 +18,6 @@ class ApiComposer:
         ApiComposer.append_message(messages, "assistant",    assistant_response)
     
         if config.print_messages:
-            ApiComposer.print_with_newlines(messages)
+            Utility.print_with_newlines(messages)
             
         return messages

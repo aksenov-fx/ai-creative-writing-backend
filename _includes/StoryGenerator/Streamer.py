@@ -30,12 +30,11 @@ class Streamer:
     def buffer_and_write(self, content):
         with self.buffer_lock:
             self.token_buffer += content
-            current_time = time.time()
             
-            if current_time - self.last_write_time >= config.write_interval:
+            if time.time() - self.last_write_time >= config.write_interval:
                 self.write_file(self.token_buffer)
                 self.token_buffer = ""
-                self.last_write_time = current_time
+                self.last_write_time = time.time()
 
     def flush_buffer(self):
         with self.buffer_lock:
@@ -74,7 +73,7 @@ class Streamer:
                 # Handle regular content
                 if hasattr(delta, 'content') and delta.content:
                     self.buffer_and_write(delta.content)
-                    
+                
             self.flush_buffer()
             self.history.fix_separator()
             
