@@ -55,9 +55,9 @@ class HistoryChanger(HistoryMixin):
         self.update(self.parts)
         open(self.path, 'w', encoding='utf-8').write(self.content)
 
-    def append_history(self, content: str) -> None:
+    def append_history(self, content: str, update: bool = False) -> None:
         self.parts[-1] += content
-        self.update(self.parts)
+        if update: self.update(self.parts)
         open(self.path, 'a', encoding='utf-8').write(content)
 
 # Change

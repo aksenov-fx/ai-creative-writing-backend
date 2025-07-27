@@ -6,7 +6,7 @@ guidelines: |
   Make your writing verbose
   Fill in the gaps to make smooth transitions between scenes
   Employ fresh metaphors drawn from uncommon domains
-  Describe sensations, thoughts, experiences, associations, smells, tastes, textures, emotions
+  Describe sensations, thoughts, experiences, associations, emotions
   Include dialogues and direct speech
   Maintain a high literary standard of true classic literature
   Prioritize originality over convention
@@ -17,6 +17,7 @@ guidelines: |
   Avoid purple prose and florid descriptions
   Avoid filler sentences like: "The room held its breath"
   Avoid atmospheric descriptions disconnected from character experience, like: "Somewhere, a creek churned with tomorrow's silt."
+  Avoid exagarration and dramatic metaphors
 
 user_preprompt: |
   Write the next part of the story based on the below events:
