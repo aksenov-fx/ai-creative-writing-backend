@@ -1,14 +1,15 @@
 import shutil, os
 
+from _includes import config, story, summary, story_parsed, summary_parsed
 from .ApiComposer import ApiComposer
+from .PromptComposer import PromptComposer
 from .Utility import Utility
 from .Streamer import Streamer
-from _includes import config, story, summary, story_parsed, summary_parsed
 from .History import HistoryChanger, HistoryParser
 
 ### Chat
 
-class StoryGenerator:
+class Chat:
 
     @staticmethod
     def chat(history_object: HistoryChanger,
@@ -37,23 +38,44 @@ class StoryGenerator:
     ### Generator
 
     @staticmethod
-    def generate(first_prompt: str, user_prompt: str) -> None:
+    def initialize(mode):
+        Utility.reset_history()
+        return PromptComposer.compose_prompt(mode)
+
+    @staticmethod
+    def write_scene() -> None:
+
+        user_prompt = Chat.initialize("write_scene")
 
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt)
+        Chat.chat(story, story_parsed, config.first_prompt, user_prompt)
 
     @staticmethod
-    def regenerate(first_prompt: str, user_prompt: str, part_number: int) -> None:
+    def custom_prompt() -> None:
+
+        user_prompt = Chat.initialize("custom_prompt")
+
+        story_parsed.merge_with_summary(summary)
+        story_parsed.parse_assistant_response()
+
+        Chat.chat(story, story_parsed, config.first_prompt, user_prompt)
+
+    @staticmethod
+    def regenerate(part_number: int) -> None:
+
+        user_prompt = Chat.initialize("regenerate")
 
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
 
-        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt, rewrite=True, part_number=part_number)
+        Chat.chat(story, story_parsed, config.first_prompt, user_prompt, rewrite=True, part_number=part_number)
 
     @staticmethod
-    def add_part(first_prompt: str, user_prompt: str, part_number: int) -> None:
+    def add_part(part_number: int) -> None:
+
+        user_prompt = Chat.initialize("add_part")
 
         story.add_part("", part_number)
 
@@ -61,39 +83,42 @@ class StoryGenerator:
         story_parsed.cut_history_to_part_number(part_number)
         part_number += 1
 
-        StoryGenerator.chat(story, story_parsed, first_prompt, user_prompt, rewrite=True, part_number=part_number)
+        Chat.chat(story, story_parsed, config.first_prompt, user_prompt, rewrite=True, part_number=part_number)
 
     ### Changer
 
     @staticmethod
-    def change_part(first_prompt: str, user_prompt: str, part_number: int) -> None:
+    def change_part(part_number: int) -> None:
+
+        user_prompt = Chat.initialize("change_part")
 
         story_parsed.cut(part_number)
-        StoryGenerator.chat(story, story_parsed, "", user_prompt, rewrite=True, part_number=part_number)
+        Chat.chat(story, story_parsed, "", user_prompt, rewrite=True, part_number=part_number)
 
     @staticmethod
-    def change_parts(first_prompt: str, user_prompt: str, part_number: int) -> None:
-        
+    def change_parts(part_number: int) -> None:
+
         print(f"Rewriting part {part_number}/{story.count-1}")
 
         for part in range(part_number, story.count):
-            StoryGenerator.change_part("", user_prompt, part)
+            Chat.change_part(part)
 
     ### Summarizer
 
     @staticmethod
-    def summarize_part(user_prompt: str, part_number: int) -> None:
+    def summarize_part(part_number: int) -> None:
+
+        user_prompt = Chat.initialize("summarize_part")
 
         part_number += 1
         print(f"Summarizing part {part_number}/{story.count-1}")
 
-        summary_parsed.refresh()
         summary_parsed.cut(part_number)
 
-        StoryGenerator.chat(summary, summary_parsed,  "", user_prompt, rewrite=True)
+        Chat.chat(summary, summary_parsed,  "", user_prompt, rewrite=True, part_number=part_number)
         
     @staticmethod
-    def summarize_all(user_prompt: str) -> None:
+    def summarize_all() -> None:
 
         if os.path.exists(summary.path):
             raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
@@ -102,13 +127,14 @@ class StoryGenerator:
         summary.refresh()
 
         for part_number in range(summary.count-1):
-            StoryGenerator.summarize_part(user_prompt, part_number)
+            Chat.summarize_part(part_number)
 
     @staticmethod
-    def update_summary(user_prompt: str) -> None:
+    def update_summary() -> None:
     
+        summary_count = summary.count
         summary.parts[summary.count-1:story.count+1] = story.parts[summary.count-1:story.count+1]
         summary.join_and_write()
 
-        for part_number in range(summary.count-1, story.count):
-            StoryGenerator.summarize_part(user_prompt, part_number-1)
+        for part_number in range(summary_count, story.count):
+            Chat.summarize_part(part_number-1)

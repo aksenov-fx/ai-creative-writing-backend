@@ -3,13 +3,14 @@ import socketserver
 import threading
 
 from _includes import config, models
-from .StoryGenerator.Utility import Utility
-from .StoryGenerator.Chat import Chat
+from .app.Utility import Utility
+from .app.Chat import Chat
 
 def process_request(data):
 
     folder_path, method_name, part_value, model_number = Utility.process_tcp_data(data)
     Utility.update_config(folder_path)
+    Utility.reset_history()
 
     os.system('clear' if os.name == 'posix' else 'cls')
     print("\nMethod: " + method_name + "\n")
@@ -21,31 +22,31 @@ def process_request(data):
         Chat.custom_prompt()
 
     elif method_name == "remove_last_response":
-        Chat.remove_last_response()
+        Utility.remove_last_response()
 
     elif method_name == "interrupt_write":
         config.interrupt_flag = True
 
     elif method_name == "rewrite":
-        Chat.rewrite(part_value)
+        Chat.change_part(part_value)
 
     elif method_name == "rewrite_parts":
-        Chat.rewrite_parts(part_value)
+        Chat.change_parts(part_value)
 
     elif method_name == "regenerate":
-        Chat.regenenerate(part_value)
+        Chat.regenerate(part_value)
 
     elif method_name == "add_part":
         Chat.add_part(part_value)
 
     elif method_name == "summarize":
-        Chat.summarize()
+        Chat.summarize_all()
 
     elif method_name == "update_summary":
         Chat.update_summary()
 
     elif method_name == "set_prompt":
-        Chat.set_prompt(part_value)
+        Utility.set_prompt(part_value)
 
     elif method_name == "set_model":
          config.model = list(models.values())[model_number -1]
@@ -79,6 +80,10 @@ def start_server():
     with socketserver.ThreadingTCPServer(('localhost', 9993), RequestHandler) as server:
         print("Server listening on port 9993")
         server.serve_forever()
-
+        
 server_thread = threading.Thread(target=start_server, daemon=True)
 server_thread.start()
+
+if __name__ == "__main__":
+    import code
+    code.interact(banner="", local=locals())

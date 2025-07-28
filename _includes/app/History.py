@@ -55,6 +55,12 @@ class HistoryChanger(HistoryMixin):
         self.update(self.parts)
         open(self.path, 'w', encoding='utf-8').write(self.content)
 
+    def join_and_write_diff(self):
+        from .Utility import Utility
+        original_content = self.content
+        self.update(self.parts)
+        Utility.write_diff(self.path, original_content, self.content)
+
     def append_history(self, content: str, update: bool = False) -> None:
         self.parts[-1] += content
         if update: self.update(self.parts)
