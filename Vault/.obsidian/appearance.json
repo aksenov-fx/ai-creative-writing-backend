@@ -1,0 +1,12 @@
+{
+  "accentColor": "",
+  "cssTheme": "AnuPpuccin",
+  "baseFontSize": 14,
+  "textFontFamily": "Arial",
+  "interfaceFontFamily": "",
+  "enabledCssSnippets": [
+    "headings"
+  ],
+  "showViewHeader": true,
+  "showRibbon": false
+}

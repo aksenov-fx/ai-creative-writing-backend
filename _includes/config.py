@@ -15,6 +15,7 @@ endpoint = endpoints['openrouter']
 endpoint['api_key'] = open(endpoint['api_key_file'], 'r').read().strip()
 config.endpoint = endpoint
 config.abbreviations = abbreviations
+config.model = models[config.model]
 
 story = HistoryChanger(config.history_path)
 summary = HistoryChanger(config.summary_path)

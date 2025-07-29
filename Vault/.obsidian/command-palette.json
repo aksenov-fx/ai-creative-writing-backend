@@ -1,0 +1,22 @@
+{
+  "pinned": [
+    "story-writer:set-prompt",
+    "story-writer:write-scene",
+    "story-writer:custom-prompt",
+    "story-writer:interrupt-write",
+    "story-writer:remove-last-response",
+    "story-writer:remove-reasoning",
+    "story-writer:set-model-1",
+    "story-writer:set-model-2",
+    "story-writer:set-model-3",
+    "story-writer:rewrite",
+    "story-writer:rewrite-parts",
+    "story-writer:regenerate",
+    "story-writer:add-part",
+    "story-writer:summarize",
+    "story-writer:update-summary",
+    "story-writer:enable-debug",
+    "story-writer:disable-debug",
+    "workspaces:open-modal"
+  ]
+}

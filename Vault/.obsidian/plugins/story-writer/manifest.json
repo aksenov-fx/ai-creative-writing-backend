@@ -1,0 +1,10 @@
+{
+	"id": "story-writer",
+	"name": "Story writer",
+	"version": "1.1",
+	"minAppVersion": "1.7.4",
+	"description": "Story writer.",
+	"author": "Aksenov-fx",
+	"authorUrl": "https://github.com/aksenov-fx/",
+	"isDesktopOnly": true
+}

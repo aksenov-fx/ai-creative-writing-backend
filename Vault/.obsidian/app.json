@@ -1,0 +1,16 @@
+{
+  "promptDelete": false,
+  "spellcheck": false,
+  "mobileToolbarCommands": [
+    "editor:indent-list",
+    "editor:unindent-list",
+    "editor:undo",
+    "editor:redo",
+    "editor:toggle-blockquote",
+    "editor:configure-toolbar",
+    "editor:toggle-keyboard"
+  ],
+  "showInlineTitle": true,
+  "showLineNumber": false,
+  "showUnsupportedFiles": true
+}

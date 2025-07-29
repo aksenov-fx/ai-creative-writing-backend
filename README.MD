@@ -1,23 +1,78 @@
-VS code/Jupyter Notebooks for creative writing with AI. They allow to:
-- Tune/inject reasoning for thinking models like Deepseek  
-- Define the beginning of the next response  
-- Continue unfinished responses  
-- Use VS Code and its plugins to work with the text
+This repo features a Python/Javascript project that allows to use **Obsidian** for AI assisted **story writing** via **OpenRouter** API.  
 
-If you do not need these particular features, please consider using Novelcrafter instead.  
+## Installation instructions for Windows:
+1. Install [Python 3.12](https://www.python.org/downloads/release/python-3122/)  
+2. [Download](https://github.com/aksenov-fx/Obsidian-AI-Story-Writer/archive/refs/heads/main.zip) and unzip the contents of the repository  
+3. Go to script folder and run `initialize.bat`  
+The script will install Python dependencies and ask for your API key
+4. Run `start.bat`  
 
-**Instructions**
-1. Get an openrouter API key or any other openai-compatible provider's key
-2. Create api_key.txt file in the _includes folder and put the key in it  
-3. Open story.ipynb and run the cells  
-4. Open story.md to work with the output  
+## How to use
+Open the Vault folder as a vault in Obsidian and set cursor position to a prompt
 
-**Optional steps**
-- Edit prompt_vars to change custom instructions  
-- Edit chat_settings according to your liking  
-- Edit chat_endpoints to add providers/models  
-- Edit chat_methods to add custom prompts
+Use the following hotkeys:  
+**Alt+S** - Set prompt  
+**Alt+W** - Write scene  
+**Alt+C** - Custom prompt  
+**Alt+Z** - Delete last response  
+**ALT+~** - Stop writing  
+
+**Alt+1-3** - Set model number 
+Models are listed in `_includes\settings\models.yaml`  
+Default model can be changed in `_includes\settings\settings.yaml`
+
+## Obsidian commands
+**Write Scene**  
+Append writing instructions to a user prompt and write a scene  
+
+**Custom Prompt**  
+Make prompt without writing instructions  
+
+**Rewrite**  
+Rewrite a selected part of the story according to prompt  
+
+**Rewrite this and the following parts**  
+Rewrite selected and the following parts  
+
+**Regenerate**  
+Regenerate a selected part of the story  
+
+**Add Part**  
+Add a new story part after a selected part  
+
+**Summarize story**  
+Ceate a file with summary for each part
+
+**Update summary**  
+Summarize new story parts
+
+## Optional steps
+- Edit `_includes\settings` files to change default settings, models, prompts and abbreviations
+- Edit files in `Settings` folders in Obsidian to change settings individually per story
+
+## Settings
+
+**use_summary**  
+Replace story parts with summaries in API request to reduce token usage
+
+**include_previous_part_when_summarizing**  
+If False, only the current part text will be included in API request when summarizing part
+
+**include_previous_part_when_rewriting**  
+If False, only the current part text will be included in API request when rewriting
+Makes sense when the changes do not require story context
+For example, when changing story tense, style etc.
+
+**print_reasoning**  
+Print reasoning in terminal when using models that output reasoning tokens, like DeepSeek R1  
+
+## How it works
+To get a response, **Obsidian** sends a TCP request to python app, which listens on port **TCP 9993**. The app gets a response and writes it to MD file, while **Obsidian** displays the changes in real time.  
+
+## Credits:
+Dmitry Savosh for [Remember cursor position](https://github.com/dy-sh/obsidian-remember-cursor-position) plugin  
 
 ---
-Try in VS Code online:  
+\
+Try app in VS Code notebooks:  
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=941547309&skip_quickstart=true)

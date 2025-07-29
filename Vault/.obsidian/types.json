@@ -1,0 +1,10 @@
+{
+  "types": {
+    "aliases": "aliases",
+    "cssclasses": "multitext",
+    "tags": "tags",
+    "system_commands": "text",
+    "chat_mode": "text",
+    "fold": "checkbox"
+  }
+}
