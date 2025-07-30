@@ -55,8 +55,8 @@ Summarize new story parts
 **use_summary**  
 Replace story parts with summaries in API request to reduce token usage
 
-**include_previous_part_when_summarizing**  
-If False, only the current part text will be included in API request when summarizing part
+**trim_history**
+Exclude first paragraphs until story lengh matches max_tokens
 
 **include_previous_part_when_rewriting**  
 If False, only the current part text will be included in API request when rewriting

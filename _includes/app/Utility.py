@@ -42,27 +42,23 @@ class Utility:
         settings_folder = folder_path + '/Settings/'
 
         # Read values
-        default_values =    default_config.copy()
-        new_values =        Utility.parse_frontmatter(settings_folder + 'settings.md')
+        new_config_values = Utility.parse_frontmatter(settings_folder + 'settings.md')
         new_abbreviations = Utility.parse_frontmatter(settings_folder + 'abbreviations.md')
         first_prompt =      Utility.read_file(settings_folder + 'introduction.md')
+        first_prompt =      Utility.expand_abbreviations(first_prompt)
+
+        new_config = {**default_config, **new_config_values}
+        new_config['abbreviations'] = {**abbreviations, **new_abbreviations}
+        new_config['first_prompt'] = first_prompt
+        new_config['folder_path'] = folder_path + '/'
 
         # Preserve values
         keys_to_preserve = ['debug', 'user_prompt', 'model', 'endpoint']
-        for key in keys_to_preserve: default_values.pop(key)
-
-        default_values.update(new_values)
+        for key in keys_to_preserve: new_config.pop(key)
 
         # Update values
-        for key, value in default_values.items():
-            if hasattr(config, key):
-                setattr(config, key, value)
-
-        config.abbreviations = abbreviations
-        config.abbreviations.update(new_abbreviations)
-        config.folder_path = folder_path + '/'
-        config.interrupt_flag = False
-        config.first_prompt = first_prompt
+        for key, value in new_config.items():
+            if hasattr(config, key): setattr(config, key, value)
 
     @staticmethod
     def reset_history():

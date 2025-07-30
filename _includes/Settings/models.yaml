@@ -1,8 +1,8 @@
 Deepseek R1:
   name: "deepseek/deepseek-r1:free"
 
-Qwen 72b:
-  name: "qwen/qwen-2.5-72b-instruct"
+Kimi K2:
+  name: "moonshotai/kimi-k2:free"
 
 Deepseek V3:
   name: "deepseek/deepseek-chat-v3-0324:free"

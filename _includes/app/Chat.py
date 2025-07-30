@@ -13,23 +13,9 @@ class Chat:
 
     @staticmethod
     def chat(history_object: HistoryChanger,
-             history_parsed: HistoryParser,
-             first_prompt: str, 
-             user_prompt: str, 
+             messages,
              rewrite: bool = False,
              part_number: int = 0) -> None:
-
-        history_parsed.trim_content()
-        history_content = "\n\n" + config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
-
-        first_prompt = Utility.expand_abbreviations(first_prompt)
-        user_prompt = Utility.expand_abbreviations(user_prompt)
-        user_prompt = first_prompt + history_content + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
-
-        messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
-        if history_parsed.removed_parts: print(f"\nRemoved {history_parsed.removed_parts} text parts to fit the token limit.")
-
-        history_parsed.refresh()
 
         if not config.debug: 
             streamer = Streamer(history_object, rewrite, part_number)
@@ -38,44 +24,62 @@ class Chat:
     ### Generator
 
     @staticmethod
-    def initialize(mode):
+    def pre_process(mode):
+        config.interrupt_flag = False
         Utility.reset_history()
         return PromptComposer.compose_prompt(mode)
 
     @staticmethod
+    def post_process(first_prompt, user_prompt, history_parsed):
+        if config.trim_history: history_parsed.trim_content()
+
+        user_prompt = first_prompt + history_parsed.parsed + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
+        messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
+
+        history_parsed.refresh()
+
+        return messages
+
+    @staticmethod
     def write_scene() -> None:
 
-        user_prompt = Chat.initialize("write_scene")
+        user_prompt = Chat.pre_process("write_scene")
 
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        Chat.chat(story, story_parsed, config.first_prompt, user_prompt)
+        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+
+        Chat.chat(story, messages)
 
     @staticmethod
     def custom_prompt() -> None:
 
-        user_prompt = Chat.initialize("custom_prompt")
+        user_prompt = Chat.pre_process("custom_prompt")
 
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        Chat.chat(story, story_parsed, config.first_prompt, user_prompt)
+        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+
+        Chat.chat(story, messages)
 
     @staticmethod
     def regenerate(part_number: int) -> None:
 
-        user_prompt = Chat.initialize("regenerate")
+        user_prompt = Chat.pre_process("regenerate")
 
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
 
-        Chat.chat(story, story_parsed, config.first_prompt, user_prompt, rewrite=True, part_number=part_number)
+        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+
+        Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def add_part(part_number: int) -> None:
 
-        user_prompt = Chat.initialize("add_part")
+        user_prompt = Chat.pre_process("add_part")
 
         story.add_part("", part_number)
 
@@ -83,17 +87,20 @@ class Chat:
         story_parsed.cut_history_to_part_number(part_number)
         part_number += 1
 
-        Chat.chat(story, story_parsed, config.first_prompt, user_prompt, rewrite=True, part_number=part_number)
+        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+
+        Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     ### Changer
 
     @staticmethod
     def change_part(part_number: int) -> None:
 
-        user_prompt = Chat.initialize("change_part")
-
+        user_prompt = Chat.pre_process("change_part")
         story_parsed.cut(part_number)
-        Chat.chat(story, story_parsed, "", user_prompt, rewrite=True, part_number=part_number)
+        messages = Chat.post_process("", user_prompt, story_parsed)
+
+        Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def change_parts(part_number: int) -> None:
@@ -108,14 +115,16 @@ class Chat:
     @staticmethod
     def summarize_part(part_number: int) -> None:
 
-        user_prompt = Chat.initialize("summarize_part")
+        user_prompt = Chat.pre_process("summarize_part")
 
         part_number += 1
         print(f"Summarizing part {part_number}/{story.count-1}")
 
         summary_parsed.cut(part_number)
 
-        Chat.chat(summary, summary_parsed,  "", user_prompt, rewrite=True, part_number=part_number)
+        messages = Chat.post_process("", user_prompt, summary_parsed)
+
+        Chat.chat(summary, messages, rewrite=True, part_number=part_number)
         
     @staticmethod
     def summarize_all() -> None:

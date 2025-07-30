@@ -29,6 +29,7 @@ class HistoryMixin:
         self.parts = parts
         self.content = self.join_parts(self.parts)
         self.parsed = "\n\n".join(self.parts)
+        self.parsed = "\n\n" + self.config.history_prefix + "\n" + self.parsed if self.parsed else ""
         self.count = len(self.parts)
 
 # Return
@@ -152,7 +153,8 @@ class HistoryParser(HistoryMixin):
             self.update(self.parts)
             self.removed_parts += 1
             current_tokens = self.estimate_tokens()
-        
+
+        if self.removed_parts: print(f"\nRemoved {self.removed_parts} text parts to fit the token limit.")
         return self
 
 # Process 

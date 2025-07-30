@@ -52,7 +52,7 @@ class Streamer:
                 model=config.model['name'],
                 messages=messages,
                 stream=True,
-                max_tokens=config.max_tokens,
+                #max_tokens=config.max_tokens,
                 temperature=config.temperature,
                 extra_body={ "include_reasoning": config.include_reasoning }
             )

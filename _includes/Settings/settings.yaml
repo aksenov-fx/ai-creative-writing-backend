@@ -7,6 +7,7 @@ model: "Deepseek V3"
 endpoint: null
 temperature: 0.8
 max_tokens: 100000
+trim_history: true
 use_summary: true
 include_previous_part_when_summarizing: True
 include_previous_part_when_rewriting: True
