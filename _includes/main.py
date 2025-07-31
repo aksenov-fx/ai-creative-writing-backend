@@ -5,12 +5,13 @@ import threading
 from _includes import config, models
 from .app.Utility import Utility
 from .app.Chat import Chat
+from .app.Factory import Factory
 
 def process_request(data):
 
-    folder_path, method_name, part_value, model_number = Utility.process_tcp_data(data)
-    Utility.update_config(folder_path)
-    Utility.reset_history()
+    folder, method_name, part_value, model_number = Utility.process_tcp_data(data)
+    Utility.update_config(folder)
+    config.interrupt_flag = False
 
     os.system('clear' if os.name == 'posix' else 'cls')
     print("\nMethod: " + method_name + "\n")
@@ -22,7 +23,8 @@ def process_request(data):
         Chat.custom_prompt()
 
     elif method_name == "remove_last_response":
-        Utility.remove_last_response()
+        story = Factory.get_story()
+        story.remove_last_response()
 
     elif method_name == "interrupt_write":
         config.interrupt_flag = True

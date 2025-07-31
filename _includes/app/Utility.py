@@ -61,22 +61,11 @@ class Utility:
             if hasattr(config, key): setattr(config, key, value)
 
     @staticmethod
-    def reset_history():
-        from _includes import config, story, summary, prompts, story_parsed, summary_parsed
-
-        folder = config.folder_path
-
-        story.refresh          (folder + config.history_path)
-        summary.refresh        (folder + config.summary_path)
-        prompts.refresh        (folder + config.prompts_path)
-
-        story_parsed.refresh   (folder + config.history_path)
-        summary_parsed.refresh (folder + config.summary_path)
-        
-    @staticmethod
     def set_prompt(part_value):
-        from _includes import config, prompts
-        prompts.refresh()
+        from _includes import config
+        from .Factory import Factory
+        
+        prompts = Factory.get_prompts()
 
         part_value -= 1
         prompts.fix_separator()
@@ -84,12 +73,6 @@ class Utility:
 
         prompt_to_print = Utility.expand_abbreviations(config.user_prompt)
         print(prompt_to_print)
-
-    @staticmethod
-    def remove_last_response():
-        from _includes import story
-        story.refresh()
-        story.remove_last_response()
 
     @staticmethod
     def expand_abbreviations(user_prompt):

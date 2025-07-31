@@ -21,10 +21,6 @@ class HistoryMixin:
         except FileNotFoundError: 
             return ""
     
-    def refresh(self, new_path=None):
-        if new_path: self.path = new_path
-        self.__init__(self.path)
-    
     def update(self, parts):
         self.parts = parts
         self.content = self.join_parts(self.parts)

@@ -1,6 +1,5 @@
 from .app.ConfigClass import ChatConfig
 from .app.Utility import Utility
-from .app.History import HistoryChanger, HistoryParser
 
 settings_folder = './_includes/settings/'
 
@@ -16,9 +15,3 @@ endpoint['api_key'] = open(endpoint['api_key_file'], 'r').read().strip()
 config.endpoint = endpoint
 config.abbreviations = abbreviations
 config.model = models[config.model]
-
-story = HistoryChanger(config.history_path)
-summary = HistoryChanger(config.summary_path)
-prompts = HistoryChanger(config.prompts_path)
-story_parsed = HistoryParser(config.history_path)
-summary_parsed = HistoryParser(config.summary_path)

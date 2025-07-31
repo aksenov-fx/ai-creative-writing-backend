@@ -18,7 +18,8 @@ class PromptComposer:
     @staticmethod
     def compose_prompt(mode):
         
-        user_prompt = Utility.expand_abbreviations(config.user_prompt)
+        if config.user_prompt:
+            user_prompt = Utility.expand_abbreviations(config.user_prompt)
 
         if mode in ['write_scene', 'regenerate', 'add_part']:
             PromptComposer.validate()
