@@ -1,74 +1,49 @@
-import os
 import socketserver
 import threading
 
-from _includes import config, models
+from _includes import config
 from .app.Utility import Utility
 from .app.Chat import Chat
 from .app.Factory import Factory
+from .app.ConfigManager import override_config
 
 def process_request(data):
 
-    folder, method_name, part_value, model_number = Utility.process_tcp_data(data)
-    Utility.update_config(folder)
+    folder, method, part_number, model_number = Utility.process_tcp_data(data)
+    new_config = Utility.read_config(folder)
     config.interrupt_flag = False
+    config.folder_path = folder + '/'
 
-    os.system('clear' if os.name == 'posix' else 'cls')
-    print("\nMethod: " + method_name + "\n")
+    Utility.clear_screen()
+    print("\nMethod: " + method + "\n")
+
+    # Config override
+    with override_config(config, **new_config):
+        if method == "write_scene":      Chat.write_scene()
+        elif method == "custom_prompt":  Chat.custom_prompt()
+        elif method == "rewrite":        Chat.change_part(part_number)
+        elif method == "rewrite_parts":  Chat.change_parts(part_number)
+        elif method == "regenerate":     Chat.regenerate(part_number)
+        elif method == "add_part":       Chat.add_part(part_number)
+        elif method == "summarize":      Chat.summarize_all()
+        elif method == "update_summary": Chat.update_summary()
+        elif method == "remove_last_response":
+            Factory.get_story().remove_last_response()
     
-    if method_name == "write_scene":
-        Chat.write_scene()
+    # No config override
+    if method == "interrupt_write":      config.interrupt_flag = True
+    elif method == "enable_debug":       config.debug = True
+    elif method == "disable_debug":      config.debug = False
+    elif method == "set_prompt":
+        Utility.set_prompt(part_number, new_config['abbreviations'])
 
-    elif method_name == "custom_prompt":
-        Chat.custom_prompt()
-
-    elif method_name == "remove_last_response":
-        story = Factory.get_story()
-        story.remove_last_response()
-
-    elif method_name == "interrupt_write":
-        config.interrupt_flag = True
-
-    elif method_name == "rewrite":
-        Chat.change_part(part_value)
-
-    elif method_name == "rewrite_parts":
-        Chat.change_parts(part_value)
-
-    elif method_name == "regenerate":
-        Chat.regenerate(part_value)
-
-    elif method_name == "add_part":
-        Chat.add_part(part_value)
-
-    elif method_name == "summarize":
-        Chat.summarize_all()
-
-    elif method_name == "update_summary":
-        Chat.update_summary()
-
-    elif method_name == "set_prompt":
-        Utility.set_prompt(part_value)
-
-    elif method_name == "set_model":
-         config.model = list(models.values())[model_number -1]
-
-    elif method_name == "enable_debug":
-        config.debug = True
-
-    elif method_name == "disable_debug":
-        config.debug = False
-
-    else:
-        print(f"Unknown method: {method_name}")
-        
 # -------------------------------- #
 
 class RequestHandler(socketserver.BaseRequestHandler):
     def handle(self): #method is called automatically by server upon receiving a new request
 
         while True:
-            # Expect format: "path:method_name:part_value:model_number"
+            # Expect format: "path:method:part_value:model_number"
             data = self.request.recv(1024).decode('utf-8').strip()
             if not data: break
 

@@ -1,10 +1,10 @@
-import shutil, os
-
 from _includes import config
 from .ApiComposer import ApiComposer
 from .PromptComposer import PromptComposer
 from .Streamer import Streamer
 from .Factory import Factory
+from .History import HistoryChanger, HistoryParser
+from .Utility import Utility
 
 ### Chat
 
@@ -15,7 +15,7 @@ class Chat:
         return Factory.get_story(), Factory.get_story_parsed(), Factory.get_summary()
 
     @staticmethod
-    def chat(history_object,
+    def chat(history_object: HistoryChanger,
              messages,
              rewrite: bool = False,
              part_number: int = 0) -> None:
@@ -25,8 +25,10 @@ class Chat:
             streamer.stream_response(messages)
 
     @staticmethod
-    def post_process(first_prompt, user_prompt, history_parsed):
+    def post_process(first_prompt, user_prompt, history_parsed: HistoryParser):
         if config.trim_history: history_parsed.trim_content()
+
+        print(f"Model: {config.model}\n")
 
         user_prompt = first_prompt + history_parsed.parsed + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
         messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
@@ -128,10 +130,7 @@ class Chat:
 
         story_path = config.folder_path + config.history_path
         summary_path = config.folder_path + config.summary_path
-
-        if os.path.exists(summary_path):
-            raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
-        shutil.copy(story_path, summary_path)
+        Utility.copy_file(story_path, summary_path)
 
         summary = Factory.get_summary()
 

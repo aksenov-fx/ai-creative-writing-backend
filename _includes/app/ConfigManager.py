@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 @dataclass
 class ChatConfig:
@@ -8,6 +10,7 @@ class ChatConfig:
     user_prompt: str
     assistant_response: str
     endpoint: dict
+    default_model: str
     model: dict
     temperature: float
     max_tokens: int
@@ -28,3 +31,17 @@ class ChatConfig:
     include_previous_part_when_rewriting: bool
     debug: bool
     history_prefix: str
+
+@contextmanager
+def override_config(config, **overrides: Any):
+    original_values = {}
+    for key, value in overrides.items():
+        if hasattr(config, key):
+            original_values[key] = getattr(config, key)
+            setattr(config, key, value)
+    
+    try:
+        yield config
+    finally:
+        for key, value in original_values.items():
+            setattr(config, key, value)

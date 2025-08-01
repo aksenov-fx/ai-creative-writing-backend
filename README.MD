@@ -8,16 +8,18 @@ The script will install Python dependencies and ask for your API key
 4. Run `start.bat`  
 
 ## How to use
-Open the Vault folder as a vault in Obsidian and set cursor position to a prompt
+Open the Vault folder as a vault in Obsidian and set cursor position on a prompt
 
 Use the following hotkeys:  
 **Alt+S** - Set prompt  
 **Alt+W** - Write scene  
 **Alt+C** - Custom prompt  
 **Alt+Z** - Delete last response  
-**ALT+~** - Stop writing  
+**Alt+~** - Stop writing  
+**Alt+R** - Manage workspaces
+**Alt+M** - Save and change workspace
 
-**Alt+1-3** - Set model number 
+**Alt+1-5** - Set model number 
 Models are listed in `_includes\settings\models.yaml`  
 Default model can be changed in `_includes\settings\settings.yaml`
 
@@ -46,6 +48,8 @@ Ceate a file with summary for each part
 **Update summary**  
 Summarize new story parts
 
+*Please check python app terminal output to understand how prompts are composed for each command*
+
 ## Optional steps
 - Edit `_includes\settings` files to change default settings, models, prompts and abbreviations
 - Edit files in `Settings` folders in Obsidian to change settings individually per story
@@ -53,7 +57,8 @@ Summarize new story parts
 ## Settings
 
 **use_summary**  
-Replace story parts with summaries in API request to reduce token usage
+Replace story parts with summaries in API request to reduce token usage  
+The last story part will remain original to preserve writing style
 
 **trim_history**
 Exclude first paragraphs until story lengh matches max_tokens

@@ -130,20 +130,28 @@
     }
   ],
   "templater-obsidian:replace-in-file-templater": [],
-  "workspaces:save-and-load": [
-    {
-      "modifiers": [
-        "Alt"
-      ],
-      "key": "M"
-    }
-  ],
   "story-writer:interrupt-write": [
     {
       "modifiers": [
         "Alt"
       ],
       "key": "`"
+    }
+  ],
+  "workspaces:open-modal": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "R"
+    }
+  ],
+  "workspaces:save-and-load": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "M"
     }
   ]
 }

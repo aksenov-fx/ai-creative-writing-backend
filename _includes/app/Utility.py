@@ -1,4 +1,4 @@
-import yaml, os, re, json
+import yaml, os, re, json, shutil
 
 class Utility:
 
@@ -20,6 +20,15 @@ class Utility:
         content = content.split('---\n')[1]
         return yaml.safe_load(content)
 
+    def parse_model(frontmatter):
+        from _includes import models
+
+        try:
+            model_number = int(frontmatter['model'])
+            return list(models.values())[model_number - 1]['name']
+        except ValueError:
+            return frontmatter['model']
+
     @staticmethod
     def print_with_newlines(obj):
         json_str = json.dumps(obj, indent=2, ensure_ascii=False)
@@ -36,52 +45,56 @@ class Utility:
         return posix_folder_path, method_name, part_value, model_number
 
     @staticmethod
-    def update_config(folder_path):
-        from ..config import config, default_config, abbreviations
+    def clear_screen():
+        os.system('clear' if os.name == 'posix' else 'cls')
 
+    @staticmethod
+    def copy_file(path, new_path):
+        if os.path.exists(new_path):
+            raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
+        shutil.copy(path, new_path)
+
+    @staticmethod
+    def read_config(folder_path):
+        from ..config import abbreviations
         settings_folder = folder_path + '/Settings/'
 
         # Read values
-        new_config_values = Utility.parse_frontmatter(settings_folder + 'settings.md')
+        new_config =        Utility.parse_frontmatter(settings_folder + 'settings.md')
         new_abbreviations = Utility.parse_frontmatter(settings_folder + 'abbreviations.md')
         first_prompt =      Utility.read_file(settings_folder + 'introduction.md')
         first_prompt =      Utility.expand_abbreviations(first_prompt)
 
-        new_config = {**default_config, **new_config_values}
         new_config['abbreviations'] = {**abbreviations, **new_abbreviations}
         new_config['first_prompt'] = first_prompt
-        new_config['folder_path'] = folder_path + '/'
-
-        # Preserve values
-        keys_to_preserve = ['debug', 'user_prompt', 'model', 'endpoint']
-        for key in keys_to_preserve: new_config.pop(key)
-
-        # Update values
-        for key, value in new_config.items():
-            if hasattr(config, key): setattr(config, key, value)
+        if new_config.get('model'): 
+            new_config['model'] = Utility.parse_model(new_config)
+        
+        return(new_config)
 
     @staticmethod
-    def set_prompt(part_value):
+    def set_prompt(part_value, abbreviations):
         from _includes import config
         from .Factory import Factory
-        
+
         prompts = Factory.get_prompts()
 
         part_value -= 1
         prompts.fix_separator()
         config.user_prompt = prompts.return_part(part_value)
 
-        prompt_to_print = Utility.expand_abbreviations(config.user_prompt)
+        prompt_to_print = Utility.expand_abbreviations(config.user_prompt, abbreviations)
         print(prompt_to_print)
 
     @staticmethod
-    def expand_abbreviations(user_prompt):
+    def expand_abbreviations(user_prompt, abbreviations=None):
         from _includes import config
+        if not abbreviations: abbreviations = config.abbreviations
         
         if config.abbreviations is None:
             return user_prompt
 
-        case_insensitive_mapping = {k.lower(): v for k, v in config.abbreviations.items()}
+        case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
         # Match words with letters/underscores preceded by @ or whitespace/start, followed by delimiters or end
         pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
         
@@ -104,6 +117,7 @@ class Utility:
         result = re.sub(pattern, replace_match, user_prompt)
         return result
 
+    # The method is not used yet
     def write_diff(path, old_content, new_content):
         import mmap
         

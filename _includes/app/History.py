@@ -1,3 +1,5 @@
+import os, time
+
 class HistoryMixin:
     
     def __init__(self, path):
@@ -21,6 +23,11 @@ class HistoryMixin:
         except FileNotFoundError: 
             return ""
     
+    def update_timestamp(self):
+        time.sleep(0.3)
+        current_time = time.time()
+        os.utime(self.path, (current_time, current_time))
+
     def update(self, parts):
         self.parts = parts
         self.content = self.join_parts(self.parts)
@@ -51,7 +58,9 @@ class HistoryChanger(HistoryMixin):
     def join_and_write(self):
         self.update(self.parts)
         open(self.path, 'w', encoding='utf-8').write(self.content)
+        self.update_timestamp()
 
+    # The method is not used yet
     def join_and_write_diff(self):
         from .Utility import Utility
         original_content = self.content

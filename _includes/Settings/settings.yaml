@@ -3,7 +3,8 @@ first_prompt: null
 user_prompt: null
 assistant_response: null
 abbreviations: null
-model: "Deepseek V3"
+default_model: "Deepseek V3"
+model: ""
 endpoint: null
 temperature: 0.8
 max_tokens: 100000

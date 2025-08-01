@@ -120,9 +120,9 @@ class MyPlugin extends Plugin {
             id: 'set-model-1',
             name: 'Set model 1',
             hotkeys: [{ modifiers: ['Alt'], key: '1' }],
-            callback: () => {
+            callback: async () => {
                 new Notice(`Set model 1`);
-                this.sendNoteCommand('set_model', 1);
+                await this.setModelNumber("1");
             }
         });
 
@@ -130,9 +130,9 @@ class MyPlugin extends Plugin {
             id: 'set-model-2',
             name: 'Set model 2',
             hotkeys: [{ modifiers: ['Alt'], key: '2' }],
-            callback: () => {
+            callback: async () => {
                 new Notice(`Set model 2`);
-                this.sendNoteCommand('set_model', 2);
+                await this.setModelNumber("2");
             }
         });
 
@@ -140,9 +140,29 @@ class MyPlugin extends Plugin {
             id: 'set-model-3',
             name: 'Set model 3',
             hotkeys: [{ modifiers: ['Alt'], key: '3' }],
-            callback: () => {
+            callback: async () => {
                 new Notice(`Set model 3`);
-                this.sendNoteCommand('set_model', 3);
+                await this.setModelNumber("3");
+            }
+        });
+
+        this.addCommand({
+            id: 'set-model-4',
+            name: 'Set model 4',
+            hotkeys: [{ modifiers: ['Alt'], key: '4' }],
+            callback: async () => {
+                new Notice(`Set model 4`);
+                await this.setModelNumber("4");
+            }
+        });
+
+        this.addCommand({
+            id: 'set-model-5',
+            name: 'Set model 5',
+            hotkeys: [{ modifiers: ['Alt'], key: '5' }],
+            callback: async () => {
+                new Notice(`Set model 5`);
+                await this.setModelNumber("5");
             }
         });
 
@@ -173,6 +193,29 @@ class MyPlugin extends Plugin {
         await this.saveData(this.settings);
     }
 
+    async setModelNumber(modelInt) {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) {
+            new Notice('No active file');
+            return;
+        }
+    
+        const activeFileFolder = activeFile.parent;
+        const settingsFilePath = activeFileFolder.path + '/Settings/settings.md';
+        const settingsFile = this.app.vault.getAbstractFileByPath(settingsFilePath);
+        
+        if (!settingsFile || settingsFile.extension !== 'md') {
+            new Notice('Settings file not found at ./Settings/settings.md');
+            return;
+        }
+    
+        await this.app.fileManager.processFrontMatter(settingsFile, (frontmatter) => {
+            frontmatter.model = modelInt;
+        });
+    
+        // new Notice(`Model number updated to: ${modelInt}`);
+    }
+    
     getPartNumber() {
         const editor = this.app.workspace.activeLeaf.view.editor
         const cursor = editor.getCursor()

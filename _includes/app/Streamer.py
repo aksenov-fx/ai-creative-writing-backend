@@ -3,12 +3,13 @@ import sys
 import time
 import threading
 from typing import List, Dict
+from .History import HistoryChanger
 
 from _includes import config
 
 class Streamer:
 
-    def __init__(self, history_object: str,
+    def __init__(self, history_object: HistoryChanger,
                  rewriting: bool = False,
                  part_number: int = 0):
         self.history = history_object
@@ -49,7 +50,7 @@ class Streamer:
             client = openai.OpenAI(base_url=self.endpoint, api_key=self.api_key)
 
             response = client.chat.completions.create(
-                model=config.model['name'],
+                model=config.model,
                 messages=messages,
                 stream=True,
                 #max_tokens=config.max_tokens,
