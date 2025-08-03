@@ -5,12 +5,13 @@ from _includes import config
 from .app.Utility import Utility
 from .app.Chat import Chat
 from .app.Factory import Factory
-from .app.ConfigManager import override_config
+from .app.ConfigManager import override_config, read_config
 
 def process_request(data):
 
-    folder, method, part_number, model_number = Utility.process_tcp_data(data)
-    new_config = Utility.read_config(folder)
+    folder, method, part_number = Utility.process_tcp_data(data)
+    
+    new_config = read_config(folder)
     config.interrupt_flag = False
     config.folder_path = folder + '/'
 
@@ -43,7 +44,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
     def handle(self): #method is called automatically by server upon receiving a new request
 
         while True:
-            # Expect format: "path:method:part_value:model_number"
+            # Expect format: "path,method,part_value"
             data = self.request.recv(1024).decode('utf-8').strip()
             if not data: break
 

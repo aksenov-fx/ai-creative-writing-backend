@@ -201,11 +201,11 @@ class MyPlugin extends Plugin {
         }
     
         const activeFileFolder = activeFile.parent;
-        const settingsFilePath = activeFileFolder.path + '/Settings/settings.md';
+        const settingsFilePath = activeFileFolder.path + '/Settings/Settings.md';
         const settingsFile = this.app.vault.getAbstractFileByPath(settingsFilePath);
         
         if (!settingsFile || settingsFile.extension !== 'md') {
-            new Notice('Settings file not found at ./Settings/settings.md');
+            new Notice('Settings file not found at ./Settings/Settings.md');
             return;
         }
     
@@ -249,7 +249,7 @@ class MyPlugin extends Plugin {
 
         var absoluteFolderPath = this.getNotePath();
         var partNumber = this.getPartNumber();
-        var parameters = `${absoluteFolderPath},${methodName},${partNumber},${model_number}`;
+        var parameters = `${absoluteFolderPath},${methodName},${partNumber}`;
 
         this.sendCommandToServer(parameters);
     }

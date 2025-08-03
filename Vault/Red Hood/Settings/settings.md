@@ -1,3 +1,4 @@
 ---
-history_path: "story.md"
+model: 
+debug: false
 ---

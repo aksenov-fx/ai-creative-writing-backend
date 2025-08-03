@@ -1,42 +1,41 @@
-from _includes import config, vars
+from _includes import config
 from .Utility import Utility
+from .ApiComposer import ApiComposer
+from .History import HistoryParser
 
 class PromptComposer:
     
     @staticmethod
-    def validate():
+    def validate(include_introduction):
 
-        first_prompt_error = "config.first_prompt is not set. Please set it before beginning a story."
-        user_prompt_error = "config.user_prompt is not set. Please set it before writing a scene."
+        introduction_error = "config.introduction is not set. Please set it before beginning a story."
+        user_prompt_error = "User prompt is not set. Please set it before writing a scene."
 
-        if not config.first_prompt:
-            raise ValueError(first_prompt_error)
+        if include_introduction and not config.introduction:
+            raise ValueError(introduction_error)
 
-        if not config.user_prompt:
+        if not config.variables['#user_prompt']:
             raise ValueError(user_prompt_error)
         
     @staticmethod
-    def compose_prompt(mode):
+    def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True) -> str:
         
-        if config.user_prompt:
-            user_prompt = Utility.expand_abbreviations(config.user_prompt)
+        PromptComposer.validate(include_introduction)
 
-        if mode in ['write_scene', 'regenerate', 'add_part']:
-            PromptComposer.validate()
-            prompt = vars["guidelines"] + "\n" + vars["instructions_preprompt"] + "\n" + vars["user_preprompt"] + user_prompt + "\n\n" + vars["user_postprompt"]
+        # Prepare user prompt
+        config.variables['#user_prompt'] = Utility.expand_abbreviations(config.variables['#user_prompt'])
+        prompt_structure = config.prompts_structure[method] # Get structure defined in prompts_structure.yaml
+        prompt = Utility.expand_abbreviations(prompt_structure, config.variables) # Compose prompt according to structure
+
+        # Prepare history
+        if config.trim_history: history_parsed.trim_content()
+        history = config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
+
+        # Combine introduction, history and user prompt
+        introduction = config.introduction + "\n\n" if include_introduction else ""
+        combined_prompt = introduction + history + "\n\n" + prompt + "\n\n" + history_parsed.part_number_content
+        combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
+
+        messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
         
-        elif mode == 'custom_prompt':
-            PromptComposer.validate()
-            prompt = vars["instructions_preprompt"] + "\n" + user_prompt
-        
-        elif mode == 'change_part':
-            PromptComposer.validate()
-            prompt = vars["instructions_preprompt"] + "\n" + user_prompt + "\n" + vars["rewrite_postprompt"]
-        
-        elif mode == 'summarize_part':
-            prompt = vars["instructions_preprompt"] + "\n" + vars["summarize_preprompt"]
-        
-        else:
-            raise ValueError(f"Unknown mode: {mode}")
-        
-        return prompt
+        return messages

@@ -23,3 +23,6 @@ class Factory:
     def get_summary_parsed() -> HistoryParser:
         return HistoryParser(config.folder_path + config.summary_path)
     
+    @staticmethod
+    def get_objects():
+        return Factory.get_story(), Factory.get_story_parsed(), Factory.get_summary()

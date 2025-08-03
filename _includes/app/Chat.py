@@ -1,9 +1,8 @@
 from _includes import config
-from .ApiComposer import ApiComposer
 from .PromptComposer import PromptComposer
 from .Streamer import Streamer
 from .Factory import Factory
-from .History import HistoryChanger, HistoryParser
+from .History import HistoryChanger
 from .Utility import Utility
 
 ### Chat
@@ -11,91 +10,75 @@ from .Utility import Utility
 class Chat:
 
     @staticmethod
-    def _get_objects():
-        return Factory.get_story(), Factory.get_story_parsed(), Factory.get_summary()
-
-    @staticmethod
     def chat(history_object: HistoryChanger,
              messages,
              rewrite: bool = False,
              part_number: int = 0) -> None:
 
+        print(f"\nModel: {config.model}")
+
         if not config.debug: 
             streamer = Streamer(history_object, rewrite, part_number)
             streamer.stream_response(messages)
-
-    @staticmethod
-    def post_process(first_prompt, user_prompt, history_parsed: HistoryParser):
-        if config.trim_history: history_parsed.trim_content()
-
-        print(f"Model: {config.model}\n")
-
-        user_prompt = first_prompt + history_parsed.parsed + "\n\n" + user_prompt + "\n" + history_parsed.part_number_content
-        messages = ApiComposer.compose_messages(user_prompt, history_parsed.assistant_response)
-
-        return messages
     
     ### Generator
 
     @staticmethod
     def write_scene() -> None:
-        user_prompt = PromptComposer.compose_prompt("write_scene")
-        story, story_parsed, summary = Chat._get_objects()
-        
+
+        story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
+
         Chat.chat(story, messages)
 
     @staticmethod
     def custom_prompt() -> None:
-        user_prompt = PromptComposer.compose_prompt("custom_prompt")
-        story, story_parsed, summary = Chat._get_objects()
-        
+
+        story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+        messages = PromptComposer.compose_prompt("Custom prompt", story_parsed)
+
         Chat.chat(story, messages)
 
     @staticmethod
     def regenerate(part_number: int) -> None:
-        user_prompt = PromptComposer.compose_prompt("regenerate")
-        story, story_parsed, summary = Chat._get_objects()
-        
+        story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
 
-        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
+
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def add_part(part_number: int) -> None:
-        user_prompt = PromptComposer.compose_prompt("add_part")
-        story, story_parsed, summary = Chat._get_objects()
-        
+        story, story_parsed, summary = Factory.get_objects()
+
         story.add_part("", part_number)
 
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number)
         part_number += 1
 
-        messages = Chat.post_process(config.first_prompt, user_prompt, story_parsed)
+        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     ### Changer
 
     @staticmethod
     def change_part(part_number: int) -> None:
-        user_prompt = PromptComposer.compose_prompt("change_part")
 
         story = Factory.get_story()
         story_parsed = Factory.get_story_parsed()
-        
         story_parsed.cut(part_number)
 
-        messages = Chat.post_process("", user_prompt, story_parsed)
+        messages = PromptComposer.compose_prompt("Change part", story_parsed, include_introduction=False)
+
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
@@ -111,7 +94,6 @@ class Chat:
 
     @staticmethod
     def summarize_part(part_number: int) -> None:
-        user_prompt = PromptComposer.compose_prompt("summarize_part")
 
         story = Factory.get_story()
         summary = Factory.get_summary()
@@ -122,7 +104,8 @@ class Chat:
 
         summary_parsed.cut(part_number)
 
-        messages = Chat.post_process("", user_prompt, summary_parsed)
+        messages = PromptComposer.compose_prompt("Summarize part", summary_parsed, include_introduction=False)
+
         Chat.chat(summary, messages, rewrite=True, part_number=part_number)
         
     @staticmethod
@@ -140,7 +123,7 @@ class Chat:
     @staticmethod
     def update_summary() -> None:
         summary = Factory.get_summary()
-        story = Factory.get_story() # Get story here, as it's used later
+        story = Factory.get_story()
 
         summary_count = summary.count
         summary.parts[summary.count-1:story.count+1] = story.parts[summary.count-1:story.count+1]

@@ -1,8 +1,8 @@
 system_prompt: null
-first_prompt: null
-user_prompt: null
-assistant_response: null
-abbreviations: null
+variables: {}
+introduction: ""
+prompts_structure: {}
+abbreviations: {}
 default_model: "Deepseek V3"
 model: ""
 endpoint: null

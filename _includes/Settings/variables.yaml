@@ -1,7 +1,7 @@
-instructions_preprompt: |
+'#instructions_preprompt': |
   **Instructions**
 
-guidelines: |
+'#guidelines': |
   **Guidelines:**
   Make your writing verbose
   Fill in the gaps to make smooth transitions between scenes
@@ -17,23 +17,19 @@ guidelines: |
   Avoid purple prose and florid descriptions
   Avoid filler sentences like: "The room held its breath"
   Avoid atmospheric descriptions disconnected from character experience, like: "Somewhere, a creek churned with tomorrow's silt."
-  Avoid exagarration and dramatic metaphors
+  Avoid exagarration and dramatizing
 
-user_preprompt: |
+'#user_preprompt': |
   Write the next part of the story based on the below events:
 
-user_postprompt: |
+'#user_postprompt': |
   Stop here
   Do not describe any further events after this point
 
-# ------------ #
-
-rewrite_postprompt: | 
+'#rewrite_postprompt': | 
   Text:
 
-# ------------ #
-
-summarize_preprompt: |
+'#summarize_preprompt': |
   Make a summary of the following story part.
   Keep the part heading if it's present.
   Exclude events, details and descriptions that are not relevant to the plot

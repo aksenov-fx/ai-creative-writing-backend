@@ -1,18 +1,21 @@
-from .app.ConfigManager import ChatConfig
+from .app.ConfigManager import ChatConfig, read_yaml
 from .app.Utility import Utility
 
-settings_folder = './_includes/settings/'
+folder = './_includes/settings/'
 
-default_config =    Utility.read_yaml(settings_folder + 'settings.yaml')
-abbreviations =     Utility.read_yaml(settings_folder + 'abbreviations.yaml')
-models =            Utility.read_yaml(settings_folder + 'models.yaml')
-endpoints =         Utility.read_yaml(settings_folder + 'endpoints.yaml')
-vars =              Utility.read_yaml(settings_folder + 'vars.yaml')
+default_config =    read_yaml(folder + 'Settings.yaml')
+abbreviations =     read_yaml(folder + 'Abbreviations.yaml')
+models =            read_yaml(folder + 'Models.yaml')
+endpoints =         read_yaml(folder + 'Endpoints.yaml')
+variables =         read_yaml(folder + 'Variables.yaml')
+prompts_structure = read_yaml(folder + 'Prompts structure.yaml')
 
 config = ChatConfig(**default_config)
 config.abbreviations = abbreviations
+config.variables = variables
+config.prompts_structure = prompts_structure
 config.model = models[config.default_model]['name']
 
 endpoint = endpoints['openrouter']
-endpoint['api_key'] = open(endpoint['api_key_file'], 'r').read().strip()
+endpoint['api_key'] = Utility.read_file(endpoint['api_key_file']).strip()
 config.endpoint = endpoint

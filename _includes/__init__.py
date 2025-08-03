@@ -1,1 +1,1 @@
-from .config import models, vars, default_config, config
+from .config import models, default_config, config

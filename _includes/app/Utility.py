@@ -1,4 +1,4 @@
-import yaml, os, re, json, shutil
+import os, re, json, shutil
 
 class Utility:
 
@@ -8,28 +8,6 @@ class Utility:
             return file.read()
 
     @staticmethod
-    def read_yaml(file_path):
-        if os.path.getsize(file_path) == 0 or not os.path.isfile(file_path):
-            return {}
-        
-        with open(file_path, 'r') as file:
-            return yaml.safe_load(file)
-
-    def parse_frontmatter(file_path):
-        content = Utility.read_file(file_path)
-        content = content.split('---\n')[1]
-        return yaml.safe_load(content)
-
-    def parse_model(frontmatter):
-        from _includes import models
-
-        try:
-            model_number = int(frontmatter['model'])
-            return list(models.values())[model_number - 1]['name']
-        except ValueError:
-            return frontmatter['model']
-
-    @staticmethod
     def print_with_newlines(obj):
         json_str = json.dumps(obj, indent=2, ensure_ascii=False)
         formatted_str = json_str.replace('\\n', '\n')
@@ -37,12 +15,11 @@ class Utility:
 
     @staticmethod
     def process_tcp_data(data):
-        folder_path, method_name, part_value_str, model_number = data.split(',')
+        folder_path, method_name, part_value_str = data.split(',')
         part_value = int(part_value_str)
-        model_number = int(model_number)
         posix_folder_path = os.path.normpath(folder_path).replace('\\', '/')
 
-        return posix_folder_path, method_name, part_value, model_number
+        return posix_folder_path, method_name, part_value
 
     @staticmethod
     def clear_screen():
@@ -55,24 +32,6 @@ class Utility:
         shutil.copy(path, new_path)
 
     @staticmethod
-    def read_config(folder_path):
-        from ..config import abbreviations
-        settings_folder = folder_path + '/Settings/'
-
-        # Read values
-        new_config =        Utility.parse_frontmatter(settings_folder + 'settings.md')
-        new_abbreviations = Utility.parse_frontmatter(settings_folder + 'abbreviations.md')
-        first_prompt =      Utility.read_file(settings_folder + 'introduction.md')
-        first_prompt =      Utility.expand_abbreviations(first_prompt)
-
-        new_config['abbreviations'] = {**abbreviations, **new_abbreviations}
-        new_config['first_prompt'] = first_prompt
-        if new_config.get('model'): 
-            new_config['model'] = Utility.parse_model(new_config)
-        
-        return(new_config)
-
-    @staticmethod
     def set_prompt(part_value, abbreviations):
         from _includes import config
         from .Factory import Factory
@@ -81,27 +40,26 @@ class Utility:
 
         part_value -= 1
         prompts.fix_separator()
-        config.user_prompt = prompts.return_part(part_value)
+        config.variables['#user_prompt'] = prompts.return_part(part_value)
 
-        prompt_to_print = Utility.expand_abbreviations(config.user_prompt, abbreviations)
+        prompt_to_print = Utility.expand_abbreviations(config.variables['#user_prompt'], abbreviations)
         print(prompt_to_print)
 
     @staticmethod
-    def expand_abbreviations(user_prompt, abbreviations=None):
+    def expand_abbreviations(text, abbreviations=None):
         from _includes import config
-        if not abbreviations: abbreviations = config.abbreviations
-        
-        if config.abbreviations is None:
-            return user_prompt
 
+        if not abbreviations: abbreviations = config.abbreviations
+        if not abbreviations or not text: return text
+            
         case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
-        # Match words with letters/underscores preceded by @ or whitespace/start, followed by delimiters or end
+        # Match words with letters/underscores preceded by # or whitespace/start, followed by delimiters or end
         pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
         
         def replace_match(match):
             prefix = match.group(1)
             abbreviation = match.group(2)
-            # For @ prefix, include it in the abbreviation lookup
+            # For # prefix, include it in the abbreviation lookup
             if prefix == "#":
                 lookup_key = ("#" + abbreviation).lower()
             else:
@@ -114,7 +72,7 @@ class Utility:
                     return prefix + case_insensitive_mapping[lookup_key]
             return match.group(0)
         
-        result = re.sub(pattern, replace_match, user_prompt)
+        result = re.sub(pattern, replace_match, text)
         return result
 
     # The method is not used yet
