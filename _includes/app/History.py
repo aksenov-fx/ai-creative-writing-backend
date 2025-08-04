@@ -89,6 +89,10 @@ class HistoryChanger(HistoryMixin):
         self.parts.insert(part_number, new_part.strip())
         self.join_and_write()
 
+    def strip_lines(self):
+        lines = self.parts[-1].split("\n")
+        self.parts[-1] = "\n".join([line.strip() for line in lines])
+
 class HistoryParser(HistoryMixin):
 
     def clear_history(self):

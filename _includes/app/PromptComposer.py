@@ -31,8 +31,11 @@ class PromptComposer:
         if config.trim_history: history_parsed.trim_content()
         history = config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
 
+        # Prepare introduction
+        introduction = Utility.expand_abbreviations(config.introduction)
+        introduction += "\n\n" if include_introduction else ""
+
         # Combine introduction, history and user prompt
-        introduction = config.introduction + "\n\n" if include_introduction else ""
         combined_prompt = introduction + history + "\n\n" + prompt + "\n\n" + history_parsed.part_number_content
         combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
 

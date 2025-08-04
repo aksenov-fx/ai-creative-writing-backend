@@ -3,8 +3,10 @@ variables: {}
 introduction: ""
 prompts_structure: {}
 abbreviations: {}
+endpoints: {}
 default_endpoint: "openrouter"
 endpoint: null
+models: {}
 default_model: "Deepseek V3"
 model: ""
 temperature: 0.8

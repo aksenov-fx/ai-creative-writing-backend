@@ -14,13 +14,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Red Hood/prompts.md",
+                "file": "Red Hood/Prompts.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "prompts"
+              "title": "Prompts"
             }
           }
         ]
@@ -36,13 +36,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Red Hood/story.md",
+                "file": "Red Hood/Story.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "story"
+              "title": "Story"
             }
           }
         ]
@@ -144,20 +144,22 @@
       "workspaces:Manage workspace layouts": false
     }
   },
-  "active": "90d1c5be9efefa54",
+  "active": "c14ee348d1ce3209",
   "lastOpenFiles": [
+    "Red Hood/Prompts.md",
+    "Red Hood/Drafts.md",
+    "Red Hood/Story.md",
     "Red Hood/prompts.md",
     "Red Hood/Settings/Abbreviations.md",
     "Red Hood/Settings/Introduction.md",
     "Red Hood/Settings/prompts_settings.md",
     "Red Hood/Settings/Settings.md",
     "Red Hood/Settings/Variables.md",
-    "Red Hood/story.md",
+    "Red Hood/Story.md",
     "_Template/Settings/settings.md",
     "_Template/Settings/introduction.md",
     "_Template/Settings/abbreviations.md",
     "_Settings",
-    "Red Hood/Drafts.md",
     "_Template/prompts.md",
     "Story/prompts.md",
     "Red Hood/Settings",
@@ -176,8 +178,6 @@
     "Reily and Chris/story.md",
     "Reily and Chris/prompts.md",
     "Reily and Chris/Drafts.md",
-    "Reily and Chris/Settings/settings.md",
-    "Reily and Chris/Settings/abbreviations.md",
     "Reily and Chris 1/Settings/settings.yaml",
     "Reily and Chris 1/Settings/abbreviations.yaml",
     "Reily and Chris 1/Settings",

@@ -76,6 +76,7 @@ class Streamer:
                     self.buffer_and_write(delta.content)
                 
             self.flush_buffer()
+            self.history.strip_lines()
             self.history.fix_separator()
             
             return self.complete_response

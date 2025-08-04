@@ -5,21 +5,13 @@ from _includes import config
 from .app.Utility import Utility
 from .app.Chat import Chat
 from .app.Factory import Factory
-from .app.ConfigManager import override_config, read_config
+from .app.ConfigManager import update_config, override_config
 
-def process_request(data):
+def process_request(folder: str, method: str, part_number: str):
 
-    folder, method, part_number = Utility.process_tcp_data(data)
-    
-    new_config = read_config(folder)
-    config.interrupt_flag = False
-    config.folder_path = folder + '/'
-
-    Utility.clear_screen()
-    print("\nMethod: " + method + "\n")
-
-    # Config override
+    new_config = update_config(folder)
     with override_config(config, **new_config):
+        
         if method == "write_scene":      Chat.write_scene()
         elif method == "custom_prompt":  Chat.custom_prompt()
         elif method == "rewrite":        Chat.change_part(part_number)
@@ -47,8 +39,12 @@ class RequestHandler(socketserver.BaseRequestHandler):
             # Expect format: "path,method,part_value"
             data = self.request.recv(1024).decode('utf-8').strip()
             if not data: break
+            
+            folder, method, part_number = Utility.process_tcp_data(data)
+            Utility.clear_screen()
+            print("\nMethod: " + method + "\n")
 
-            process_request(data)
+            process_request(folder, method, part_number)
 
 # -------------------------------- #
 

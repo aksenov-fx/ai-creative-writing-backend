@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
@@ -12,33 +12,44 @@ class ChatConfig:
     introduction: str
     variables: dict
     prompts_structure: dict
+    abbreviations: str
+
+    endpoints: dict
     default_endpoint: str
     endpoint: dict
+
+    models: dict
     default_model: str
     model: dict
+
     temperature: float
     max_tokens: int
     trim_history: bool
+    history_prefix: str
+    use_summary: bool
+
     print_messages: bool
     include_reasoning: bool
-    separator: str
-    interrupt_flag: bool
     print_reasoning: bool
-    abbreviations: str
+    separator: str
     write_interval: float
-    use_summary: bool
+
     history_path: Path
     summary_path: Path
     prompts_path: Path
     folder_path: Path
+
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
+
+    interrupt_flag: bool
     debug: bool
-    history_prefix: str
 
 @contextmanager
-def override_config(config, **overrides: Any):
+def override_config(config: ChatConfig, **overrides: Any):
+
     original_values = {}
+
     for key, value in overrides.items():
         if hasattr(config, key):
             original_values[key] = getattr(config, key)
@@ -46,52 +57,63 @@ def override_config(config, **overrides: Any):
     
     try:
         yield config
+        
     finally:
         for key, value in original_values.items():
             setattr(config, key, value)
 
 def read_yaml(file_path):
-    if os.path.getsize(file_path) == 0 or not os.path.isfile(file_path):
+    if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
         return {}
     
-    return yaml.safe_load(Utility.read_file(file_path))
-
-def parse_frontmatter(file_path):
-    if not os.path.isfile(file_path): return {}
     content = Utility.read_file(file_path)
-    content = content.split('---\n')[1]
+    if file_path.endswith('.md'): content = content.split('---\n')[1]
     return yaml.safe_load(content)
 
-def parse_model(frontmatter):
-    from _includes import models
+def get_model(config_dict):
 
-    try:
-        model_number = int(frontmatter['model'])
-        return list(models.values())[model_number - 1]['name']
-    except ValueError:
-        return frontmatter['model']
-
-def read_config(folder_path):
-    from ..config import abbreviations, prompts_structure, variables
-    settings_folder = folder_path + '/Settings/'
-
-    # Read values
-    new_config =        parse_frontmatter(settings_folder + 'Settings.md')
-    new_abbreviations = parse_frontmatter(settings_folder + 'Abbreviations.md')
-    new_variables     = parse_frontmatter(settings_folder + 'Variables.md')
-    new_prompts =       parse_frontmatter(settings_folder + 'Prompts structure.md')
-
-    introduction =      Utility.read_file(settings_folder + 'Introduction.md')
-    introduction =      Utility.expand_abbreviations(introduction)
-
-    new_config['abbreviations'] = {**abbreviations, **new_abbreviations}
-    new_config['variables'] = {**variables, **new_variables}
-    new_config['prompts_structure'] = {**prompts_structure, **new_prompts}
-    new_config['introduction'] = introduction
+    model = config_dict['model']
     
-    if 'model' in new_config and not new_config['model']: #if the key is present but value is empty
-        new_config.pop('model')
-    elif 'model' in new_config and new_config['model']: 
-        new_config['model'] = parse_model(new_config)
+    if not model:
+        return config_dict['models'][config_dict['default_model']]['name']
+    
+    try:
+        model_number = int(model)
+        return list(config_dict['models'].values())[model_number - 1]['name']
+    except ValueError:
+        return model
 
-    return(new_config)
+def get_endpoint(config_dict):
+    endpoint = config_dict['endpoints'][config_dict['default_endpoint']]
+    endpoint['api_key'] = Utility.read_file(endpoint['api_key_file']).strip()
+    return endpoint
+
+def load_config(folder_path, config_dict, extension = '.yaml'):
+
+    keys = ['Variables', 'Abbreviations', 'Prompts_structure', 'Models', 'Endpoints']
+    
+    for key in keys:
+        path = os.path.join(folder_path, key + extension)
+        key_name = key.lower()
+        config_dict[key_name].update(read_yaml(path))
+    
+    config_dict['endpoint'] = get_endpoint(config_dict)
+    config_dict['model'] = get_model(config_dict)
+    config_dict['introduction'] = Utility.read_file(folder_path + 'Introduction.md')
+
+    return config_dict
+
+def update_config(folder: str):
+    from _includes import config
+
+    settings_folder = folder + '/Settings/'
+
+    old_config = asdict(config)
+    new_config = read_yaml(settings_folder + 'Settings.md')
+    old_config.update(new_config)
+    new_config = load_config(settings_folder, old_config, ".md")
+
+    config.interrupt_flag = False
+    config.folder_path = folder + '/'
+
+    return new_config
