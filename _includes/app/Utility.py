@@ -1,11 +1,25 @@
 import os, re, json, shutil
+from pathlib import Path
 
 class Utility:
 
     @staticmethod
     def read_file(file_path):
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return file.read()
+        path = Path(file_path)
+        
+        # If the exact file exists, use it
+        if path.exists():
+            return path.read_text(encoding='utf-8')
+        
+        # Case-insensitive search
+        directory = path.parent if path.parent != Path('.') else Path.cwd()
+        target_name = path.name.lower()
+        
+        for existing_file in directory.iterdir():
+            if existing_file.is_file() and existing_file.name.lower() == target_name:
+                return existing_file.read_text(encoding='utf-8')
+        
+        return ""
 
     @staticmethod
     def print_with_newlines(obj):

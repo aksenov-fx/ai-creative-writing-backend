@@ -12,6 +12,7 @@ class ChatConfig:
     introduction: str
     variables: dict
     prompts_structure: dict
+    default_endpoint: str
     endpoint: dict
     default_model: str
     model: dict

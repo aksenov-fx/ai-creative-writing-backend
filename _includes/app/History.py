@@ -1,4 +1,5 @@
 import os, time
+from .Utility import Utility
 
 class HistoryMixin:
     
@@ -9,7 +10,7 @@ class HistoryMixin:
         self.config = config
         self.separator = self.config.separator
 
-        self.content = self._read_file()
+        self.content = Utility.read_file(self.path)
         self.parts = self.split_history()
         self.parsed = "\n\n".join(self.parts)
         self.count = len(self.parts)
@@ -17,12 +18,6 @@ class HistoryMixin:
         self.part_number_content = ""
         self.removed_parts = 0
 
-    def _read_file(self) -> str:
-        try: 
-            with open(self.path, 'r', encoding='utf-8') as f: return f.read() or ""
-        except FileNotFoundError: 
-            return ""
-    
     def update_timestamp(self):
         time.sleep(0.3)
         current_time = time.time()
