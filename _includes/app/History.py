@@ -51,7 +51,7 @@ class HistoryChanger(HistoryMixin):
 
     def join_and_write(self):
         self.update(self.parts)
-        open(self.path, 'w', encoding='utf-8').write(self.content)
+        with open(self.path, 'w', encoding='utf-8') as f: f.write(self.content)
         self.update_timestamp()
 
     # The method is not used yet
@@ -64,8 +64,8 @@ class HistoryChanger(HistoryMixin):
     def append_history(self, content: str, update: bool = False) -> None:
         self.parts[-1] += content
         if update: self.update(self.parts)
-        open(self.path, 'a', encoding='utf-8').write(content)
-
+        with open(self.path, 'a', encoding='utf-8') as f: f.write(content)
+        
 # Change
 
     def fix_separator(self):
@@ -117,7 +117,7 @@ class HistoryParser(HistoryMixin):
         if self.count == summary.count:
             self.parts[:-2] = summary.parts[:-2]
         else:
-            self.parts[:len(summary.parts)] = summary.parts
+            self.parts[:len(summary.parts) - 1] = summary.parts
             
         self.update(self.parts)
         return self

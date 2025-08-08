@@ -28,18 +28,24 @@ class Streamer:
         else:
             self.history.append_history(content)
 
-    def buffer_and_write(self, content):
+    def handle_content(self, content):
         with self.buffer_lock:
-            self.token_buffer += content
+            self.complete_response += content
             
-            if time.time() - self.last_write_time >= config.write_interval:
-                self.write_file(self.token_buffer)
-                self.token_buffer = ""
-                self.last_write_time = time.time()
+            # Buffer tokens and use write delay for rewriting mode,
+            # Because the whole file content is being written
+            if self.rewriting:
+                self.token_buffer += content
+                if time.time() - self.last_write_time >= config.write_interval:
+                    self.write_file(self.token_buffer)
+                    self.token_buffer = ""
+                    self.last_write_time = time.time()
+            else:
+                self.write_file(content)
 
     def flush_buffer(self):
         with self.buffer_lock:
-            if self.token_buffer:
+            if self.rewriting and self.token_buffer:
                 self.write_file(self.token_buffer)
                 self.token_buffer = ""
                 self.last_write_time = time.time()
@@ -53,18 +59,16 @@ class Streamer:
                 model=config.model,
                 messages=messages,
                 stream=True,
-                #max_tokens=config.max_tokens,
                 temperature=config.temperature,
                 extra_body={ "include_reasoning": config.include_reasoning }
             )
 
             for chunk in response:
                 delta = chunk.choices[0].delta
-                self.complete_response += delta.content
                 
                 if config.interrupt_flag:
                     config.interrupt_flag = False
-                    return
+                    break
 
                 # Handle reasoning content if present
                 if hasattr(delta, 'reasoning') and delta.reasoning and config.print_reasoning:
@@ -73,7 +77,7 @@ class Streamer:
 
                 # Handle regular content
                 if hasattr(delta, 'content') and delta.content:
-                    self.buffer_and_write(delta.content)
+                    self.handle_content(delta.content)
                 
             self.flush_buffer()
             self.history.strip_lines()
@@ -84,3 +88,6 @@ class Streamer:
         except KeyboardInterrupt:
             print('\nProgram terminated by user')
             sys.exit(0)
+        except Exception as e:
+            self.flush_buffer()
+            raise
