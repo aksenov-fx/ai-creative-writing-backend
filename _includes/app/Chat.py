@@ -16,6 +16,7 @@ class Chat:
              part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
+        if config.debug: print("\nDebug mode is on")
 
         if not config.debug: 
             streamer = Streamer(history_object, rewrite, part_number)
@@ -104,6 +105,7 @@ class Chat:
 
         summary_parsed.cut(part_number)
 
+        config.model = config.models[config.summary_model]['name']
         messages = PromptComposer.compose_prompt("Summarize part", summary_parsed, include_introduction=False)
 
         Chat.chat(summary, messages, rewrite=True, part_number=part_number)

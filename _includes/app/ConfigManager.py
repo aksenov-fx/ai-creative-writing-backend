@@ -20,6 +20,7 @@ class ChatConfig:
 
     models: dict
     default_model: str
+    summary_model: str
     model: dict
 
     temperature: float

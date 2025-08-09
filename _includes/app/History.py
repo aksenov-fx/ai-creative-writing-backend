@@ -49,17 +49,22 @@ class HistoryChanger(HistoryMixin):
 
 # Write
 
+    def write_file(self, content):
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with open(self.path, 'w', encoding='utf-8') as f: 
+                    f.write(content)
+                break
+            except (OSError, IOError) as e:
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
+
     def join_and_write(self):
         self.update(self.parts)
-        with open(self.path, 'w', encoding='utf-8') as f: f.write(self.content)
+        self.write_file(self.content)
         self.update_timestamp()
-
-    # The method is not used yet
-    def join_and_write_diff(self):
-        from .Utility import Utility
-        original_content = self.content
-        self.update(self.parts)
-        Utility.write_diff(self.path, original_content, self.content)
 
     def append_history(self, content: str, update: bool = False) -> None:
         self.parts[-1] += content
@@ -70,8 +75,8 @@ class HistoryChanger(HistoryMixin):
 
     def fix_separator(self):
         if self.parts[-1] != "":
-            self.parts.append("")
-            self.join_and_write()
+            self.append_history("\n" + self.separator + "\n")
+            self.update_timestamp()
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
@@ -88,10 +93,6 @@ class HistoryChanger(HistoryMixin):
     def add_part(self, new_part, part_number) -> None:
         self.parts.insert(part_number, new_part.strip())
         self.join_and_write()
-
-    def strip_lines(self):
-        lines = self.parts[-1].split("\n")
-        self.parts[-1] = "\n".join([line.strip() for line in lines])
 
 class HistoryParser(HistoryMixin):
 
@@ -112,6 +113,7 @@ class HistoryParser(HistoryMixin):
 
         if not summary or not summary.content: return
         if not self.config.use_summary: return
+        if self.count < summary.count: raise ValueError("Summary is longer than story.")
 
         # Keep the last part unsummarized
         if self.count == summary.count:

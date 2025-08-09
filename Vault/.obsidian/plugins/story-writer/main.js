@@ -167,6 +167,16 @@ class MyPlugin extends Plugin {
         });
 
         this.addCommand({
+            id: 'reset-model',
+            name: 'Reset model',
+            hotkeys: [{ modifiers: ['Alt'], key: 'R' }],
+            callback: async () => {
+                new Notice(`Reset model`);
+                await this.setModelNumber("");
+            }
+        });
+
+        this.addCommand({
             id: 'enable-debug',
             name: 'Enable Debug Mode',
             callback: () => {

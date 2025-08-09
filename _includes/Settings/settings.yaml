@@ -8,6 +8,7 @@ default_endpoint: "openrouter"
 endpoint: null
 models: {}
 default_model: "Deepseek V3"
+summary_model: "Deepseek V3"
 model: ""
 temperature: 0.8
 max_tokens: 100000

@@ -80,7 +80,7 @@ class Streamer:
                     self.handle_content(delta.content)
                 
             self.flush_buffer()
-            self.history.strip_lines()
+            #self.history.strip_lines()
             self.history.fix_separator()
             
             return self.complete_response

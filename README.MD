@@ -1,3 +1,5 @@
+![screenshot](screenshot.png)
+
 This repo features a Python/Javascript project that allows to use **Obsidian** for AI assisted **story writing** via **OpenRouter** API.  
 
 ## Installation instructions for Windows:
@@ -16,12 +18,14 @@ Use the following hotkeys:
 **Alt+C** - Custom prompt  
 **Alt+Z** - Delete last response  
 **Alt+~** - Stop writing  
-**Alt+R** - Manage workspaces
-**Alt+M** - Save and change workspace
+**Alt+T** - Manage workspaces
+**Alt+E** - Save and change workspace
 
 **Alt+1-5** - Set model number 
 Models are listed in `_includes\settings\models.yaml`  
 Default model can be changed in `_includes\settings\settings.yaml`
+
+**Alt+R** - Reset model
 
 ## Obsidian commands
 **Write Scene**  
@@ -52,13 +56,16 @@ Summarize new story parts
 
 ## Optional steps
 - Edit `_includes\settings` files to change default settings, models, prompts and abbreviations
-- Edit files in `Settings` folders in Obsidian to change settings individually per story
+- Edit files in story `Settings` folder in Obsidian to change settings individually per story
 
 ## Settings
 
 **use_summary**  
 Replace story parts with summaries in API request to reduce token usage  
 The last story part will remain original to preserve writing style
+
+**summary_model**  
+Model used to summarize story.  
 
 **trim_history**
 Exclude first paragraphs until story lengh matches max_tokens

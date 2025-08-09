@@ -143,7 +143,7 @@
       "modifiers": [
         "Alt"
       ],
-      "key": "R"
+      "key": "T"
     }
   ],
   "workspaces:save-and-load": [
@@ -151,7 +151,7 @@
       "modifiers": [
         "Alt"
       ],
-      "key": "M"
+      "key": "E"
     }
   ]
 }
