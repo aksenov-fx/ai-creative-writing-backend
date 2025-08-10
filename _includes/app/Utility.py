@@ -29,11 +29,13 @@ class Utility:
 
     @staticmethod
     def process_tcp_data(data):
-        folder_path, method_name, part_value_str = data.split(',')
+        args = data.split(',', 3)
+        folder_path, method_name, part_value_str, selected_text = args 
+
         part_value = int(part_value_str)
         posix_folder_path = os.path.normpath(folder_path).replace('\\', '/')
 
-        return posix_folder_path, method_name, part_value
+        return posix_folder_path, method_name, part_value, selected_text
 
     @staticmethod
     def clear_screen():

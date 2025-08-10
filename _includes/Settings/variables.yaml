@@ -29,6 +29,11 @@
 '#rewrite_postprompt': | 
   Text:
 
+'#rewrite_selection_postprompt': | 
+  Return the rewritten text only without any comments.
+
+  Text:
+
 '#summarize_preprompt': |
   Make a summary of the following story part.
   Keep the part heading if it's present.

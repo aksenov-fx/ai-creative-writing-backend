@@ -18,7 +18,7 @@ class PromptComposer:
             raise ValueError(user_prompt_error)
         
     @staticmethod
-    def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True) -> str:
+    def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True):
         
         PromptComposer.validate(include_introduction)
 
@@ -41,4 +41,14 @@ class PromptComposer:
 
         messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
         
+        return messages
+    
+    @staticmethod
+    def compose_prompt_to_rewrite_selection(selected_text: str):
+        config.variables['#user_prompt'] = Utility.expand_abbreviations(config.variables['#user_prompt'])
+        prompt_structure = config.prompts_structure['Rewrite selection']
+        prompt = Utility.expand_abbreviations(prompt_structure, config.variables)
+
+        combined_prompt = prompt + selected_text 
+        messages = ApiComposer.compose_messages(combined_prompt, None)
         return messages

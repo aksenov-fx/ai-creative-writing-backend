@@ -7,14 +7,21 @@ Write scene: |-
   #user_prompt
 
   #user_postprompt
+
 Custom prompt: |-
   #instructions_preprompt
   #user_prompt
+
 Change part: |-
   #instructions_preprompt
   #user_prompt
 
   #rewrite_postprompt
+
+Rewrite selection: |-
+  #user_prompt
+  #rewrite_selection_postprompt
+
 Summarize part: |-
   #instructions_preprompt
   #summarize_preprompt

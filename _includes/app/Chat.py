@@ -13,14 +13,15 @@ class Chat:
     def chat(history_object: HistoryChanger,
              messages,
              rewrite: bool = False,
+             rewriting_selection: bool = False,
              part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
         if config.debug: print("\nDebug mode is on")
 
         if not config.debug: 
-            streamer = Streamer(history_object, rewrite, part_number)
-            streamer.stream_response(messages)
+            streamer = Streamer(history_object, rewrite, rewriting_selection, part_number)
+            return streamer.stream_response(messages)
     
     ### Generator
 
@@ -91,6 +92,12 @@ class Chat:
         for part in range(part_number, story.count):
             Chat.change_part(part)
 
+    def rewrite_selection(selected_text: str) -> None:
+        story = Factory.get_story() # story is not used, but it is required for the Streamer class
+        messages = PromptComposer.compose_prompt_to_rewrite_selection(selected_text)
+        result = Chat.chat(story, messages, rewriting_selection=True)
+        return result
+    
     ### Summarizer
 
     @staticmethod

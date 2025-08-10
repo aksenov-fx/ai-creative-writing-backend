@@ -16,6 +16,7 @@ Use the following hotkeys:
 **Alt+S** - Set prompt  
 **Alt+W** - Write scene  
 **Alt+C** - Custom prompt  
+**Alt+A** - Rewrite selection  
 **Alt+Z** - Delete last response  
 **Alt+~** - Stop writing  
 **Alt+T** - Manage workspaces
@@ -34,7 +35,10 @@ Append writing instructions to a user prompt and write a scene
 **Custom Prompt**  
 Make prompt without writing instructions  
 
-**Rewrite**  
+**Rewrite selection**
+Rewrite selected text according to prompt
+
+**Rewrite part**  
 Rewrite a selected part of the story according to prompt  
 
 **Rewrite this and the following parts**  

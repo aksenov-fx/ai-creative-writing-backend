@@ -3,7 +3,7 @@ const net = require('net');
 const path = require('path');
 
 const DEFAULT_SETTINGS = {
-    separator: '----'
+    separator: '\n----\n'
 };
 
 class MyPlugin extends Plugin {
@@ -63,11 +63,20 @@ class MyPlugin extends Plugin {
         });
 
         this.addCommand({
-            id: 'rewrite',
-            name: 'Rewrite',
+            id: 'rewrite-selection',
+            name: 'Rewrite selection',
             callback: () => {
-                new Notice(`Rewrite`);
-                this.sendNoteCommand('rewrite');
+                new Notice(`Rewrite selection`);
+                this.rewriteSelection();
+            }
+        });
+
+        this.addCommand({
+            id: 'rewrite-part',
+            name: 'Rewrite part',
+            callback: () => {
+                new Notice(`Rewrite part`);
+                this.sendNoteCommand('rewrite_part');
             }
         });
 
@@ -254,35 +263,67 @@ class MyPlugin extends Plugin {
         }
     }
 
-    sendNoteCommand(methodName, model_number = 0) {
+    async rewriteSelection() {
+        //const editor = this.app.workspace.getActiveViewOfType(tp.obsidian.MarkdownView)?.editor;
+        const editor = this.app.workspace.activeLeaf.view.editor;
+        const selection = editor.getSelection();
+
+        if (!selection) {
+            new Notice('No selection found');
+            return;
+        }
+
+        const response = await this.sendNoteCommand('rewrite_selection', 0, selection);
+        
+        if (!response) { 
+            new Notice('No response received');
+            return;
+        }
+
+        if (editor.somethingSelected()) {
+            editor.replaceSelection(response);
+        }
+        else {
+            new Notice('No selection found');
+        }
+    }
+
+    async sendNoteCommand(methodName, model_number = 0, selected_text = "") {
         this.app.commands.executeCommandById('editor:save-file');
 
         var absoluteFolderPath = this.getNotePath();
         var partNumber = this.getPartNumber();
-        var parameters = `${absoluteFolderPath},${methodName},${partNumber}`;
+        var parameters = `${absoluteFolderPath},${methodName},${partNumber},${selected_text}`;
 
-        this.sendCommandToServer(parameters);
+        const response = await this.sendCommandToServer(parameters);
+        //console.log('Server response:', response);
+        return response;
     }
 
-    sendCommandToServer(command) {
-        const client = new net.Socket();
-        client.connect(9993, 'localhost', () => {
-            console.log('Connected to Python server');
-            client.write(command);
-            client.destroy();
-        });
-
-        client.on('data', (data) => {
-            console.log('Received: ' + data);
-            client.destroy();
-        });
-
-        client.on('close', () => {
-            console.log('Connection closed');
-        });
-
-        client.on('error', (err) => {
-            console.error('Connection error: ', err);
+    async sendCommandToServer(command) {
+        return new Promise((resolve, reject) => {
+            const client = new net.Socket();
+            let response = '';
+            
+            client.connect(9993, 'localhost', () => {
+                console.log('Connected to Python server');
+                client.write(command);
+            });
+    
+            client.on('data', (data) => {
+                response += data.toString();
+                client.destroy();
+            });
+    
+            client.on('close', () => {
+                console.log('Connection closed');
+                resolve(response);
+            });
+    
+            client.on('error', (err) => {
+                console.error('Connection error: ', err);
+                reject(err);
+            });
         });
     }
 }

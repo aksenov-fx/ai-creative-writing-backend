@@ -11,11 +11,13 @@ class Streamer:
 
     def __init__(self, history_object: HistoryChanger,
                  rewriting: bool = False,
+                 rewriting_selection: bool = False,
                  part_number: int = 0):
         self.history = history_object
         self.endpoint = config.endpoint['url']
         self.api_key = config.endpoint['api_key']
         self.rewriting = rewriting
+        self.rewriting_selection = rewriting_selection
         self.part_number = part_number
         self.token_buffer = ""
         self.complete_response = ""
@@ -32,14 +34,18 @@ class Streamer:
         with self.buffer_lock:
             self.complete_response += content
             
+            if self.rewriting_selection:
+                return
+            
             # Buffer tokens and use write delay for rewriting mode,
             # Because the whole file content is being written
-            if self.rewriting:
+            elif self.rewriting:
                 self.token_buffer += content
                 if time.time() - self.last_write_time >= config.write_interval:
                     self.write_file(self.token_buffer)
                     self.token_buffer = ""
                     self.last_write_time = time.time()
+
             else:
                 self.write_file(content)
 
@@ -78,10 +84,10 @@ class Streamer:
                 # Handle regular content
                 if hasattr(delta, 'content') and delta.content:
                     self.handle_content(delta.content)
-                
-            self.flush_buffer()
-            #self.history.strip_lines()
-            self.history.fix_separator()
+            
+            if not self.rewriting_selection:
+                self.flush_buffer()
+                self.history.fix_separator()
             
             return self.complete_response
             

@@ -153,5 +153,13 @@
       ],
       "key": "E"
     }
+  ],
+  "story-writer:rewrite-selection": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "A"
+    }
   ]
 }
