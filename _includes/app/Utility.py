@@ -1,4 +1,4 @@
-import os, re, json, shutil
+import os, json, shutil, time
 from pathlib import Path
 
 class Utility:
@@ -20,6 +20,19 @@ class Utility:
                 return existing_file.read_text(encoding='utf-8')
         
         return ""
+
+    @staticmethod
+    def write_file(path, content):
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with open(path, 'w', encoding='utf-8') as f: 
+                    f.write(content)
+                break
+            except (OSError, IOError) as e:
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
 
     @staticmethod
     def print_with_newlines(obj):
@@ -46,46 +59,3 @@ class Utility:
         if os.path.exists(new_path):
             raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
         shutil.copy(path, new_path)
-
-    @staticmethod
-    def set_prompt(part_value, abbreviations):
-        from _includes import config
-        from .Factory import Factory
-
-        prompts = Factory.get_prompts()
-
-        config.variables['#user_prompt'] = prompts.return_part(part_value -1)
-        prompt_to_print = Utility.expand_abbreviations(config.variables['#user_prompt'], abbreviations)
-        print(prompt_to_print)
-
-        prompts.fix_separator()
-
-    @staticmethod
-    def expand_abbreviations(text, abbreviations=None):
-        from _includes import config
-
-        if not abbreviations: abbreviations = config.abbreviations
-        if not abbreviations or not text: return text
-            
-        case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
-        # Match words with letters/underscores preceded by # or whitespace/start, followed by delimiters or end
-        pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
-        
-        def replace_match(match):
-            prefix = match.group(1)
-            abbreviation = match.group(2)
-            # For # prefix, include it in the abbreviation lookup
-            if prefix == "#":
-                lookup_key = ("#" + abbreviation).lower()
-            else:
-                lookup_key = abbreviation.lower()
-                
-            if lookup_key in case_insensitive_mapping:
-                if prefix == "#":
-                    return case_insensitive_mapping[lookup_key]
-                else:
-                    return prefix + case_insensitive_mapping[lookup_key]
-            return match.group(0)
-        
-        result = re.sub(pattern, replace_match, text)
-        return result

@@ -187,23 +187,14 @@ class MyPlugin extends Plugin {
 
         this.addCommand({
             id: 'enable-debug',
-            name: 'Enable Debug Mode',
+            name: 'Switch Debug Mode On/Off',
             callback: () => {
-                new Notice(`Enable Debug Mode`);
-                this.sendNoteCommand('enable_debug');
-            }
-        });
-
-        this.addCommand({
-            id: 'disable-debug',
-            name: 'Disable Debug Mode',
-            callback: () => {
-                new Notice(`Enable Debug Mode`);
-                this.sendNoteCommand('disable_debug');
+                new Notice(`Switch Debug Mode On/Off`);
+                this.sendNoteCommand('switch_debug');
             }
         });
     }
-
+    
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }

@@ -3,6 +3,7 @@ import threading
 
 from _includes import config
 from .app.Utility import Utility
+from .app.PromptComposer import set_prompt
 from .app.Chat import Chat
 from .app.Factory import Factory
 from .app.ConfigManager import update_config, override_config
@@ -26,11 +27,15 @@ def process_request(folder: str, method: str, part_number: str, selected_text: s
             Factory.get_story().remove_last_response()
     
     # No config override
-    if method == "interrupt_write":      config.interrupt_flag = True
-    elif method == "enable_debug":       config.debug = True
-    elif method == "disable_debug":      config.debug = False
+    if method == "interrupt_write":      
+        config.interrupt_flag = True
+
+    elif method == "switch_debug":       
+        config.debug = not config.debug
+        print("Debug mode is on") if config.debug else print("Debug mode is off")
+    
     elif method == "set_prompt":
-        Utility.set_prompt(part_number, new_config['abbreviations'])
+        set_prompt(part_number, new_config['abbreviations'])
 
     return result
 
@@ -44,7 +49,10 @@ class RequestHandler(socketserver.BaseRequestHandler):
             if not data: break
             
             folder, method, part_number, selected_text = Utility.process_tcp_data(data)
-            Utility.clear_screen()
+
+            if method not in ["remove_last_response", "interrupt_write", "switch_debug"]:
+                Utility.clear_screen()
+                
             print("\nMethod: " + method + "\n")
 
             result = process_request(folder, method, part_number, selected_text)

@@ -1,6 +1,7 @@
 from _includes import config
-from .PromptComposer import PromptComposer
+from .PromptComposer import compose_prompt, compose_prompt_to_rewrite_selection
 from .Streamer import Streamer
+from .TokenHandler import TokenHandler
 from .Factory import Factory
 from .History import HistoryChanger
 from .Utility import Utility
@@ -17,11 +18,15 @@ class Chat:
              part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
-        if config.debug: print("\nDebug mode is on")
 
-        if not config.debug: 
-            streamer = Streamer(history_object, rewrite, rewriting_selection, part_number)
-            return streamer.stream_response(messages)
+        if config.debug: print("\nDebug mode is on"); return
+
+        token_handler = TokenHandler(history_object, rewrite, rewriting_selection, part_number)
+        streamer = Streamer(token_handler.get_token_callback())
+
+        streamer.stream_response(messages)
+        result = token_handler.finalize()
+        return result
     
     ### Generator
 
@@ -32,7 +37,7 @@ class Chat:
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
+        messages = compose_prompt("Write scene", story_parsed)
 
         Chat.chat(story, messages)
 
@@ -43,7 +48,7 @@ class Chat:
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
 
-        messages = PromptComposer.compose_prompt("Custom prompt", story_parsed)
+        messages = compose_prompt("Custom prompt", story_parsed)
 
         Chat.chat(story, messages)
 
@@ -53,7 +58,7 @@ class Chat:
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
 
-        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
+        messages = compose_prompt("Write scene", story_parsed)
 
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
@@ -67,7 +72,7 @@ class Chat:
         story_parsed.cut_history_to_part_number(part_number)
         part_number += 1
 
-        messages = PromptComposer.compose_prompt("Write scene", story_parsed)
+        messages = compose_prompt("Write scene", story_parsed)
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
     ### Changer
@@ -79,7 +84,7 @@ class Chat:
         story_parsed = Factory.get_story_parsed()
         story_parsed.cut(part_number)
 
-        messages = PromptComposer.compose_prompt("Change part", story_parsed, include_introduction=False)
+        messages = compose_prompt("Change part", story_parsed, include_introduction=False)
 
         Chat.chat(story, messages, rewrite=True, part_number=part_number)
 
@@ -94,7 +99,7 @@ class Chat:
 
     def rewrite_selection(selected_text: str) -> None:
         story = Factory.get_story() # story is not used, but it is required for the Streamer class
-        messages = PromptComposer.compose_prompt_to_rewrite_selection(selected_text)
+        messages = compose_prompt_to_rewrite_selection(selected_text)
         result = Chat.chat(story, messages, rewriting_selection=True)
         return result
     
@@ -113,7 +118,7 @@ class Chat:
         summary_parsed.cut(part_number)
 
         config.model = config.models[config.summary_model]['name']
-        messages = PromptComposer.compose_prompt("Summarize part", summary_parsed, include_introduction=False)
+        messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
 
         Chat.chat(summary, messages, rewrite=True, part_number=part_number)
         

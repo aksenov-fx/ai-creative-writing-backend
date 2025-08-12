@@ -18,11 +18,6 @@ class HistoryMixin:
         self.part_number_content = ""
         self.removed_parts = 0
 
-    def update_timestamp(self):
-        time.sleep(0.3)
-        current_time = time.time()
-        os.utime(self.path, (current_time, current_time))
-
     def update(self, parts):
         self.parts = parts
         self.content = self.join_parts(self.parts)
@@ -39,9 +34,6 @@ class HistoryMixin:
     def join_parts(self, content):
         return f"\n{self.separator}\n".join(content)
 
-    def has_separator(self) -> bool:
-        return self.separator in self.content
-
     def return_part(self, part_number):
         return self.parts[part_number].strip()
 
@@ -49,21 +41,9 @@ class HistoryChanger(HistoryMixin):
 
 # Write
 
-    def write_file(self, content):
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                with open(self.path, 'w', encoding='utf-8') as f: 
-                    f.write(content)
-                break
-            except (OSError, IOError) as e:
-                if attempt == max_retries - 1:
-                    raise
-                time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
-
     def join_and_write(self):
         self.update(self.parts)
-        self.write_file(self.content)
+        Utility.write_file(self.path, self.content)
         self.update_timestamp()
 
     def append_history(self, content: str, update: bool = False) -> None:
@@ -71,6 +51,11 @@ class HistoryChanger(HistoryMixin):
         if update: self.update(self.parts)
         with open(self.path, 'a', encoding='utf-8') as f: f.write(content)
         
+    def update_timestamp(self):
+        time.sleep(0.3)
+        current_time = time.time()
+        os.utime(self.path, (current_time, current_time))
+
 # Change
 
     def fix_separator(self):
@@ -95,9 +80,6 @@ class HistoryChanger(HistoryMixin):
         self.join_and_write()
 
 class HistoryParser(HistoryMixin):
-
-    def clear_history(self):
-        self.content = ""
 
 # Split
 
@@ -143,7 +125,7 @@ class HistoryParser(HistoryMixin):
             .set_part_number_content(part_number)
             .set_to_previous_part())
         else:
-            self.clear_history()
+            self.content = ""
 
 # Trim
 

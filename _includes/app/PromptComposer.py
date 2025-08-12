@@ -1,54 +1,90 @@
+import re
+
 from _includes import config
-from .Utility import Utility
 from .ApiComposer import ApiComposer
 from .History import HistoryParser
 
-class PromptComposer:
+def validate(include_introduction):
+
+    introduction_error = "config.introduction is not set. Please set it before beginning a story."
+    user_prompt_error = "User prompt is not set. Please set it before writing a scene."
+
+    if include_introduction and not config.introduction:
+        raise ValueError(introduction_error)
+
+    if not config.variables['#user_prompt']:
+        raise ValueError(user_prompt_error)
     
-    @staticmethod
-    def validate(include_introduction):
+def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True):
 
-        introduction_error = "config.introduction is not set. Please set it before beginning a story."
-        user_prompt_error = "User prompt is not set. Please set it before writing a scene."
+    validate(include_introduction)
 
-        if include_introduction and not config.introduction:
-            raise ValueError(introduction_error)
+    # Prepare user prompt
+    prompt_structure = config.prompts_structure[method] # Get structure defined in prompts_structure.yaml
+    prompt = expand_abbreviations(prompt_structure, config.variables) # Compose prompt according to structure
 
-        if not config.variables['#user_prompt']:
-            raise ValueError(user_prompt_error)
-        
-    @staticmethod
-    def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True):
-        
-        PromptComposer.validate(include_introduction)
+    # Prepare history
+    if config.trim_history: history_parsed.trim_content()
+    history = config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
 
-        # Prepare user prompt
-        config.variables['#user_prompt'] = Utility.expand_abbreviations(config.variables['#user_prompt'])
-        prompt_structure = config.prompts_structure[method] # Get structure defined in prompts_structure.yaml
-        prompt = Utility.expand_abbreviations(prompt_structure, config.variables) # Compose prompt according to structure
+    # Prepare introduction
+    introduction = expand_abbreviations(config.introduction)
+    introduction += "\n\n" if include_introduction else ""
 
-        # Prepare history
-        if config.trim_history: history_parsed.trim_content()
-        history = config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
+    # Combine introduction, history and user prompt
+    combined_prompt = introduction + history + "\n\n" + prompt + "\n\n" + history_parsed.part_number_content
+    combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
 
-        # Prepare introduction
-        introduction = Utility.expand_abbreviations(config.introduction)
-        introduction += "\n\n" if include_introduction else ""
-
-        # Combine introduction, history and user prompt
-        combined_prompt = introduction + history + "\n\n" + prompt + "\n\n" + history_parsed.part_number_content
-        combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
-
-        messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
-        
-        return messages
+    messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
     
-    @staticmethod
-    def compose_prompt_to_rewrite_selection(selected_text: str):
-        config.variables['#user_prompt'] = Utility.expand_abbreviations(config.variables['#user_prompt'])
-        prompt_structure = config.prompts_structure['Rewrite selection']
-        prompt = Utility.expand_abbreviations(prompt_structure, config.variables)
+    return messages
 
-        combined_prompt = prompt + selected_text 
-        messages = ApiComposer.compose_messages(combined_prompt, None)
-        return messages
+def compose_prompt_to_rewrite_selection(selected_text: str):
+    prompt_structure = config.prompts_structure['Rewrite selection']
+    prompt = expand_abbreviations(prompt_structure, config.variables)
+
+    combined_prompt = prompt + selected_text 
+    messages = ApiComposer.compose_messages(combined_prompt, None)
+    return messages
+
+def set_prompt(part_value, abbreviations):
+    from .Factory import Factory
+
+    prompts = Factory.get_prompts()
+
+    prompt = prompts.return_part(part_value -1)
+    prompt = expand_abbreviations(prompt, abbreviations)
+    config.variables['#user_prompt'] = prompt
+    print(prompt)
+
+    prompts.fix_separator()
+
+def expand_abbreviations(text, abbreviations=None):
+    from _includes import config
+
+    if not abbreviations: abbreviations = config.abbreviations
+    if not abbreviations or not text: return text
+    
+    case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
+    # Match words with letters/underscores preceded by # or whitespace/start, followed by delimiters or end
+    pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
+    
+    def replace_match(match):
+        prefix = match.group(1)
+        abbreviation = match.group(2)
+        
+        # For # prefix, include it in the abbreviation lookup
+        if prefix == "#":
+            lookup_key = ("#" + abbreviation).lower()
+        else:
+            lookup_key = abbreviation.lower()
+            
+        if lookup_key in case_insensitive_mapping:
+            if prefix == "#":
+                return case_insensitive_mapping[lookup_key]
+            else:
+                return prefix + case_insensitive_mapping[lookup_key]
+        return match.group(0)
+    
+    result = re.sub(pattern, replace_match, text)
+    return result
