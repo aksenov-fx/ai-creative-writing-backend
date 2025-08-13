@@ -139,6 +139,14 @@ var require_commands = __commonJS({
             this.plugin.translateSelection();
           }
         });
+        this.plugin.addCommand({
+          id: "explain",
+          name: "Explain selected word",
+          callback: () => {
+            new Notice(`Explain selected word`);
+            this.plugin.explainWord();
+          }
+        });
       }
       registerModelCommands() {
         this.plugin.addCommand({
@@ -334,6 +342,20 @@ var require_utilities = __commonJS({
         }
         new Notice(response);
       }
+      async explainWord() {
+        const editor = this.plugin.app.workspace.activeLeaf.view.editor;
+        const selection = editor.getSelection();
+        if (!selection) {
+          new Notice("No selection found");
+          return;
+        }
+        const response = await this.plugin.communicationManager.sendNoteCommand("explain", selection);
+        if (!response) {
+          new Notice("No response received");
+          return;
+        }
+        new Notice(response);
+      }
     };
     module2.exports = UtilityManager2;
   }
@@ -400,9 +422,12 @@ var MyPlugin = class extends Plugin {
   async translateSelection() {
     return await this.utilityManager.translateSelection();
   }
+  async explainWord() {
+    return await this.utilityManager.explainWord();
+  }
   // Delegate methods to communication manager
-  async sendNoteCommand(methodName, model_number = 0, selected_text = "") {
-    return await this.communicationManager.sendNoteCommand(methodName, model_number, selected_text);
+  async sendNoteCommand(methodName, selected_text = "") {
+    return await this.communicationManager.sendNoteCommand(methodName, selected_text);
   }
   async sendCommandToServer(command) {
     return await this.communicationManager.sendCommandToServer(command);

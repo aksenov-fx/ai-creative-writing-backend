@@ -25,6 +25,9 @@ Rewrite selection: |-
 Translate: |-
   #translate_preprompt
 
+Explain: |-
+  #explain_preprompt
+
 Summarize part: |-
   #instructions_preprompt
   #summarize_preprompt

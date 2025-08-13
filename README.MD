@@ -57,7 +57,10 @@ Ceate a file with summary for each part
 Summarize new story parts
 
 **Translate selection**  
-Translate selected text into a language, defined in settings and show translation as an obsidian notification  
+Show translation for selected text in a language, defined in settings  
+
+**Explain word**  
+Show definition for a selected word  
 
 *Please check python app terminal output to understand how prompts are composed for each command*
 

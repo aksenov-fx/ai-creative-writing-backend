@@ -133,6 +133,16 @@ class CommandManager {
                 this.plugin.translateSelection();
             }
         });
+
+        this.plugin.addCommand({
+            id: 'explain',
+            name: 'Explain selected word',
+            callback: () => {
+                new Notice(`Explain selected word`);
+                this.plugin.explainWord();
+            }
+        });
+
     }
 
     

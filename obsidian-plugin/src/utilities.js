@@ -26,7 +26,6 @@ class UtilityManager {
             frontmatter.model = modelInt;
         });
     
-        // new Notice(`Model number updated to: ${modelInt}`);
     }
     
     getPartNumber() {
@@ -92,6 +91,26 @@ class UtilityManager {
         }
 
         const response = await this.plugin.communicationManager.sendNoteCommand('translate', selection);
+        
+        if (!response) { 
+            new Notice('No response received');
+            return;
+        }
+
+        new Notice(response);
+
+    }
+
+    async explainWord() {
+        const editor = this.plugin.app.workspace.activeLeaf.view.editor;
+        const selection = editor.getSelection();
+
+        if (!selection) {
+            new Notice('No selection found');
+            return;
+        }
+
+        const response = await this.plugin.communicationManager.sendNoteCommand('explain', selection);
         
         if (!response) { 
             new Notice('No response received');

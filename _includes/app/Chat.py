@@ -110,6 +110,12 @@ class Chat:
         result = Chat.chat(None, messages, write_history=False)
         return result
 
+    @staticmethod
+    def explain(selected_text: str):
+        messages = compose_prompt_to_explain(selected_text)
+        result = Chat.chat(None, messages, write_history=False)
+        return result
+
     ### Summarizer
 
     @staticmethod
