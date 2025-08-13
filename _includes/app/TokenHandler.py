@@ -8,14 +8,14 @@ from _includes import config
 class TokenHandler:
     
     def __init__(self, 
-                 history_object: HistoryChanger,
+                 history_object: HistoryChanger = None,
                  rewriting: bool = False,
-                 rewriting_selection: bool = False,
+                 write_history: bool = True,
                  part_number: int = 0):
         
         self.history = history_object
         self.rewriting = rewriting
-        self.rewriting_selection = rewriting_selection
+        self.write_history = write_history
         self.part_number = part_number
 
         self.token_buffer = ""
@@ -25,7 +25,7 @@ class TokenHandler:
     
     def write_file(self, content: str) -> None:
         
-        if self.rewriting_selection:
+        if not self.write_history:
             return
             
         elif self.rewriting:
@@ -61,7 +61,7 @@ class TokenHandler:
     
     def finalize(self) -> str:
         self.flush_buffer()
-        self.history.fix_separator()
+        if self.write_history: self.history.fix_separator()
         return self.complete_response
     
     def get_token_callback(self) -> Callable[[str], None]:

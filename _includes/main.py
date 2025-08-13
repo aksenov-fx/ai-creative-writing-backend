@@ -17,6 +17,7 @@ def process_request(folder: str, method: str, part_number: str, selected_text: s
         if method == "write_scene":         Chat.write_scene()
         elif method == "custom_prompt":     Chat.custom_prompt()
         elif method == "rewrite_selection": result = Chat.rewrite_selection(selected_text)
+        elif method == "translate":         result = Chat.translate(selected_text)
         elif method == "rewrite_part":      Chat.change_part(part_number)
         elif method == "rewrite_parts":     Chat.change_parts(part_number)
         elif method == "regenerate":        Chat.regenerate(part_number)

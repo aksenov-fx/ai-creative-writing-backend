@@ -124,8 +124,18 @@ class CommandManager {
                 this.plugin.sendNoteCommand('update_summary');
             }
         });
+        
+        this.plugin.addCommand({
+            id: 'translate',
+            name: 'Translate selection',
+            callback: () => {
+                new Notice(`Translate selection`);
+                this.plugin.translateSelection();
+            }
+        });
     }
 
+    
     registerModelCommands() {
         this.plugin.addCommand({
             id: 'set-model-1',
@@ -190,7 +200,7 @@ class CommandManager {
 
     registerUtilityCommands() {
         this.plugin.addCommand({
-            id: 'enable-debug',
+            id: 'switch-debug',
             name: 'Switch Debug Mode On/Off',
             callback: () => {
                 new Notice(`Switch Debug Mode On/Off`);

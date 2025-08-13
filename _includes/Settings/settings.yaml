@@ -28,3 +28,4 @@ print_messages: true
 include_reasoning: true
 history_prefix: "**Previous text parts for reference:**"
 print_reasoning: true
+translation_language: "Russian"

@@ -47,6 +47,14 @@ def compose_prompt_to_rewrite_selection(selected_text: str):
     messages = ApiComposer.compose_messages(combined_prompt, None)
     return messages
 
+def compose_prompt_to_translate(selected_text: str):
+    prompt_structure = config.prompts_structure['Translate']
+    prompt = expand_abbreviations(prompt_structure, config.variables)
+
+    combined_prompt = prompt.strip() + " " + config.translation_language + ":" + "\n" + '"' + selected_text + '"'
+    messages = ApiComposer.compose_messages(combined_prompt, None)
+    return messages
+
 def set_prompt(part_value, abbreviations):
     from .Factory import Factory
 

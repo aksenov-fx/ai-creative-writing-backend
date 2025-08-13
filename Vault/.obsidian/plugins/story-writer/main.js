@@ -131,6 +131,14 @@ var require_commands = __commonJS({
             this.plugin.sendNoteCommand("update_summary");
           }
         });
+        this.plugin.addCommand({
+          id: "translate",
+          name: "Translate selection",
+          callback: () => {
+            new Notice(`Translate selection`);
+            this.plugin.translateSelection();
+          }
+        });
       }
       registerModelCommands() {
         this.plugin.addCommand({
@@ -190,7 +198,7 @@ var require_commands = __commonJS({
       }
       registerUtilityCommands() {
         this.plugin.addCommand({
-          id: "enable-debug",
+          id: "switch-debug",
           name: "Switch Debug Mode On/Off",
           callback: () => {
             new Notice(`Switch Debug Mode On/Off`);
@@ -301,7 +309,7 @@ var require_utilities = __commonJS({
           new Notice("No selection found");
           return;
         }
-        const response = await this.plugin.communicationManager.sendNoteCommand("rewrite_selection", 0, selection);
+        const response = await this.plugin.communicationManager.sendNoteCommand("rewrite_selection", selection);
         if (!response) {
           new Notice("No response received");
           return;
@@ -311,6 +319,20 @@ var require_utilities = __commonJS({
         } else {
           new Notice("No selection found");
         }
+      }
+      async translateSelection() {
+        const editor = this.plugin.app.workspace.activeLeaf.view.editor;
+        const selection = editor.getSelection();
+        if (!selection) {
+          new Notice("No selection found");
+          return;
+        }
+        const response = await this.plugin.communicationManager.sendNoteCommand("translate", selection);
+        if (!response) {
+          new Notice("No response received");
+          return;
+        }
+        new Notice(response);
       }
     };
     module2.exports = UtilityManager2;
@@ -374,6 +396,9 @@ var MyPlugin = class extends Plugin {
   }
   async rewriteSelection() {
     return await this.utilityManager.rewriteSelection();
+  }
+  async translateSelection() {
+    return await this.utilityManager.translateSelection();
   }
   // Delegate methods to communication manager
   async sendNoteCommand(methodName, model_number = 0, selected_text = "") {

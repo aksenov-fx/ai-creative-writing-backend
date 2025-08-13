@@ -13,6 +13,7 @@ class ChatConfig:
     variables: dict
     prompts_structure: dict
     abbreviations: str
+    translation_language: str
 
     endpoints: dict
     default_endpoint: str

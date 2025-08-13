@@ -1,5 +1,5 @@
 from _includes import config
-from .PromptComposer import compose_prompt, compose_prompt_to_rewrite_selection
+from .PromptComposer import *
 from .Streamer import Streamer
 from .TokenHandler import TokenHandler
 from .Factory import Factory
@@ -14,14 +14,14 @@ class Chat:
     def chat(history_object: HistoryChanger,
              messages,
              rewrite: bool = False,
-             rewriting_selection: bool = False,
+             write_history: bool = True,
              part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
 
         if config.debug: print("\nDebug mode is on"); return
 
-        token_handler = TokenHandler(history_object, rewrite, rewriting_selection, part_number)
+        token_handler = TokenHandler(history_object, rewrite, write_history, part_number)
         streamer = Streamer(token_handler.get_token_callback())
 
         streamer.stream_response(messages)
@@ -97,12 +97,19 @@ class Chat:
         for part in range(part_number, story.count):
             Chat.change_part(part)
 
-    def rewrite_selection(selected_text: str) -> None:
-        story = Factory.get_story() # story is not used, but it is required for the Streamer class
+    @staticmethod
+    def rewrite_selection(selected_text: str):
         messages = compose_prompt_to_rewrite_selection(selected_text)
-        result = Chat.chat(story, messages, rewriting_selection=True)
+        result = Chat.chat(None, messages, write_history=False)
         return result
     
+    ### Other
+    @staticmethod
+    def translate(selected_text: str):
+        messages = compose_prompt_to_translate(selected_text)
+        result = Chat.chat(None, messages, write_history=False)
+        return result
+
     ### Summarizer
 
     @staticmethod

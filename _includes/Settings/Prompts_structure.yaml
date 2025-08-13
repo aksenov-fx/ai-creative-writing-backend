@@ -22,6 +22,9 @@ Rewrite selection: |-
   #user_prompt
   #rewrite_selection_postprompt
 
+Translate: |-
+  #translate_preprompt
+
 Summarize part: |-
   #instructions_preprompt
   #summarize_preprompt

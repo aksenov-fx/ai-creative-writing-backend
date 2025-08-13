@@ -45,6 +45,10 @@ class MyPlugin extends Plugin {
     async rewriteSelection() {
         return await this.utilityManager.rewriteSelection();
     }
+    
+    async translateSelection() {
+        return await this.utilityManager.translateSelection();
+    }
 
     // Delegate methods to communication manager
     async sendNoteCommand(methodName, model_number = 0, selected_text = "") {

@@ -58,7 +58,6 @@ class UtilityManager {
     }
 
     async rewriteSelection() {
-        //const editor = this.app.workspace.getActiveViewOfType(tp.obsidian.MarkdownView)?.editor;
         const editor = this.plugin.app.workspace.activeLeaf.view.editor;
         const selection = editor.getSelection();
 
@@ -67,7 +66,7 @@ class UtilityManager {
             return;
         }
 
-        const response = await this.plugin.communicationManager.sendNoteCommand('rewrite_selection', 0, selection);
+        const response = await this.plugin.communicationManager.sendNoteCommand('rewrite_selection', selection);
         
         if (!response) { 
             new Notice('No response received');
@@ -77,10 +76,32 @@ class UtilityManager {
         if (editor.somethingSelected()) {
             editor.replaceSelection(response);
         }
+
         else {
             new Notice('No selection found');
         }
     }
+
+    async translateSelection() {
+        const editor = this.plugin.app.workspace.activeLeaf.view.editor;
+        const selection = editor.getSelection();
+
+        if (!selection) {
+            new Notice('No selection found');
+            return;
+        }
+
+        const response = await this.plugin.communicationManager.sendNoteCommand('translate', selection);
+        
+        if (!response) { 
+            new Notice('No response received');
+            return;
+        }
+
+        new Notice(response);
+
+    }
+
 }
 
 module.exports = UtilityManager;

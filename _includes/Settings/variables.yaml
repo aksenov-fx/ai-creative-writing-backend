@@ -34,6 +34,9 @@
 
   Text:
 
+'#translate_preprompt': | 
+  Translate the following text into
+
 '#summarize_preprompt': |
   Make a summary of the following story part.
   Keep the part heading if it's present.
