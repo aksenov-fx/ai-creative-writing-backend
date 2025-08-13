@@ -39,29 +39,15 @@ def compose_prompt(method: str, history_parsed: HistoryParser, include_introduct
     
     return messages
 
-def compose_prompt_to_rewrite_selection(selected_text: str):
-    prompt_structure = config.prompts_structure['Rewrite selection']
+def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
+    prompt_structure = config.prompts_structure[prompt_key]
     prompt = expand_abbreviations(prompt_structure, config.variables)
 
-    combined_prompt = prompt + selected_text 
-    messages = ApiComposer.compose_messages(combined_prompt, None)
-    return messages
-
-def compose_prompt_to_translate(selected_text: str):
-    prompt_structure = config.prompts_structure['Translate']
-    prompt = expand_abbreviations(prompt_structure, config.variables)
-
-    combined_prompt = prompt.strip() + " " + config.translation_language + ":" + "\n" + '"' + selected_text + '"'
-    messages = ApiComposer.compose_messages(combined_prompt, None)
-    return messages
-
-def compose_prompt_to_explain(selected_text: str):
-    prompt_structure = config.prompts_structure['Explain']
-    prompt = expand_abbreviations(prompt_structure, config.variables)
-
-    combined_prompt = prompt.strip() + ' "' + selected_text + '"'
-    messages = ApiComposer.compose_messages(combined_prompt, None)
-    return messages
+    if prompt_key == 'Translate':
+        prompt = prompt.strip() + " " + config.translation_language + ":"
+    
+    combined_prompt = prompt.strip() + "\n" + selected_text
+    return ApiComposer.compose_messages(combined_prompt, None)
 
 def set_prompt(part_value, abbreviations):
     from .Factory import Factory

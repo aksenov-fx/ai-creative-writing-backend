@@ -8,8 +8,8 @@ class CommunicationManager {
     async sendNoteCommand(methodName, selected_text = "") {
         this.plugin.app.commands.executeCommandById('editor:save-file');
 
-        var absoluteFolderPath = this.plugin.getNotePath();
-        var partNumber = this.plugin.getPartNumber();
+        var absoluteFolderPath = this.plugin.utilityManager.getNotePath();
+        var partNumber = this.plugin.utilityManager.getPartNumber();
         var parameters = `${absoluteFolderPath},${methodName},${partNumber},${selected_text}`;
 
         const response = await this.sendCommandToServer(parameters);

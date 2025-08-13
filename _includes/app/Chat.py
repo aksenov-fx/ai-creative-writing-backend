@@ -1,5 +1,5 @@
 from _includes import config
-from .PromptComposer import *
+from .PromptComposer import compose_prompt, compose_helper_prompt
 from .Streamer import Streamer
 from .TokenHandler import TokenHandler
 from .Factory import Factory
@@ -97,22 +97,23 @@ class Chat:
         for part in range(part_number, story.count):
             Chat.change_part(part)
 
+    ### Helpers
+
     @staticmethod
     def rewrite_selection(selected_text: str):
-        messages = compose_prompt_to_rewrite_selection(selected_text)
+        messages = compose_helper_prompt('Rewrite selection', selected_text)
         result = Chat.chat(None, messages, write_history=False)
         return result
     
-    ### Other
     @staticmethod
     def translate(selected_text: str):
-        messages = compose_prompt_to_translate(selected_text)
+        messages = compose_helper_prompt('Translate', selected_text)
         result = Chat.chat(None, messages, write_history=False)
         return result
 
     @staticmethod
     def explain(selected_text: str):
-        messages = compose_prompt_to_explain(selected_text)
+        messages = compose_helper_prompt('Explain', selected_text)
         result = Chat.chat(None, messages, write_history=False)
         return result
 
