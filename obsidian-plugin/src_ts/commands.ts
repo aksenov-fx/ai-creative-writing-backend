@@ -1,12 +1,17 @@
-const { Notice } = require('obsidian');
+import { Notice } from 'obsidian';
+import { CommandConfig, CommandsHash } from './types';
+import MyPlugin from './main';
 
-class CommandManager {
-    constructor(plugin) {
+export default class CommandManager {
+    private plugin: MyPlugin;
+    private commands: CommandsHash;
+
+    constructor(plugin: MyPlugin) {
         this.plugin = plugin;
         this.commands = this.getCommandsHash();
     }
 
-    getCommandsHash() {
+    private getCommandsHash(): CommandsHash {
         return {
             'set-prompt': {
                 name: 'Set user prompt',
@@ -106,14 +111,14 @@ class CommandManager {
         };
     }
 
-    registerAllCommands() {
+    registerAllCommands(): void {
         Object.entries(this.commands).forEach(([id, config]) => {
             this.registerCommand(id, config);
         });
     }
 
-    registerCommand(id, config) {
-        const commandConfig = {
+    private registerCommand(id: string, config: CommandConfig): void {
+        const commandConfig: any = {
             id,
             name: config.name,
             callback: () => {
@@ -129,5 +134,3 @@ class CommandManager {
         this.plugin.addCommand(commandConfig);
     }
 }
-
-module.exports = CommandManager;

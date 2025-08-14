@@ -6,7 +6,9 @@
   "type": "commonjs",
   "scripts": {
     "dev": "node build.js --dev",
-    "build": "node build.js"
+    "build": "node build.js",
+    "build:ts": "tsc --noEmit && node build.js",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "obsidian",
@@ -21,6 +23,7 @@
     "builtin-modules": "^3.3.0",
     "esbuild": "0.17.3",
     "obsidian": "latest",
-    "tslib": "2.4.0"
+    "tslib": "2.4.0",
+    "typescript": "^5.9.2"
   }
 }

@@ -1,12 +1,15 @@
-const { PluginSettingTab, Setting } = require('obsidian');
+import { PluginSettingTab, Setting } from 'obsidian';
+import MyPlugin from './main';
 
-class MyPluginSettingTab extends PluginSettingTab {
-    constructor(app, plugin) {
+export default class MyPluginSettingTab extends PluginSettingTab {
+    private plugin: MyPlugin;
+
+    constructor(app: any, plugin: MyPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }
 
-    display() {
+    display(): void {
         const { containerEl } = this;
 
         containerEl.empty();
@@ -25,5 +28,3 @@ class MyPluginSettingTab extends PluginSettingTab {
                 }));
     }
 }
-
-module.exports = MyPluginSettingTab;

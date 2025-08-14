@@ -1,12 +1,19 @@
-const { Plugin } = require('obsidian');
-const { DEFAULT_SETTINGS } = require('./constants');
-const CommandManager = require('./commands');
-const CommunicationManager = require('./communication');
-const UtilityManager = require('./utilities');
-const HelperManager = require('./helpers');
-const MyPluginSettingTab = require('./settings');
+import { Plugin } from 'obsidian';
+import { MyPluginSettings } from './types';
+import { DEFAULT_SETTINGS } from './constants';
+import CommandManager from './commands';
+import CommunicationManager from './communication';
+import UtilityManager from './utilities';
+import HelperManager from './helpers';
+import MyPluginSettingTab from './settings';
 
-class MyPlugin extends Plugin {
+export default class MyPlugin extends Plugin {
+    settings: MyPluginSettings;
+    commandManager: CommandManager;
+    communicationManager: CommunicationManager;
+    utilityManager: UtilityManager;
+    helperManager: HelperManager;
+
     async onload() {
         await this.loadSettings();
         
@@ -31,5 +38,3 @@ class MyPlugin extends Plugin {
         await this.saveData(this.settings);
     }
 }
-
-module.exports = MyPlugin;

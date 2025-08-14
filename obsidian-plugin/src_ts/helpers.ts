@@ -1,18 +1,21 @@
-const { Notice } = require('obsidian');
+import { Notice } from 'obsidian';
+import MyPlugin from './main';
 
-class HelperManager {
-    constructor(plugin) {
+export default class HelperManager {
+    private plugin: MyPlugin;
+
+    constructor(plugin: MyPlugin) {
         this.plugin = plugin;
     }
 
-    _getEditor() {
-        return this.plugin.app.workspace.activeLeaf.view.editor;
-    }
-    
-    async _processSelection(command) {
-        const editor = this._getEditor();
-        const selection = editor.getSelection();
+    private async _processSelection(command: string): Promise<string | null> {
+        const editor = this.plugin.utilityManager.getEditor();
+        if (!editor) {
+            new Notice('No active editor');
+            return null;
+        }
 
+        const selection = editor.getSelection();
         if (!selection) {
             new Notice('No selection found');
             return null;
@@ -28,11 +31,13 @@ class HelperManager {
         return response;
     }
 
-    async rewriteSelection() {
+    async rewriteSelection(): Promise<void> {
         const response = await this._processSelection('rewrite_selection');
         if (!response) return;
 
-        const editor = this._getEditor();
+        const editor = this.plugin.utilityManager.getEditor();
+        if (!editor) return;
+
         if (editor.somethingSelected()) {
             editor.replaceSelection(response);
         } else {
@@ -40,20 +45,17 @@ class HelperManager {
         }
     }
 
-    async translateSelection() {
+    async translateSelection(): Promise<void> {
         const response = await this._processSelection('translate');
         if (response) {
             new Notice(response);
         }
     }
 
-    async explainWord() {
+    async explainWord(): Promise<void> {
         const response = await this._processSelection('explain');
         if (response) {
             new Notice(response);
         }
     }
-
 }
-
-module.exports = HelperManager;

@@ -1,40 +1,45 @@
-const net = require('net');
+import * as net from 'net';
+import MyPlugin from './main';
 
-class CommunicationManager {
-    constructor(plugin) {
+export default class CommunicationManager {
+    private plugin: MyPlugin;
+
+    constructor(plugin: MyPlugin) {
         this.plugin = plugin;
     }
 
-    async sendNoteCommand(methodName, selected_text = "") {
+    async sendNoteCommand(methodName: string, selected_text: string = ""): Promise<string> {
+        // @ts-ignore - Obsidian API limitation
         this.plugin.app.commands.executeCommandById('editor:save-file');
 
-        var [absoluteFolderPath, absoluteFilePath] = this.plugin.utilityManager.getPaths();
-        var partNumber = this.plugin.utilityManager.getPartNumber();
-        var chatMode = await this.plugin.utilityManager.getMode();
+        const [absoluteFolderPath, absoluteFilePath] = this.plugin.utilityManager.getPaths();
+        const partNumber = this.plugin.utilityManager.getPartNumber();
+        const chatMode = await this.plugin.utilityManager.getMode();
 
-        if (methodName == "write_scene_or_chat") {
+        let finalMethodName = methodName;
+        if (methodName === "write_scene_or_chat") {
             if (chatMode) {
-                methodName = "chat"
+                finalMethodName = "chat";
             } else {
-                methodName = "write_scene"
+                finalMethodName = "write_scene";
             }
         }
 
-        if (methodName == "remove_last_response") {
+        if (methodName === "remove_last_response") {
             if (chatMode) {
-                methodName = "chat_remove_last_response"
+                finalMethodName = "chat_remove_last_response";
             } else {
-                methodName = "story_remove_last_response"
+                finalMethodName = "story_remove_last_response";
             }
         }
 
-        var parameters = `${absoluteFolderPath},${absoluteFilePath},${methodName},${chatMode},${partNumber},${selected_text}`;
+        const parameters = `${absoluteFolderPath},${absoluteFilePath},${finalMethodName},${chatMode},${partNumber},${selected_text}`;
 
         const response = await this.sendCommandToServer(parameters);
         return response;
     }
 
-    async sendCommandToServer(command) {
+    private async sendCommandToServer(command: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new net.Socket();
             let response = '';
@@ -61,5 +66,3 @@ class CommunicationManager {
         });
     }
 }
-
-module.exports = CommunicationManager;

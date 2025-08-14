@@ -9,7 +9,7 @@ const prod = (process.argv[2] === "production");
 async function build() {
 	const context = await esbuild.context({
 		banner: { js: banner },
-		entryPoints: ["./src/main.js"],
+		entryPoints: ["./src_ts/main.ts"],
 		bundle: true,
 		external: ["obsidian", ...builtins],
 		format: "cjs",
