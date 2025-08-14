@@ -41,6 +41,10 @@ class ChatConfig:
     prompts_path: Path
     folder_path: Path
 
+    # Chat settings
+    splitter: str
+    add_header: bool
+
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
 
@@ -105,7 +109,7 @@ def load_config(folder_path, config_dict, extension = '.yaml'):
 
     return config_dict
 
-def update_config(folder: str):
+def get_story_config(folder: str):
     from _includes import config
 
     settings_folder = folder + '/Settings/'
@@ -119,3 +123,18 @@ def update_config(folder: str):
     config.folder_path = folder + '/'
 
     return new_config
+
+def get_chat_config(file):
+    from _includes import config
+
+    old_config = asdict(config)
+    default_config = read_yaml('./_includes/settings/Chat_settings.yaml')
+    new_config = read_yaml(file)
+    
+    old_config.update(default_config)
+    old_config.update(new_config)
+    
+    old_config['endpoint'] = get_endpoint(old_config)
+    old_config['model'] = get_model(old_config)
+
+    return old_config

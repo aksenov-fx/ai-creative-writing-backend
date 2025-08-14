@@ -11,14 +11,13 @@ from .Utility import Utility
 class Chat:
 
     @staticmethod
-    def chat(history_object: HistoryChanger,
-             messages,
-             rewrite: bool = False,
-             write_history: bool = True,
-             part_number: int = 0) -> None:
+    def stream(history_object: HistoryChanger,
+               messages,
+               rewrite: bool = False,
+               write_history: bool = True,
+               part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
-
         if config.debug: print("\nDebug mode is on"); return
 
         token_handler = TokenHandler(history_object, rewrite, write_history, part_number)
@@ -39,7 +38,7 @@ class Chat:
 
         messages = compose_prompt("Write scene", story_parsed)
 
-        Chat.chat(story, messages)
+        Chat.stream(story, messages)
 
     @staticmethod
     def custom_prompt() -> None:
@@ -50,7 +49,7 @@ class Chat:
 
         messages = compose_prompt("Custom prompt", story_parsed)
 
-        Chat.chat(story, messages)
+        Chat.stream(story, messages)
 
     @staticmethod
     def regenerate(part_number: int) -> None:
@@ -60,7 +59,7 @@ class Chat:
 
         messages = compose_prompt("Write scene", story_parsed)
 
-        Chat.chat(story, messages, rewrite=True, part_number=part_number)
+        Chat.stream(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def add_part(part_number: int) -> None:
@@ -73,7 +72,7 @@ class Chat:
         part_number += 1
 
         messages = compose_prompt("Write scene", story_parsed)
-        Chat.chat(story, messages, rewrite=True, part_number=part_number)
+        Chat.stream(story, messages, rewrite=True, part_number=part_number)
 
     ### Changer
 
@@ -86,7 +85,7 @@ class Chat:
 
         messages = compose_prompt("Change part", story_parsed, include_introduction=False)
 
-        Chat.chat(story, messages, rewrite=True, part_number=part_number)
+        Chat.stream(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def change_parts(part_number: int) -> None:
@@ -102,19 +101,19 @@ class Chat:
     @staticmethod
     def rewrite_selection(selected_text: str):
         messages = compose_helper_prompt('Rewrite selection', selected_text)
-        result = Chat.chat(None, messages, write_history=False)
+        result = Chat.stream(None, messages, write_history=False)
         return result
     
     @staticmethod
     def translate(selected_text: str):
         messages = compose_helper_prompt('Translate', selected_text)
-        result = Chat.chat(None, messages, write_history=False)
+        result = Chat.stream(None, messages, write_history=False)
         return result
 
     @staticmethod
     def explain(selected_text: str):
         messages = compose_helper_prompt('Explain', selected_text)
-        result = Chat.chat(None, messages, write_history=False)
+        result = Chat.stream(None, messages, write_history=False)
         return result
 
     ### Summarizer
@@ -134,7 +133,7 @@ class Chat:
         config.model = config.models[config.summary_model]['name']
         messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
 
-        Chat.chat(summary, messages, rewrite=True, part_number=part_number)
+        Chat.stream(summary, messages, rewrite=True, part_number=part_number)
         
     @staticmethod
     def summarize_all() -> None:
@@ -159,3 +158,16 @@ class Chat:
 
         for part_number in range(summary_count, story.count):
             Chat.summarize_part(part_number-1)
+
+# Chat
+    @staticmethod
+    def chat(file_path: str) -> None:
+        from .ApiComposer import ApiComposer
+
+        history, history_parsed = Factory.get_chat_objects(file_path)
+        
+        history_parsed.process()
+        messages = ApiComposer.compose_chat_messages(history_parsed)
+
+        history.fix_separator()
+        Chat.stream(history, messages)

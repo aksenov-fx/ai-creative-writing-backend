@@ -6,7 +6,7 @@ class UtilityManager {
         this.plugin = plugin;
     }
 
-    async setModelNumber(modelInt) {
+    async setStoryModelNumber(modelInt) {
         const activeFile = this.plugin.app.workspace.getActiveFile();
         if (!activeFile) {
             new Notice('No active file');
@@ -28,6 +28,36 @@ class UtilityManager {
     
     }
     
+    async setChatModelNumber(modelInt) {
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        if (!activeFile) {
+            new Notice('No active file');
+            return;
+        }
+
+        await this.plugin.app.fileManager.processFrontMatter(activeFile, (frontmatter) => {
+            frontmatter.model = modelInt;
+        });
+
+    }
+    
+    async setModelNumber(modelInt) {
+
+        var chatMode = await this.getMode()
+
+        if (chatMode) {
+            await this.setChatModelNumber(modelInt)
+        } else {
+            await this.setStoryModelNumber(modelInt)
+        }
+    }
+    
+    async getMode() {
+        const note = app.workspace.getActiveFile()
+        const content = await app.vault.read(note)
+        return /```\s*Custom instructions:/i.test(content)
+    }
+
     getPartNumber() {
         const editor = this.plugin.app.workspace.activeLeaf.view.editor
         const cursor = editor.getCursor()
@@ -44,16 +74,22 @@ class UtilityManager {
         return count
     }
 
-    getNotePath() {
+    getPaths() {
         const activeFile = this.plugin.app.workspace.getActiveFile();
-        if (activeFile) {
-            const vaultPath = this.plugin.app.vault.adapter.basePath;
-            const folderPath = activeFile.parent?.path || '';
-            const absoluteFolderPath = path.join(vaultPath, folderPath);
-            return absoluteFolderPath;
-        } else {
+
+        if (!activeFile) {
             console.log('No file is currently open');
+            return;
         }
+
+        const vaultPath = this.plugin.app.vault.adapter.basePath;
+        const folderPath = activeFile.parent?.path || '';
+
+        const absoluteFolderPath = path.join(vaultPath, folderPath);
+        const absoluteFilePath = path.join(vaultPath, activeFile.path);
+
+        return [absoluteFolderPath, absoluteFilePath];
+            
     }
 
 

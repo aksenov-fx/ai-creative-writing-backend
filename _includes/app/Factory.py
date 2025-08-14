@@ -1,5 +1,6 @@
 from _includes import config
 from .History import HistoryChanger, HistoryParser
+from .ChatHistory import ChatHistoryChanger, ChatHistoryParser
 
 class Factory:
     
@@ -26,3 +27,17 @@ class Factory:
     @staticmethod
     def get_objects():
         return Factory.get_story(), Factory.get_story_parsed(), Factory.get_summary()
+
+# Chat
+
+    @staticmethod
+    def get_chat_history(file_path) -> ChatHistoryChanger:
+        return ChatHistoryChanger(file_path)
+
+    @staticmethod
+    def get_chat_history_parsed(file_path) -> ChatHistoryParser:
+        return ChatHistoryParser(file_path)
+
+    @staticmethod
+    def get_chat_objects(file_path):
+        return Factory.get_chat_history(file_path), Factory.get_chat_history_parsed(file_path)

@@ -35,7 +35,7 @@ Append writing instructions to a user prompt and write a scene
 **Custom Prompt**  
 Make prompt without writing instructions  
 
-**Rewrite selection**
+**Rewrite selection**  
 Rewrite selected text according to prompt
 
 **Rewrite part**  
@@ -71,25 +71,26 @@ Show definition for a selected word
 ## Settings
 
 **use_summary**  
-Replace story parts with summaries in API request to reduce token usage  
-The last story part will remain original to preserve writing style
+Replace story parts with summaries in API request to reduce token usage.  
+The last story part will remain original to preserve writing style.
 
 **summary_model**  
 Model used to summarize story.  
 
-**trim_history**
+**trim_history**  
 Exclude first paragraphs until story lengh matches max_tokens
 
 **include_previous_part_when_rewriting**  
-If False, only the current part text will be included in API request when rewriting
-Makes sense when the changes do not require story context
+If False, only the current part text will be included in API request when rewriting.  
+Makes sense when the changes do not require story context.  
 For example, when changing story tense, style etc.
 
 **print_reasoning**  
 Print reasoning in terminal when using models that output reasoning tokens, like DeepSeek R1  
 
 ## How it works
-To get a response, **Obsidian** sends a TCP request to python app, which listens on port **TCP 9993**. The app gets a response and writes it to MD file, while **Obsidian** displays the changes in real time.  
+To get a response, **Obsidian** sends a TCP request to python app, which listens on port **TCP 9993**.  
+The app gets a response and writes it to MD file, while **Obsidian** displays the changes in real time.  
 
 ## Credits:
 Dmitry Savosh for [Remember cursor position](https://github.com/dy-sh/obsidian-remember-cursor-position) plugin  

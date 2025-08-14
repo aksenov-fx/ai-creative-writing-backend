@@ -32,10 +32,10 @@ var require_commands = __commonJS({
             hotkeys: [{ modifiers: ["Alt"], key: "S" }],
             callback: () => this.plugin.communicationManager.sendNoteCommand("set_prompt")
           },
-          "write-scene": {
-            name: "Write Scene",
+          "write-scene-or-chat": {
+            name: "Write Scene/Chat",
             hotkeys: [{ modifiers: ["Alt"], key: "W" }],
-            callback: () => this.plugin.communicationManager.sendNoteCommand("write_scene")
+            callback: () => this.plugin.communicationManager.sendNoteCommand("write_scene_or_chat")
           },
           "custom-prompt": {
             name: "Custom Prompt",
@@ -158,9 +158,24 @@ var require_communication = __commonJS({
       }
       async sendNoteCommand(methodName, selected_text = "") {
         this.plugin.app.commands.executeCommandById("editor:save-file");
-        var absoluteFolderPath = this.plugin.utilityManager.getNotePath();
+        var [absoluteFolderPath, absoluteFilePath] = this.plugin.utilityManager.getPaths();
         var partNumber = this.plugin.utilityManager.getPartNumber();
-        var parameters = `${absoluteFolderPath},${methodName},${partNumber},${selected_text}`;
+        var chatMode = await this.plugin.utilityManager.getMode();
+        if (methodName == "write_scene_or_chat") {
+          if (chatMode) {
+            methodName = "chat";
+          } else {
+            methodName = "write_scene";
+          }
+        }
+        if (methodName == "remove_last_response") {
+          if (chatMode) {
+            methodName = "chat_remove_last_response";
+          } else {
+            methodName = "story_remove_last_response";
+          }
+        }
+        var parameters = `${absoluteFolderPath},${absoluteFilePath},${methodName},${chatMode},${partNumber},${selected_text}`;
         const response = await this.sendCommandToServer(parameters);
         return response;
       }
@@ -200,7 +215,7 @@ var require_utilities = __commonJS({
       constructor(plugin) {
         this.plugin = plugin;
       }
-      async setModelNumber(modelInt) {
+      async setStoryModelNumber(modelInt) {
         const activeFile = this.plugin.app.workspace.getActiveFile();
         if (!activeFile) {
           new Notice("No active file");
@@ -217,6 +232,29 @@ var require_utilities = __commonJS({
           frontmatter.model = modelInt;
         });
       }
+      async setChatModelNumber(modelInt) {
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        if (!activeFile) {
+          new Notice("No active file");
+          return;
+        }
+        await this.plugin.app.fileManager.processFrontMatter(activeFile, (frontmatter) => {
+          frontmatter.model = modelInt;
+        });
+      }
+      async setModelNumber(modelInt) {
+        var chatMode = await this.getMode();
+        if (chatMode) {
+          await this.setChatModelNumber(modelInt);
+        } else {
+          await this.setStoryModelNumber(modelInt);
+        }
+      }
+      async getMode() {
+        const note = app.workspace.getActiveFile();
+        const content = await app.vault.read(note);
+        return /```\s*Custom instructions:/i.test(content);
+      }
       getPartNumber() {
         const editor = this.plugin.app.workspace.activeLeaf.view.editor;
         const cursor = editor.getCursor();
@@ -227,17 +265,18 @@ var require_utilities = __commonJS({
         count = count + 1;
         return count;
       }
-      getNotePath() {
+      getPaths() {
         var _a;
         const activeFile = this.plugin.app.workspace.getActiveFile();
-        if (activeFile) {
-          const vaultPath = this.plugin.app.vault.adapter.basePath;
-          const folderPath = ((_a = activeFile.parent) == null ? void 0 : _a.path) || "";
-          const absoluteFolderPath = path.join(vaultPath, folderPath);
-          return absoluteFolderPath;
-        } else {
+        if (!activeFile) {
           console.log("No file is currently open");
+          return;
         }
+        const vaultPath = this.plugin.app.vault.adapter.basePath;
+        const folderPath = ((_a = activeFile.parent) == null ? void 0 : _a.path) || "";
+        const absoluteFolderPath = path.join(vaultPath, folderPath);
+        const absoluteFilePath = path.join(vaultPath, activeFile.path);
+        return [absoluteFolderPath, absoluteFilePath];
       }
     };
     module2.exports = UtilityManager2;
@@ -302,8 +341,8 @@ var require_settings = __commonJS({
   "src/settings.js"(exports2, module2) {
     var { PluginSettingTab, Setting } = require("obsidian");
     var MyPluginSettingTab2 = class extends PluginSettingTab {
-      constructor(app, plugin) {
-        super(app, plugin);
+      constructor(app2, plugin) {
+        super(app2, plugin);
         this.plugin = plugin;
       }
       display() {

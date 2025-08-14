@@ -6,3 +6,9 @@ Kimi K2:
 
 Deepseek V3:
   name: "deepseek/deepseek-chat-v3-0324:free"
+
+Claude 4:
+  name: "anthropic/claude-sonnet-4"
+
+Gemini 2.5 Flash:
+  name: "google/gemini-2.5-flash"

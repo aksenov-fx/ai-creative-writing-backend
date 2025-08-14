@@ -1,0 +1,6 @@
+default_model: "Claude 4"
+model: ""
+temperature: 0.8
+splitter: "\n****\n"    # Conversation splitter for excluding previous parts
+history_path: "chat.md"
+add_header: true

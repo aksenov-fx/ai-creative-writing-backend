@@ -21,3 +21,19 @@ class ApiComposer:
             Utility.print_with_newlines(messages)
             
         return messages
+    
+    @staticmethod
+    def compose_chat_messages(history) -> List[Dict[str, str]]:
+        messages = []
+
+        ApiComposer.append_message(messages, "system", history.custom_instructions)
+
+        for i, part in enumerate(history.parts):
+            part_even = i % 2 == 0
+            role = "user" if part_even else "assistant"
+            ApiComposer.append_message(messages, role, part)
+    
+        if config.print_messages:
+            Utility.print_with_newlines(messages)
+            
+        return messages

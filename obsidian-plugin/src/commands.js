@@ -13,10 +13,10 @@ class CommandManager {
                 hotkeys: [{ modifiers: ['Alt'], key: 'S' }],
                 callback: () => this.plugin.communicationManager.sendNoteCommand('set_prompt')
             },
-            'write-scene': {
-                name: 'Write Scene',
+            'write-scene-or-chat': {
+                name: 'Write Scene/Chat',
                 hotkeys: [{ modifiers: ['Alt'], key: 'W' }],
-                callback: () => this.plugin.communicationManager.sendNoteCommand('write_scene')
+                callback: () => this.plugin.communicationManager.sendNoteCommand('write_scene_or_chat')
             },
             'custom-prompt': {
                 name: 'Custom Prompt',

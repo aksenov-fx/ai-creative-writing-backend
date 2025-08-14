@@ -1,4 +1,5 @@
 import os, json, shutil, time
+from importlib import resources
 from pathlib import Path
 
 class Utility:
@@ -35,6 +36,18 @@ class Utility:
                 time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
 
     @staticmethod
+    def read_instructions(instructions: str):
+        if not instructions.startswith("{"):
+            return instructions
+        
+        instructions_file = instructions.replace('{', '').replace('}', '')
+        instructions_file += '.md'
+
+        with resources.files('_includes.settings._instructions').joinpath(instructions_file).open('r') as file:
+            content = file.read()
+            return content
+        
+    @staticmethod
     def print_with_newlines(obj):
         json_str = json.dumps(obj, indent=2, ensure_ascii=False)
         formatted_str = json_str.replace('\\n', '\n')
@@ -42,13 +55,15 @@ class Utility:
 
     @staticmethod
     def process_tcp_data(data):
-        args = data.split(',', 3)
-        folder_path, method_name, part_value_str, selected_text = args 
+        args = data.split(',', 5)
+        folder_path, file_path, method_name, chat_mode, part_value_str, selected_text = args 
 
         part_value = int(part_value_str)
         posix_folder_path = os.path.normpath(folder_path).replace('\\', '/')
+        posix_file_path = os.path.normpath(file_path).replace('\\', '/')
+        chat_mode = chat_mode.lower() == 'true'
 
-        return posix_folder_path, method_name, part_value, selected_text
+        return posix_folder_path, posix_file_path, method_name, chat_mode, part_value, selected_text
 
     @staticmethod
     def clear_screen():

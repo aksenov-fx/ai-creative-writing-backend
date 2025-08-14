@@ -8,9 +8,27 @@ class CommunicationManager {
     async sendNoteCommand(methodName, selected_text = "") {
         this.plugin.app.commands.executeCommandById('editor:save-file');
 
-        var absoluteFolderPath = this.plugin.utilityManager.getNotePath();
+        var [absoluteFolderPath, absoluteFilePath] = this.plugin.utilityManager.getPaths();
         var partNumber = this.plugin.utilityManager.getPartNumber();
-        var parameters = `${absoluteFolderPath},${methodName},${partNumber},${selected_text}`;
+        var chatMode = await this.plugin.utilityManager.getMode();
+
+        if (methodName == "write_scene_or_chat") {
+            if (chatMode) {
+                methodName = "chat"
+            } else {
+                methodName = "write_scene"
+            }
+        }
+
+        if (methodName == "remove_last_response") {
+            if (chatMode) {
+                methodName = "chat_remove_last_response"
+            } else {
+                methodName = "story_remove_last_response"
+            }
+        }
+
+        var parameters = `${absoluteFolderPath},${absoluteFilePath},${methodName},${chatMode},${partNumber},${selected_text}`;
 
         const response = await this.sendCommandToServer(parameters);
         return response;
