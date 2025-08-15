@@ -173,26 +173,21 @@ var CommunicationManager = class {
   constructor(plugin) {
     this.plugin = plugin;
   }
+  async getFinalMethodName(chatMode, methodName) {
+    if (methodName === "write_scene_or_chat") {
+      return chatMode ? "chat" : "write_scene";
+    }
+    if (methodName === "remove_last_response") {
+      return chatMode ? "chat_remove_last_response" : "story_remove_last_response";
+    }
+    return methodName;
+  }
   async sendNoteCommand(methodName, selected_text = "") {
     this.plugin.app.commands.executeCommandById("editor:save-file");
     const [absoluteFolderPath, absoluteFilePath] = this.plugin.utilityManager.getPaths();
     const partNumber = this.plugin.utilityManager.getPartNumber();
     const chatMode = await this.plugin.utilityManager.getMode();
-    let finalMethodName = methodName;
-    if (methodName === "write_scene_or_chat") {
-      if (chatMode) {
-        finalMethodName = "chat";
-      } else {
-        finalMethodName = "write_scene";
-      }
-    }
-    if (methodName === "remove_last_response") {
-      if (chatMode) {
-        finalMethodName = "chat_remove_last_response";
-      } else {
-        finalMethodName = "story_remove_last_response";
-      }
-    }
+    const finalMethodName = await this.getFinalMethodName(chatMode, methodName);
     const parameters = `${absoluteFolderPath},${absoluteFilePath},${finalMethodName},${chatMode},${partNumber},${selected_text}`;
     const response = await this.sendCommandToServer(parameters);
     return response;

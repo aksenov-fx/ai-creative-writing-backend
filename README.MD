@@ -1,6 +1,8 @@
 ![screenshot](screenshot.png)
 
-This repo features a Python/Javascript project that allows to use **Obsidian** for AI assisted **story writing** via **OpenRouter** API.  
+This repo features a Python/Javascript project.  
+It allows to use **Obsidian** for AI assisted **creative writing** with multiple models via **OpenRouter** API.  
+It also includes **Chat** and **Chat with your story** features.
 
 ## Installation instructions for Windows:
 1. Install [Python 3.12](https://www.python.org/downloads/release/python-3122/)  
@@ -14,23 +16,25 @@ Open the Vault folder as a vault in Obsidian and set cursor position on a prompt
 
 Use the following hotkeys:  
 **Alt+S** - Set prompt  
-**Alt+W** - Write scene  
+**Alt+W** - Write scene / Chat  
 **Alt+C** - Custom prompt  
 **Alt+A** - Rewrite selection  
 **Alt+Z** - Delete last response  
 **Alt+~** - Stop writing  
-**Alt+T** - Manage workspaces
+**Alt+T** - Manage workspaces  
 **Alt+E** - Save and change workspace
 
 **Alt+1-5** - Set model number 
-Models are listed in `_includes\settings\models.yaml`  
-Default model can be changed in `_includes\settings\settings.yaml`
+Models are listed in `_includes\Settings\Models.yaml`  
+Default model can be changed in `_includes\Settings\Settings.yaml`  
+To chat with model without updating `Models.yaml`, input the model name from OpenRouter into frontmatter `Model` property instead of model number
 
 **Alt+R** - Reset model
 
 ## Obsidian commands
-**Write Scene**  
-Append writing instructions to a user prompt and write a scene  
+**Write Scene / Chat**  
+Story mode: append writing instructions to a user prompt and write a scene in   
+Chat mode: chat
 
 **Custom Prompt**  
 Make prompt without writing instructions  
@@ -70,22 +74,22 @@ Show definition for a selected word
 
 ## Settings
 
-**use_summary**  
+**Use summary**  
 Replace story parts with summaries in API request to reduce token usage.  
 The last story part will remain original to preserve writing style.
 
-**summary_model**  
+**Summary model**  
 Model used to summarize story.  
 
-**trim_history**  
+**Trim history**  
 Exclude first paragraphs until story lengh matches max_tokens
 
-**include_previous_part_when_rewriting**  
+**Include previous part when rewriting**  
 If False, only the current part text will be included in API request when rewriting.  
 Makes sense when the changes do not require story context.  
 For example, when changing story tense, style etc.
 
-**print_reasoning**  
+**Print reasoning**  
 Print reasoning in terminal when using models that output reasoning tokens, like DeepSeek R1  
 
 ## How it works

@@ -41,15 +41,17 @@ class ChatConfig:
     prompts_path: Path
     folder_path: Path
 
-    # Chat settings
-    splitter: str
-    add_header: bool
-
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
 
     interrupt_flag: bool
     debug: bool
+
+    # Chat settings
+    splitter: str
+    add_header: bool
+    chat_with_story: bool
+    include_file: str
 
 @contextmanager
 def override_config(config: ChatConfig, **overrides: Any):
@@ -68,13 +70,18 @@ def override_config(config: ChatConfig, **overrides: Any):
         for key, value in original_values.items():
             setattr(config, key, value)
 
-def read_yaml(file_path):
+def read_yaml(file_path, convert_keys_to_snake_case = False):
     if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
         return {}
     
-    content = Utility.read_file(file_path)
-    if file_path.endswith('.md'): content = content.split('---\n')[1]
-    return yaml.safe_load(content)
+    yaml_data = Utility.read_file(file_path)
+    if file_path.endswith('.md'): yaml_data = yaml_data.split('---\n')[1]
+    yaml_data = yaml.safe_load(yaml_data)
+    
+    if convert_keys_to_snake_case:
+        yaml_data = {k.lower().replace(" ", "_"): v for k, v in yaml_data.items()}
+    
+    return yaml_data
 
 def get_model(config_dict):
 
@@ -96,11 +103,11 @@ def get_endpoint(config_dict):
 
 def load_config(folder_path, config_dict, extension = '.yaml'):
 
-    keys = ['Variables', 'Abbreviations', 'Prompts_structure', 'Models', 'Endpoints']
+    keys = ['Variables', 'Abbreviations', 'Prompts Structure', 'Models', 'Endpoints']
     
     for key in keys:
         path = os.path.join(folder_path, key + extension)
-        key_name = key.lower()
+        key_name = key.lower().replace(" ", "_")
         config_dict[key_name].update(read_yaml(path))
     
     config_dict['endpoint'] = get_endpoint(config_dict)
@@ -115,7 +122,7 @@ def get_story_config(folder: str):
     settings_folder = folder + '/Settings/'
 
     old_config = asdict(config)
-    new_config = read_yaml(settings_folder + 'Settings.md')
+    new_config = read_yaml(settings_folder + 'Settings.md', convert_keys_to_snake_case=True)
     old_config.update(new_config)
     new_config = load_config(settings_folder, old_config, ".md")
 
@@ -125,16 +132,31 @@ def get_story_config(folder: str):
     return new_config
 
 def get_chat_config(file):
-    from _includes import config
+    from ..config import config, default_config
+    from pathlib import Path
 
-    old_config = asdict(config)
-    default_config = read_yaml('./_includes/settings/Chat_settings.yaml')
-    new_config = read_yaml(file)
+    current_config = asdict(config)
+    default_chat_config = read_yaml('./_includes/settings/Chat Settings.yaml')
+    new_config = read_yaml(file, convert_keys_to_snake_case=True)
     
-    old_config.update(default_config)
-    old_config.update(new_config)
+    current_config.update(default_chat_config)
+    current_config.update(new_config)
     
-    old_config['endpoint'] = get_endpoint(old_config)
-    old_config['model'] = get_model(old_config)
+    current_config['model'] = get_model(current_config)
 
-    return old_config
+    # Get story path if chat_with_story is True
+    if current_config['chat_with_story']: 
+
+        parent_directory = Path(file).parent.parent
+        
+        # Get story config to get history and summary paths
+        story_config = read_yaml(str(parent_directory / 'Settings' / 'Settings.md'))
+        story_config = {**default_config, **story_config}
+
+        story_path = parent_directory / story_config["history_path"]
+        summary_path = parent_directory / story_config["summary_path"]
+
+        file_path = summary_path if current_config['use_summary'] else story_path
+        current_config['include_file'] = file_path
+
+    return current_config

@@ -33,3 +33,5 @@ translation_language: "Russian"
 # Chat settings that are not used in story mode
 splitter: ""
 add_header: true
+chat_with_story: false
+include_file: ""

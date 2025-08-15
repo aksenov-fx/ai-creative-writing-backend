@@ -6,6 +6,8 @@
     "system_commands": "text",
     "chat_mode": "text",
     "fold": "checkbox",
-    "debug": "checkbox"
+    "debug": "checkbox",
+    "chat_with_story": "checkbox",
+    "use_summary": "checkbox"
   }
 }

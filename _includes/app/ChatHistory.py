@@ -99,16 +99,17 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.update(self.parts)
 
     def include_file(self):   
-        if self.frontmatter.get('include'):
+        if not self.config.include_file: return
 
-            included_content = self._read_file(self.frontmatter['include'])
-            if not included_content: raise FileNotFoundError(f"File is empty or not found: {self.frontmatter['include']}")
+        if not Utility.read_file(self.config.include_file): 
+            raise FileNotFoundError(f"File is empty or not found: {self.config.include_file}")
 
-            included_parts = self.split_parts(included_content)
-            included_content = "\n\n".join(included_parts)
+        included_content = Utility.read_file(self.config.include_file)
+        included_parts = self.split_parts(included_content)
+        included_content = "\n\n".join(included_parts)
 
-            self.parts[0] = self.parts[0] + "\n\n" + included_content 
-            self.update(self.parts)
+        self.parts[0] = self.parts[0] + "\n\n" + included_content 
+        self.update(self.parts)
 
     def parse_instructions(self):
         from .Utility import Utility
@@ -135,6 +136,5 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.split_conversation()
         self.clean_header()
         if self.config.trim_history: self.trim_content()
-        #self.include_file()
+        self.include_file()
         self.custom_instructions = self.parse_instructions()
-        #self.model = self.parse_model()
