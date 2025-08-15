@@ -35,8 +35,6 @@ def process_request(folder: str, file: str, method: str, chat_mode: bool, part_n
             Chat.regenerate(part_number)
         elif method == "add_part":          
             Chat.add_part(part_number)
-        elif method == "summarize":         
-            Chat.summarize_all()
         elif method == "update_summary":    
             Chat.update_summary()
         elif method == "chat":              

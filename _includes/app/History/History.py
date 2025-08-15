@@ -17,12 +17,14 @@ class HistoryMixin:
         self.assistant_response = ""
         self.part_number_content = ""
         self.removed_parts = 0
+        self.hashes = self.update_hashes()
 
     def update(self, parts):
         self.parts = parts
         self.content = self.join_parts(self.parts)
         self.parsed = "\n\n".join(self.parts)
         self.count = len(self.parts)
+        self.hashes = self.update_hashes()
 
 # Return
 
@@ -36,6 +38,17 @@ class HistoryMixin:
 
     def return_part(self, part_number):
         return self.parts[part_number].strip()
+    
+    def update_hashes(self):
+        if not self.config.use_summary: return
+        
+        hashes = {}
+        for part_text in self.parts:
+            if not part_text or not part_text.strip(): continue
+            part_hash = Utility.calculate_hash(part_text)
+            hashes[part_hash] = part_text.strip()
+
+        return hashes
 
 class HistoryChanger(HistoryMixin):
 
@@ -93,15 +106,18 @@ class HistoryParser(HistoryMixin):
 
     def merge_with_summary(self, summary):
 
-        if not summary or not summary.content: return
         if not self.config.use_summary: return
-        if self.count < summary.count: raise ValueError("Summary is longer than story.")
+        if not summary or not summary.yaml_data: return
+        if not self.hashes: return
 
-        # Keep the last part unsummarized
-        if self.count == summary.count:
-            self.parts[:-2] = summary.parts[:-2]
-        else:
-            self.parts[:len(summary.parts) - 1] = summary.parts
+        # Keep the last part unsummarized when counts are equal
+        hash_keys = list(self.hashes.keys())
+        hashes_to_process = hash_keys[:-1] if len(self.hashes) == len(summary.yaml_data) else hash_keys
+        
+        # Replace story parts with summarized versions for matching hashes
+        for i, part_hash in enumerate(hashes_to_process):
+            if part_hash in summary.yaml_data:
+                self.parts[i] = summary.yaml_data[part_hash]['part_text']
             
         self.update(self.parts)
         return self

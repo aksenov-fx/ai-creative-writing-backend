@@ -4,7 +4,6 @@ from .Streaming.Streamer import Streamer
 from .Streaming.TokenHandler import TokenHandler
 from .History.Factory import Factory
 from .History.History import HistoryChanger
-from .Utility import Utility
 
 ### Chat
 
@@ -18,7 +17,7 @@ class Chat:
                part_number: int = 0) -> None:
 
         print(f"\nModel: {config.model}")
-        if config.debug: print("\nDebug mode is on"); return
+        if config.debug: print("\nDebug mode is on"); return "debug response"
 
         token_handler = TokenHandler(history_object, rewrite, write_history, part_number)
         streamer = Streamer(token_handler.get_token_callback())
@@ -119,45 +118,33 @@ class Chat:
     ### Summarizer
 
     @staticmethod
-    def summarize_part(part_number: int) -> None:
-
-        story = Factory.get_story()
-        summary = Factory.get_summary()
-        summary_parsed = Factory.get_summary_parsed()        
-
-        part_number += 1
-        print(f"Summarizing part {part_number}/{story.count-1}")
-
-        summary_parsed.cut(part_number, include_previous_part=config.include_previous_part_when_summarizing)
-
-        config.model = config.models[config.summary_model]['name']
-        messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
-
-        Chat.stream(summary, messages, rewrite=True, part_number=part_number)
-        
-    @staticmethod
-    def summarize_all() -> None:
-
-        story_path = config.folder_path + config.history_path
-        summary_path = config.folder_path + config.summary_path
-        Utility.copy_file(story_path, summary_path)
+    def summarize_parts() -> None:
 
         summary = Factory.get_summary()
+        hash_keys = list(summary.yaml_data.keys())
 
-        for part_number in range(summary.count-1):
-            Chat.summarize_part(part_number)
+        for part_index, hash_key in enumerate(hash_keys):
+            
+            summary_parsed = Factory.get_summary_parsed()
+            if summary.yaml_data[hash_key]['summarized']: continue
+            
+            print(f"Summarizing part {part_index+1}/{summary.count}")
+            
+            summary_parsed.cut(part_index+1, config.include_previous_part_when_summarizing)
+            messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
+            
+            config.model = config.models[config.summary_model]['name']
+            result = Chat.stream(None, messages, write_history=False)
+
+            summary.yaml_data[hash_key]['summarized'] = True
+            summary.replace_history_part(result, hash_key)
 
     @staticmethod
     def update_summary() -> None:
-        summary = Factory.get_summary()
         story = Factory.get_story()
+        Factory.get_summary().update_from_story_parts(story)
 
-        summary_count = summary.count
-        summary.parts[summary.count-1:story.count+1] = story.parts[summary.count-1:story.count+1]
-        summary.join_and_write()
-
-        for part_number in range(summary_count, story.count):
-            Chat.summarize_part(part_number-1)
+        Chat.summarize_parts()
 
 # Chat
     @staticmethod

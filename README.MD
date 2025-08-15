@@ -54,11 +54,9 @@ Regenerate a selected part of the story
 **Add Part**  
 Add a new story part after a selected part  
 
-**Summarize story**  
-Ceate a file with summary for each part
-
 **Update summary**  
-Summarize new story parts
+Create or update story summary  
+Only updates summaries for story parts that were added or changed  
 
 **Translate selection**  
 Show translation for selected text in a language, defined in settings  

@@ -1,6 +1,7 @@
-import os, json, shutil, time
+import os, json, hashlib, time
 from importlib import resources
 from pathlib import Path
+import yaml
 
 class Utility:
 
@@ -24,6 +25,9 @@ class Utility:
 
     @staticmethod
     def write_file(path, content):
+        # Create parent directories if they don't exist
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -34,6 +38,32 @@ class Utility:
                 if attempt == max_retries - 1:
                     raise
                 time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
+
+    @staticmethod
+    def write_yaml(path, content):
+        # Convert OrderedDict to regular dict to avoid Python-specific YAML tags
+        if hasattr(content, 'items'):
+            content = dict(content)
+        yaml_data = yaml.dump(content, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        Utility.write_file(path, yaml_data)
+
+    @staticmethod
+    def read_yaml(file_path, convert_keys_to_snake_case = False):
+        if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
+            return {}
+        
+        yaml_data = Utility.read_file(file_path)
+        if file_path.endswith('.md'): yaml_data = yaml_data.split('---\n')[1]
+        yaml_data = yaml.safe_load(yaml_data)
+        
+        if convert_keys_to_snake_case:
+            yaml_data = {k.lower().replace(" ", "_"): v for k, v in yaml_data.items()}
+        
+        return yaml_data
+
+    @staticmethod
+    def calculate_hash(text):
+        return hashlib.md5(text.encode('utf-8')).hexdigest()
 
     @staticmethod
     def read_instructions(instructions: str):
@@ -68,9 +98,3 @@ class Utility:
     @staticmethod
     def clear_screen():
         os.system('clear' if os.name == 'posix' else 'cls')
-
-    @staticmethod
-    def copy_file(path, new_path):
-        if os.path.exists(new_path):
-            raise FileExistsError(f"Summary already exists. Please delete it before creating a new one.")
-        shutil.copy(path, new_path)

@@ -12,12 +12,13 @@ summary_model: "Deepseek V3"
 model: ""
 temperature: 0.8
 max_tokens: 100000
-trim_history: true
+trim_history: false
 use_summary: true
 include_previous_part_when_summarizing: True
 include_previous_part_when_rewriting: True
 history_path: "Story.md"
-summary_path: "Story summary.md"
+summary_yaml_path: "Data/Summary YAML.yaml"
+summary_md_path: "Story Summary.md"
 prompts_path: "Prompts.md"
 folder_path: ""
 separator: "\n----\n"

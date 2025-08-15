@@ -4,7 +4,7 @@ from _includes import config
 from .ApiComposer import ApiComposer
 from ..History.History import HistoryParser
 
-def validate(include_introduction):
+def validate(include_introduction, validate_user_prompt=True):
 
     introduction_error = "config.introduction is not set. Please set it before beginning a story."
     user_prompt_error = "User prompt is not set. Please set it before writing a scene."
@@ -12,12 +12,15 @@ def validate(include_introduction):
     if include_introduction and not config.introduction:
         raise ValueError(introduction_error)
 
-    if not config.variables['#user_prompt']:
+    if validate_user_prompt and not config.variables['#user_prompt']:
         raise ValueError(user_prompt_error)
     
 def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True):
 
-    validate(include_introduction)
+    if method == "Summarize part":
+        validate(include_introduction, validate_user_prompt=False)
+    else:
+        validate(include_introduction)
 
     # Prepare user prompt
     prompt_structure = config.prompts_structure[method] # Get structure defined in prompts_structure.yaml

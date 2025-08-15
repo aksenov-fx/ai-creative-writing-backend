@@ -2,9 +2,9 @@ from dataclasses import dataclass, asdict
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
+import os
 
 from .Utility import Utility
-import os, yaml
 
 @dataclass
 class ChatConfig:
@@ -37,7 +37,8 @@ class ChatConfig:
     write_interval: float
 
     history_path: Path
-    summary_path: Path
+    summary_yaml_path: Path
+    summary_md_path: Path
     prompts_path: Path
     folder_path: Path
 
@@ -70,19 +71,6 @@ def override_config(config: ChatConfig, **overrides: Any):
         for key, value in original_values.items():
             setattr(config, key, value)
 
-def read_yaml(file_path, convert_keys_to_snake_case = False):
-    if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
-        return {}
-    
-    yaml_data = Utility.read_file(file_path)
-    if file_path.endswith('.md'): yaml_data = yaml_data.split('---\n')[1]
-    yaml_data = yaml.safe_load(yaml_data)
-    
-    if convert_keys_to_snake_case:
-        yaml_data = {k.lower().replace(" ", "_"): v for k, v in yaml_data.items()}
-    
-    return yaml_data
-
 def get_model(config_dict):
 
     model = config_dict['model']
@@ -108,7 +96,7 @@ def load_config(folder_path, config_dict, extension = '.yaml'):
     for key in keys:
         path = os.path.join(folder_path, key + extension)
         key_name = key.lower().replace(" ", "_")
-        config_dict[key_name].update(read_yaml(path))
+        config_dict[key_name].update(Utility.read_yaml(path))
     
     config_dict['endpoint'] = get_endpoint(config_dict)
     config_dict['model'] = get_model(config_dict)
@@ -120,14 +108,13 @@ def get_story_config(folder: str):
     from _includes import config
 
     settings_folder = folder + '/Settings/'
+    config.folder_path = folder + '/'
+    config.interrupt_flag = False
 
     old_config = asdict(config)
-    new_config = read_yaml(settings_folder + 'Settings.md', convert_keys_to_snake_case=True)
+    new_config = Utility.read_yaml(settings_folder + 'Settings.md', convert_keys_to_snake_case=True)
     old_config.update(new_config)
     new_config = load_config(settings_folder, old_config, ".md")
-
-    config.interrupt_flag = False
-    config.folder_path = folder + '/'
 
     return new_config
 
@@ -136,8 +123,8 @@ def get_chat_config(file):
     from pathlib import Path
 
     current_config = asdict(config)
-    default_chat_config = read_yaml('./_includes/settings/Chat Settings.yaml')
-    new_config = read_yaml(file, convert_keys_to_snake_case=True)
+    default_chat_config = Utility.read_yaml('./_includes/settings/Chat Settings.yaml')
+    new_config = Utility.read_yaml(file, convert_keys_to_snake_case=True)
     
     current_config.update(default_chat_config)
     current_config.update(new_config)
@@ -150,7 +137,7 @@ def get_chat_config(file):
         parent_directory = Path(file).parent.parent
         
         # Get story config to get history and summary paths
-        story_config = read_yaml(str(parent_directory / 'Settings' / 'Settings.md'))
+        story_config = Utility.read_yaml(str(parent_directory / 'Settings' / 'Settings.md'))
         story_config = {**default_config, **story_config}
 
         story_path = parent_directory / story_config["history_path"]
