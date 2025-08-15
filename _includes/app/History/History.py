@@ -1,10 +1,10 @@
 import os, time
-from .Utility import Utility
+from ..Utility import Utility
 
 class HistoryMixin:
     
     def __init__(self, path):
-        from ..config import config
+        from ...config import config
 
         self.path = path
         self.config = config
@@ -118,8 +118,8 @@ class HistoryParser(HistoryMixin):
         self.update(self.parts[-2:-1])
         return self
 
-    def cut(self, part_number):
-        if self.config.include_previous_part_when_rewriting: 
+    def cut(self, part_number, include_previous_part):
+        if include_previous_part: 
             (self
             .cut_history_to_part_number(part_number)
             .set_part_number_content(part_number)

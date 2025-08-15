@@ -2,7 +2,7 @@ import time
 import threading
 from typing import Callable
 
-from .History import HistoryChanger
+from ..History.History import HistoryChanger
 from _includes import config
 
 class TokenHandler:

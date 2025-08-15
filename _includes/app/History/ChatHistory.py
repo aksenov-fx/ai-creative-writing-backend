@@ -1,10 +1,10 @@
 import os, time
-from .Utility import Utility
+from ..Utility import Utility
 
 class ChatHistoryMixin:
     
     def __init__(self, path):
-        from ..config import config
+        from ...config import config
 
         self.path = path
 
@@ -112,7 +112,7 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.update(self.parts)
 
     def parse_instructions(self):
-        from .Utility import Utility
+        from ..Utility import Utility
         return Utility.read_instructions(self.custom_instructions)
 
 # Trim

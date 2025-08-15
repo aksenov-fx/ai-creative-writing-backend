@@ -3,9 +3,9 @@ import threading
 
 from _includes import config
 from .app.Utility import Utility
-from .app.PromptComposer import set_prompt
+from .app.Composers.PromptComposer import set_prompt
 from .app.Chat import Chat
-from .app.Factory import Factory
+from .app.History.Factory import Factory
 from .app.ConfigManager import get_story_config, override_config, get_chat_config
 
 def process_request(folder: str, file: str, method: str, chat_mode: bool, part_number: str, selected_text: str):

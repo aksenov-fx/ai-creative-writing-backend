@@ -1,9 +1,9 @@
 from _includes import config
-from .PromptComposer import compose_prompt, compose_helper_prompt
-from .Streamer import Streamer
-from .TokenHandler import TokenHandler
-from .Factory import Factory
-from .History import HistoryChanger
+from .Composers.PromptComposer import compose_prompt, compose_helper_prompt
+from .Streaming.Streamer import Streamer
+from .Streaming.TokenHandler import TokenHandler
+from .History.Factory import Factory
+from .History.History import HistoryChanger
 from .Utility import Utility
 
 ### Chat
@@ -81,7 +81,7 @@ class Chat:
 
         story = Factory.get_story()
         story_parsed = Factory.get_story_parsed()
-        story_parsed.cut(part_number)
+        story_parsed.cut(part_number, include_previous_part=config.include_previous_part_when_rewriting)
 
         messages = compose_prompt("Change part", story_parsed, include_introduction=False)
 
@@ -128,7 +128,7 @@ class Chat:
         part_number += 1
         print(f"Summarizing part {part_number}/{story.count-1}")
 
-        summary_parsed.cut(part_number)
+        summary_parsed.cut(part_number, include_previous_part=config.include_previous_part_when_summarizing)
 
         config.model = config.models[config.summary_model]['name']
         messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
@@ -162,7 +162,7 @@ class Chat:
 # Chat
     @staticmethod
     def chat(file_path: str) -> None:
-        from .ApiComposer import ApiComposer
+        from .Composers.ApiComposer import ApiComposer
 
         history, history_parsed = Factory.get_chat_objects(file_path)
         

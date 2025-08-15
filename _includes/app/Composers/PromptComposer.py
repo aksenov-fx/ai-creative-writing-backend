@@ -2,7 +2,7 @@ import re
 
 from _includes import config
 from .ApiComposer import ApiComposer
-from .History import HistoryParser
+from ..History.History import HistoryParser
 
 def validate(include_introduction):
 
@@ -50,7 +50,7 @@ def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
     return ApiComposer.compose_messages(combined_prompt, None)
 
 def set_prompt(part_value, abbreviations):
-    from .Factory import Factory
+    from ..History.Factory import Factory
 
     prompts = Factory.get_prompts()
 
