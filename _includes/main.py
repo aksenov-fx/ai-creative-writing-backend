@@ -18,27 +18,27 @@ def process_request(folder: str, file: str, method: str, chat_mode: bool, part_n
     with override_config(config, **new_config):
         
         if method == "write_scene":         
-            Chat.write_scene()
+            Chat.Generator.write_scene()
         elif method == "custom_prompt":     
-            Chat.custom_prompt()
+            Chat.Generator.custom_prompt()
         elif method == "rewrite_selection": 
-            result = Chat.rewrite_selection(selected_text)
+            result = Chat.Helpers.rewrite_selection(selected_text)
         elif method == "translate":         
-            result = Chat.translate(selected_text)
+            result = Chat.Helpers.translate(selected_text)
         elif method == "explain":           
-            result = Chat.explain(selected_text)
+            result = Chat.Helpers.explain(selected_text)
         elif method == "rewrite_part":      
-            Chat.change_part(part_number)
+            Chat.Changer.change_part(part_number)
         elif method == "rewrite_parts":     
-            Chat.change_parts(part_number)
+            Chat.Changer.change_parts(part_number)
         elif method == "regenerate":        
-            Chat.regenerate(part_number)
+            Chat.Generator.regenerate(part_number)
         elif method == "add_part":          
-            Chat.add_part(part_number)
+            Chat.Generator.add_part(part_number)
         elif method == "update_summary":    
-            Chat.update_summary()
+            Chat.Summarizer.update_summary()
         elif method == "chat":              
-            Chat.chat(file)
+            Chat.Chatter.chat(file)
         elif method == "story_remove_last_response":
             Factory.get_story().remove_last_response()
         elif method == "chat_remove_last_response":
