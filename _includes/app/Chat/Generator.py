@@ -1,12 +1,11 @@
 from ..Composers.PromptComposer import compose_prompt
 from ..History.Factory import Factory
-
+from ..Streaming.stream import stream
 
 class Generator:
 
     @staticmethod
     def write_scene() -> None:
-        from ..Chat import Chat
         
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
@@ -14,11 +13,10 @@ class Generator:
 
         messages = compose_prompt("Write scene", story_parsed)
 
-        Chat.stream(story, messages)
+        stream(story, messages)
 
     @staticmethod
     def custom_prompt() -> None:
-        from ..Chat import Chat
         
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
@@ -26,11 +24,10 @@ class Generator:
 
         messages = compose_prompt("Custom prompt", story_parsed)
 
-        Chat.stream(story, messages)
+        stream(story, messages)
 
     @staticmethod
     def regenerate(part_number: int) -> None:
-        from ..Chat import Chat
         
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
@@ -38,11 +35,10 @@ class Generator:
 
         messages = compose_prompt("Write scene", story_parsed)
 
-        Chat.stream(story, messages, rewrite=True, part_number=part_number)
+        stream(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def add_part(part_number: int) -> None:
-        from ..Chat import Chat
         
         story, story_parsed, summary = Factory.get_objects()
 
@@ -53,4 +49,4 @@ class Generator:
         part_number += 1
 
         messages = compose_prompt("Write scene", story_parsed)
-        Chat.stream(story, messages, rewrite=True, part_number=part_number)
+        stream(story, messages, rewrite=True, part_number=part_number)

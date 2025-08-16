@@ -1,11 +1,11 @@
 from ..Composers.PromptComposer import compose_prompt
 from ..History.Factory import Factory
+from ..Streaming.stream import stream
 
 class Changer:
 
     @staticmethod
     def change_part(part_number: int) -> None:
-        from ..Chat import Chat
         
         story = Factory.get_story()
         story_parsed = Factory.get_story_parsed()
@@ -13,7 +13,7 @@ class Changer:
 
         messages = compose_prompt("Change part", story_parsed, include_introduction=False)
 
-        Chat.stream(story, messages, rewrite=True, part_number=part_number)
+        stream(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
     def change_parts(part_number: int) -> None:

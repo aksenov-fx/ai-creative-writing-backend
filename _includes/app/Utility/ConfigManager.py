@@ -119,7 +119,7 @@ def get_story_config(folder: str):
     return new_config
 
 def get_chat_config(file):
-    from ..config import config, default_config
+    from ...config import config, default_config
     from pathlib import Path
 
     current_config = asdict(config)

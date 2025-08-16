@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
 from _includes import config
-from ..Utility import Utility
+from ..Utility.Utility import Utility
 
 class ApiComposer:
 

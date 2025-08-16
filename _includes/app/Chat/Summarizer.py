@@ -1,13 +1,12 @@
-from _includes import config
 from ..Composers.PromptComposer import compose_prompt
 from ..History.Factory import Factory
-
+from ..Streaming.stream import stream
+from _includes import config
 
 class Summarizer:
 
     @staticmethod
     def summarize_parts() -> None:
-        from ..Chat import Chat
         
         summary = Factory.get_summary()
         hash_keys = list(summary.yaml_data.keys())
@@ -23,7 +22,7 @@ class Summarizer:
             messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
             
             config.model = config.models[config.summary_model]['name']
-            result = Chat.stream(None, messages, write_history=False)
+            result = stream(None, messages, write_history=False)
 
             summary.yaml_data[hash_key]['summarized'] = True
             summary.replace_history_part(result, hash_key)
