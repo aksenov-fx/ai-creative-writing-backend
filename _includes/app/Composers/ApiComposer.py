@@ -2,7 +2,7 @@ from typing import Optional
 from typing import List
 from typing import Dict
 from _includes import config
-from ..Utility.Utility import Utility
+from .. import Utility
 
 class ApiComposer:
 

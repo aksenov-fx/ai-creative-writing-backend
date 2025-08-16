@@ -1,6 +1,6 @@
 import os
 import time
-from ..Utility.Utility import Utility
+from .. import Utility
 
 class HistoryMixin:
     

@@ -1,4 +1,4 @@
-from ..Utility.Utility import Utility
+from .. import Utility
 
 
 def get_model(config_dict):

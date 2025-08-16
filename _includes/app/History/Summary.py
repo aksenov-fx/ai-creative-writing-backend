@@ -1,7 +1,7 @@
 import os
 import time
 from collections import OrderedDict
-from ..Utility.Utility import Utility
+from .. import Utility
 
 class SummaryMixin:
     

@@ -1,7 +1,7 @@
 from dataclasses import asdict
 from pathlib import Path
 
-from ..Utility.Utility import Utility
+from .. import Utility
 from .commons import get_model
 
 

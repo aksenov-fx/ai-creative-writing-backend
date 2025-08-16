@@ -1,6 +1,6 @@
 import os
 import time
-from ..Utility.Utility import Utility
+from .. import Utility
 
 class ChatHistoryMixin:
     
@@ -113,7 +113,6 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.update(self.parts)
 
     def parse_instructions(self):
-        from ..Utility.Utility import Utility
         return Utility.read_instructions(self.custom_instructions)
 
 # Trim

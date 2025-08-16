@@ -1,7 +1,7 @@
 import os
 from dataclasses import asdict
 
-from ..Utility.Utility import Utility
+from .. import Utility
 from .commons import get_endpoint, get_model
 
 
