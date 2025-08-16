@@ -1,6 +1,6 @@
 import os
 import socketserver
-from .dispatcher import dispatch
+from .dispatcher import dispatch_story, dispatch_chat
 from _includes import config
 
 class RequestHandler(socketserver.BaseRequestHandler):
@@ -25,14 +25,17 @@ class RequestHandler(socketserver.BaseRequestHandler):
             data = self.request.recv(1024).decode('utf-8').strip()
             if not data: break
             
-            folder, file, method, chat_mode,part_number, selected_text = self.process_tcp_data(data)
+            folder, file, method, chat_mode, part_number, selected_text = self.process_tcp_data(data)
 
-            if method not in ["story_remove_last_response", "chat_remove_last_response", "interrupt_write", "switch_debug"]:
-                self.clear_screen()
+            exempt_methods = ["story_remove_last_response", "chat_remove_last_response", "interrupt_write", "switch_debug"]
+            if method not in exempt_methods: self.clear_screen()
                 
             print("\nMethod: " + method + "\n")
-            result = dispatch(folder, file, method, chat_mode, part_number, selected_text)
-            self.request.sendall(result.encode('utf-8'))
+
+            if chat_mode: result = dispatch_chat(folder, file, method, selected_text)
+            else:         result = dispatch_story(folder, file, method, part_number, selected_text)
+
+            if result: self.request.sendall(result.encode('utf-8'))
             
             break
 

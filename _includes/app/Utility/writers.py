@@ -22,4 +22,4 @@ def write_yaml(path: str, content: dict) -> None:
     if hasattr(content, 'items'):
         content = dict(content)
     yaml_data = yaml.dump(content, default_flow_style=False, allow_unicode=True, sort_keys=False)
-    Utility.write_file(path, yaml_data)
+    write_file(path, yaml_data)
