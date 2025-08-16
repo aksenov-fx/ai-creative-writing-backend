@@ -29,7 +29,11 @@ class Summarizer:
 
     @staticmethod
     def update_summary() -> None:
+        
         story = Factory.get_story()
+        if not story.content: raise ValueError("Story file is empty or not found")
+        
+        story.update_hashes()
         Factory.get_summary().update_from_story_parts(story)
 
         Summarizer.summarize_parts()

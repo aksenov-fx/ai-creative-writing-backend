@@ -18,14 +18,13 @@ class HistoryMixin:
         self.assistant_response = ""
         self.part_number_content = ""
         self.removed_parts = 0
-        self.hashes = self.update_hashes()
+        self.hashes = {}
 
     def update(self, parts):
         self.parts = parts
         self.content = self.join_parts(self.parts)
         self.parsed = "\n\n".join(self.parts)
         self.count = len(self.parts)
-        self.hashes = self.update_hashes()
 
 # Return
 
@@ -41,15 +40,13 @@ class HistoryMixin:
         return self.parts[part_number].strip()
     
     def update_hashes(self):
-        if not self.config.use_summary: return
-        
         hashes = {}
         for part_text in self.parts:
             if not part_text or not part_text.strip(): continue
             part_hash = Utility.calculate_hash(part_text)
             hashes[part_hash] = part_text.strip()
 
-        return hashes
+        self.hashes = hashes
 
 class HistoryChanger(HistoryMixin):
 
@@ -109,6 +106,8 @@ class HistoryParser(HistoryMixin):
 
         if not self.config.use_summary: return
         if not summary or not summary.yaml_data: return
+
+        self.update_hashes()
         if not self.hashes: return
 
         # Keep the last part unsummarized when counts are equal
