@@ -1,6 +1,6 @@
 import os
 import socketserver
-from .process_request import process_request
+from .dispatcher import dispatch
 
 class RequestHandler(socketserver.BaseRequestHandler):
 
@@ -30,7 +30,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 self.clear_screen()
                 
             print("\nMethod: " + method + "\n")
-            result = process_request(folder, file, method, chat_mode, part_number, selected_text)
+            result = dispatch(folder, file, method, chat_mode, part_number, selected_text)
             self.request.sendall(result.encode('utf-8'))
             
             break
