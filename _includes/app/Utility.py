@@ -82,19 +82,3 @@ class Utility:
         json_str = json.dumps(obj, indent=2, ensure_ascii=False)
         formatted_str = json_str.replace('\\n', '\n')
         print(formatted_str)
-
-    @staticmethod
-    def process_tcp_data(data):
-        args = data.split(',', 5)
-        folder_path, file_path, method_name, chat_mode, part_value_str, selected_text = args 
-
-        part_value = int(part_value_str)
-        posix_folder_path = os.path.normpath(folder_path).replace('\\', '/')
-        posix_file_path = os.path.normpath(file_path).replace('\\', '/')
-        chat_mode = chat_mode.lower() == 'true'
-
-        return posix_folder_path, posix_file_path, method_name, chat_mode, part_value, selected_text
-
-    @staticmethod
-    def clear_screen():
-        os.system('clear' if os.name == 'posix' else 'cls')
