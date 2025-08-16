@@ -4,7 +4,7 @@ from _includes import config
 from .ApiComposer import ApiComposer
 from ..History.History import HistoryParser
 
-def validate(include_introduction, validate_user_prompt=True):
+def validate(include_introduction: bool, validate_user_prompt: bool = True) -> None:
 
     introduction_error = "config.introduction is not set. Please set it before beginning a story."
     user_prompt_error = "User prompt is not set. Please set it before writing a scene."
@@ -28,14 +28,14 @@ def compose_prompt(method: str, history_parsed: HistoryParser, include_introduct
 
     # Prepare history
     if config.trim_history: history_parsed.trim_content()
-    history = config.history_prefix + "\n" + history_parsed.parsed if history_parsed.parsed else ""
+    history = f"{config.history_prefix}\n{history_parsed.parsed}" if history_parsed.parsed else ""
 
     # Prepare introduction
     introduction = expand_abbreviations(config.introduction)
     introduction += "\n\n" if include_introduction else ""
 
     # Combine introduction, history and user prompt
-    combined_prompt = introduction + history + "\n\n" + prompt + "\n\n" + history_parsed.part_number_content
+    combined_prompt = f"{introduction}{history}\n\n{prompt}\n\n{history_parsed.part_number_content}"
     combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
 
     messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
@@ -47,12 +47,12 @@ def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
     prompt = expand_abbreviations(prompt_structure, config.variables)
 
     if prompt_key == 'Translate':
-        prompt = prompt.strip() + " " + config.translation_language + ":"
+        prompt = f"{prompt.strip()} {config.translation_language}:"
     
-    combined_prompt = prompt.strip() + "\n" + selected_text
+    combined_prompt = f"{prompt.strip()}\n{selected_text}"
     return ApiComposer.compose_messages(combined_prompt, None)
 
-def set_prompt(part_value, abbreviations):
+def set_prompt(part_value: int, abbreviations: dict) -> None:
     from ..History.Factory import Factory
 
     prompts = Factory.get_prompts()
@@ -64,7 +64,7 @@ def set_prompt(part_value, abbreviations):
 
     prompts.fix_separator()
 
-def expand_abbreviations(text, abbreviations=None):
+def expand_abbreviations(text: str, abbreviations: dict = None) -> str:
     from _includes import config
 
     if not abbreviations: abbreviations = config.abbreviations

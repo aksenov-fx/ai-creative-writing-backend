@@ -1,7 +1,11 @@
-import os, json, hashlib, time
+import os
+import json
+import hashlib
+import time
+import yaml
+
 from importlib import resources
 from pathlib import Path
-import yaml
 
 class Utility:
 
@@ -24,7 +28,7 @@ class Utility:
         return ""
 
     @staticmethod
-    def write_file(path, content):
+    def write_file(path: str, content: str) -> None:
         # Create parent directories if they don't exist
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         
@@ -40,7 +44,7 @@ class Utility:
                 time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
 
     @staticmethod
-    def write_yaml(path, content):
+    def write_yaml(path: str, content: dict) -> None:
         # Convert OrderedDict to regular dict to avoid Python-specific YAML tags
         if hasattr(content, 'items'):
             content = dict(content)
@@ -48,7 +52,7 @@ class Utility:
         Utility.write_file(path, yaml_data)
 
     @staticmethod
-    def read_yaml(file_path, convert_keys_to_snake_case = False):
+    def read_yaml(file_path: str, convert_keys_to_snake_case: bool = False) -> dict:
         if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
             return {}
         

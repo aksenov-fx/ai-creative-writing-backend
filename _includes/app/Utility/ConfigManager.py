@@ -1,8 +1,10 @@
-from dataclasses import dataclass, asdict
+import os
+
+from dataclasses import dataclass
+from dataclasses import asdict
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
-import os
 
 from .Utility import Utility
 
@@ -45,6 +47,7 @@ class ChatConfig:
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
 
+    port: int
     interrupt_flag: bool
     debug: bool
 

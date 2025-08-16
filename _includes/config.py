@@ -1,4 +1,5 @@
-from .app.Utility.ConfigManager import ChatConfig, load_config
+from .app.Utility.ConfigManager import ChatConfig
+from .app.Utility.ConfigManager import load_config
 from .app.Utility.Utility import Utility
 
 folder = './_includes/settings/'

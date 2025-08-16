@@ -1,4 +1,5 @@
-import os, time
+import os
+import time
 from ..Utility.Utility import Utility
 
 class ChatHistoryMixin:
@@ -66,7 +67,7 @@ class ChatHistoryChanger(ChatHistoryMixin):
         if self.parts[-1] == "" or self.parts[-1].strip() == "#": return
 
         self.parts.append("")
-        self.append_history("\n" + self.separator + "\n")
+        self.append_history(f"\n{self.separator}\n")
         self.update(self.parts)
 
         if not self.parts_even and self.config.add_header: self.append_history("# ")
@@ -108,7 +109,7 @@ class ChatHistoryParser(ChatHistoryMixin):
         included_parts = self.split_parts(included_content)
         included_content = "\n\n".join(included_parts)
 
-        self.parts[0] = self.parts[0] + "\n\n" + included_content 
+        self.parts[0] = f"{self.parts[0]}\n\n{included_content}" 
         self.update(self.parts)
 
     def parse_instructions(self):

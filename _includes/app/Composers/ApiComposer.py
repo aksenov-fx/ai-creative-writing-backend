@@ -1,4 +1,6 @@
-from typing import Optional, List, Dict
+from typing import Optional
+from typing import List
+from typing import Dict
 from _includes import config
 from ..Utility.Utility import Utility
 
@@ -29,8 +31,8 @@ class ApiComposer:
         ApiComposer.append_message(messages, "system", history.custom_instructions)
 
         for i, part in enumerate(history.parts):
-            part_even = i % 2 == 0
-            role = "user" if part_even else "assistant"
+            is_user_message = i % 2 == 0
+            role = "user" if is_user_message else "assistant"
             ApiComposer.append_message(messages, role, part)
     
         if config.print_messages:

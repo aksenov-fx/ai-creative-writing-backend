@@ -1,4 +1,5 @@
-import threading, code
+import threading
+import code
 from .listener import start_server
 
 def main():

@@ -1,6 +1,7 @@
 import os
 import socketserver
 from .dispatcher import dispatch
+from _includes import config
 
 class RequestHandler(socketserver.BaseRequestHandler):
 
@@ -38,7 +39,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
 # -------------------------------- #
 
 def start_server():
-    with socketserver.ThreadingTCPServer(('localhost', 9993), RequestHandler) as server:
-        print("Server listening on port 9993")
+    with socketserver.ThreadingTCPServer(('localhost', config.port), RequestHandler) as server:
+        print("Server listening on port " + str(config.port))
         server.serve_forever()
         

@@ -1,4 +1,5 @@
-import os, time
+import os
+import time
 from ..Utility.Utility import Utility
 
 class HistoryMixin:
@@ -73,7 +74,7 @@ class HistoryChanger(HistoryMixin):
 
     def fix_separator(self):
         if self.parts[-1] != "":
-            self.append_history("\n" + self.separator + "\n")
+            self.append_history(f"\n{self.separator}\n")
             self.update_timestamp()
 
     def remove_last_response(self) -> None:

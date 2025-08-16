@@ -1,7 +1,10 @@
 from _includes import config
-from .History import HistoryChanger, HistoryParser
-from .ChatHistory import ChatHistoryChanger, ChatHistoryParser
-from .Summary import SummaryChanger, SummaryParser
+from .History import HistoryChanger
+from .History import HistoryParser
+from .ChatHistory import ChatHistoryChanger
+from .ChatHistory import ChatHistoryParser
+from .Summary import SummaryChanger
+from .Summary import SummaryParser
 
 class Factory:
     
