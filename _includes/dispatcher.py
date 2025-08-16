@@ -1,17 +1,17 @@
 from . import config
 from .app.Composers.PromptComposer import set_prompt
 from .app.History.Factory import Factory
-from .app.Utility.ConfigManager import get_story_config, override_config, get_chat_config
+from .app import ConfigManager
 from .app import Chat
 
 def dispatch(folder: str, file: str, method: str, chat_mode: bool, part_number: str, selected_text: str):
 
     result = ""
 
-    if chat_mode: new_config = get_chat_config(file)
-    else:         new_config = get_story_config(folder)
+    if chat_mode: new_config = ConfigManager.get_chat_config(file)
+    else:         new_config = ConfigManager.get_story_config(folder)
 
-    with override_config(config, **new_config):
+    with ConfigManager.override_config(config, **new_config):
         
         if method == "write_scene":         
             Chat.Generator.write_scene()
