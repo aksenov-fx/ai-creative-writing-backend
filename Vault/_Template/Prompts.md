@@ -1,5 +1,0 @@
-
-Write first scene
-
-----
-
