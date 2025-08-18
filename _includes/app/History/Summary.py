@@ -13,6 +13,7 @@ class SummaryMixin:
         self.separator = self.config.separator
 
         self.yaml_data = Utility.read_yaml(self.path)
+        self.keys = list(self.yaml_data.keys())
         self.parts = self._extract_parts_from_yaml()
         self.parsed = self.join_parts(self.parts)
         self.count = len(self.parts)
@@ -68,6 +69,8 @@ class SummaryChanger(SummaryMixin):
         self.yaml_data = new_yaml_data
         self.parts = self._extract_parts_from_yaml()
         self.join_and_write()
+
+        return self
     
 # Change
 
