@@ -30,6 +30,7 @@ include_reasoning: true
 history_prefix: "**Previous text parts for reference:**"
 print_reasoning: true
 translation_language: "Russian"
+settings_folder: "./_includes/settings/"
 
 # Chat settings that are not used in story mode
 splitter: ""

@@ -37,6 +37,7 @@ class ConfigDataClass:
     summary_md_path: Path
     prompts_path: Path
     folder_path: Path
+    settings_folder: Path
 
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
