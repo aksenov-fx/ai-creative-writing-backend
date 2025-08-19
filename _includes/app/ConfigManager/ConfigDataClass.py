@@ -30,7 +30,6 @@ class ConfigDataClass:
     include_reasoning: bool
     print_reasoning: bool
     separator: str
-    write_interval: float
 
     history_path: Path
     summary_yaml_path: Path
@@ -42,7 +41,6 @@ class ConfigDataClass:
     include_previous_part_when_summarizing: bool
     include_previous_part_when_rewriting: bool
 
-    port: int
     interrupt_flag: bool
     debug: bool
 
@@ -51,3 +49,11 @@ class ConfigDataClass:
     add_header: bool
     chat_with_story: bool
     include_file: str
+
+    # Constants
+    WRITE_INTERVAL: float
+    PORT: int
+    TOKEN_ESTIMATION_DIVISOR: int
+    BUFFER_SIZE: int
+    TIMESTAMP_UPDATE_DELAY: float
+    RETRY_BASE_DELAY: float

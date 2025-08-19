@@ -65,20 +65,37 @@ def set_prompt(part_value: int, abbreviations: dict) -> None:
     prompts.fix_separator()
 
 def expand_abbreviations(text: str, abbreviations: dict = None) -> str:
+    r"""
+    Replaces abbreviations in the text with their corresponding values.
+
+    This function is case-insensitive and matches text
+    preceded by # or whitespace/newline, followed by delimiters or end.
+    The delimiters are: :, ., ?, !, ', ', \s (whitespace), $ (end of string).
+
+    The method is used in two ways:
+    - to expand abbreviations from config.abbreviations for user prompt and introduction.
+    - to expand variables from config.variables in config.prompts_structure.
+
+    Args:
+        text (str): The text to expand abbreviations in.
+        abbreviations (dict, optional): The abbreviations to use. Defaults to None.
+
+    Returns:
+        str: The text with abbreviations expanded.
+    """
+
     from _includes import config
 
     if not abbreviations: abbreviations = config.abbreviations
     if not abbreviations or not text: return text
     
     case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
-    # Match words with letters/underscores preceded by # or whitespace/start, followed by delimiters or end
     pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
     
     def replace_match(match):
         prefix = match.group(1)
         abbreviation = match.group(2)
         
-        # For # prefix, include it in the abbreviation lookup
         if prefix == "#":
             lookup_key = ("#" + abbreviation).lower()
         else:

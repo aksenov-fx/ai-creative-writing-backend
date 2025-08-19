@@ -23,7 +23,6 @@ prompts_path: "Prompts.md"
 folder_path: ""
 separator: "\n----\n"
 interrupt_flag: false
-write_interval: 1.0
 debug: false
 print_messages: true
 include_reasoning: true
@@ -37,4 +36,11 @@ splitter: ""
 add_header: true
 chat_with_story: false
 include_file: ""
-port: 9993
+
+# Constants
+WRITE_INTERVAL: 1.0
+PORT: 9993
+TOKEN_ESTIMATION_DIVISOR: 4
+BUFFER_SIZE: 1024
+TIMESTAMP_UPDATE_DELAY: 0.3
+RETRY_BASE_DELAY: 0.1

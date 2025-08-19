@@ -1,8 +1,19 @@
 from pathlib import Path
 import yaml
 import time
+import os
+
+
+def update_timestamp(path: str) -> None:
+    from _includes import config
+    
+    time.sleep(config.TIMESTAMP_UPDATE_DELAY)
+    current_time = time.time()
+    os.utime(path, (current_time, current_time))
 
 def write_file(path: str, content: str) -> None:
+    from _includes import config
+
     # Create parent directories if they don't exist
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     
@@ -15,11 +26,19 @@ def write_file(path: str, content: str) -> None:
         except (OSError, IOError) as e:
             if attempt == max_retries - 1:
                 raise
-            time.sleep(0.1 * (2 ** attempt))  # Exponential backoff
+            time.sleep(config.RETRY_BASE_DELAY * (2 ** attempt))  # Exponential backoff
+    
+    update_timestamp(path)
 
 def write_yaml(path: str, content: dict) -> None:
-    # Convert OrderedDict to regular dict to avoid Python-specific YAML tags
+    """
+    Write a YAML file with the given content.
+    
+    Converts OrderedDict to regular dict to avoid Python-specific YAML tags.
+    """
+
     if hasattr(content, 'items'):
         content = dict(content)
+        
     yaml_data = yaml.dump(content, default_flow_style=False, allow_unicode=True, sort_keys=False)
     write_file(path, yaml_data)

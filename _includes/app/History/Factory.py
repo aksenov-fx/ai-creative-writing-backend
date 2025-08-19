@@ -1,8 +1,12 @@
+import os
 from _includes import config
+
 from .History import HistoryChanger
 from .History import HistoryParser
+
 from .ChatHistory import ChatHistoryChanger
 from .ChatHistory import ChatHistoryParser
+
 from .Summary import SummaryChanger
 from .Summary import SummaryParser
 
@@ -10,15 +14,15 @@ class Factory:
     
     @staticmethod
     def get_story() -> HistoryChanger:
-        return HistoryChanger(config.folder_path + config.history_path)
+        return HistoryChanger(os.path.join(config.folder_path, config.history_path))
 
     @staticmethod
     def get_prompts() -> HistoryChanger:
-        return HistoryChanger(config.folder_path + config.prompts_path)
+        return HistoryChanger(os.path.join(config.folder_path, config.prompts_path))
 
     @staticmethod
     def get_story_parsed() -> HistoryParser:
-        return HistoryParser(config.folder_path + config.history_path)
+        return HistoryParser(os.path.join(config.folder_path, config.history_path))
 
     @staticmethod
     def get_objects():
@@ -28,11 +32,11 @@ class Factory:
 
     @staticmethod
     def get_summary() -> SummaryChanger:
-        return SummaryChanger(config.folder_path + config.summary_yaml_path)
+        return SummaryChanger(os.path.join(config.folder_path, config.summary_yaml_path))
 
     @staticmethod
     def get_summary_parsed() -> SummaryParser:
-        return SummaryParser(config.folder_path + config.summary_yaml_path)
+        return SummaryParser(os.path.join(config.folder_path, config.summary_yaml_path))
     
 # Chat
 

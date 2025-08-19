@@ -61,7 +61,7 @@ def dispatch_global(method: str, folder: str, part_number: int):
 
     elif method == "switch_debug":       
         config.debug = not config.debug
-        print("Debug mode is on") if config.debug else print("Debug mode is off")
+        print(f"Debug mode is {config.debug}") 
     
     elif method == "set_prompt":
         new_config = ConfigManager.get_story_config(folder)

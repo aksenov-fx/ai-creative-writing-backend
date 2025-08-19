@@ -1,5 +1,3 @@
-import os
-import time
 from collections import OrderedDict
 from .. import Utility
 
@@ -23,9 +21,6 @@ class SummaryMixin:
     def _extract_parts_from_yaml(self):
         return [part['part_text'].strip() for part in self.yaml_data.values()]
 
-    def _save_yaml(self):
-        Utility.write_yaml(self.path, self.yaml_data)
-
     def update(self, parts):
         self.parts = parts
         self.parsed = self.join_parts(self.parts)
@@ -42,18 +37,24 @@ class SummaryChanger(SummaryMixin):
 
     def join_and_write(self):
         self.update(self.parts)
-        self._save_yaml()
-        self.update_timestamp()
+        Utility.write_yaml(self.path, self.yaml_data)
 
+        # Write human readable summary
         summary_md_path = self.config.folder_path + self.config.summary_md_path
         Utility.write_file(summary_md_path, self.parsed)
 
-    def update_timestamp(self):
-        time.sleep(0.3)
-        current_time = time.time()
-        os.utime(self.path, (current_time, current_time))
-
     def update_from_story_parts(self, story):
+        """
+        Update the summary from the story parts.
+        
+        On first run, the summary for each part will have the same text as the story part.
+        Each part will get a calculated hash and summarized flag set to False.
+        On subsequent runs, the method will find parts without matching hash and copy them to summary.
+        The summarized flag will be set to false.
+        Summaries without matching hashes in the story will be removed from summary.
+        
+        Note: The actual summarization happens in Summarizer.py
+        """
         current_hashes = list(story.hashes.keys())
         new_yaml_data = OrderedDict()
         

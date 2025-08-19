@@ -1,5 +1,3 @@
-import os
-import time
 from .. import Utility
 
 class ChatHistoryMixin:
@@ -24,11 +22,6 @@ class ChatHistoryMixin:
         self.removed_parts = 0
 
         self.update(self.parts)
-
-    def update_timestamp(self):
-        time.sleep(0.3)
-        current_time = time.time()
-        os.utime(self.path, (current_time, current_time))
 
     def update(self, parts):
         self.parts = parts
@@ -55,7 +48,6 @@ class ChatHistoryChanger(ChatHistoryMixin):
     def join_and_write(self):
         self.update(self.parts)
         Utility.write_file(self.path, self.content)
-        self.update_timestamp()
         
     def append_history(self, content: str) -> None:
         self.parts[-1] += content
@@ -71,7 +63,7 @@ class ChatHistoryChanger(ChatHistoryMixin):
         self.update(self.parts)
 
         if not self.parts_even and self.config.add_header: self.append_history("# ")
-        self.update_timestamp()
+        Utility.update_timestamp(self.path)
 
         return self
 
@@ -95,11 +87,25 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.update(parts)
 
     def clean_header(self):
+        """
+        Remove the "# " prefix from the user messages.
+
+        This prefix is added if config.add_header is True.
+        The purpose of header is to make it easier to identify user messages.
+        """
         for i, part in enumerate(self.parts):
             if i % 2 == 0 and part.startswith("# "): self.parts[i] = part[2:]
         self.update(self.parts)
 
-    def include_file(self):   
+    def include_file(self):
+        """
+        Include the content of the file specified in config.include_file.
+        
+        The content is appended to the first user message.
+        config.include_file is set in get_chat_config method, 
+        if chat_with_story or chat_with_summary is True.
+        """
+
         if not self.config.include_file: return
 
         if not Utility.read_file(self.config.include_file): 
@@ -113,12 +119,15 @@ class ChatHistoryParser(ChatHistoryMixin):
         self.update(self.parts)
 
     def parse_instructions(self):
+        """
+        Parse the instructions from the custom instructions section of md file.
+        """
         return Utility.read_instructions(self.custom_instructions)
 
 # Trim
 
     def estimate_tokens(self) -> int:
-        return len(self.content) // 4
+        return len(self.content) // config.TOKEN_ESTIMATION_DIVISOR
         
     def trim_content(self) -> str:
         current_tokens = self.estimate_tokens()

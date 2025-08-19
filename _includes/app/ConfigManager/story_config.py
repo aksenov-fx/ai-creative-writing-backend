@@ -16,7 +16,7 @@ def load_config(folder_path, config_dict, extension='.yaml'):
     
     config_dict['endpoint'] = get_endpoint(config_dict)
     config_dict['model'] = get_model(config_dict)
-    config_dict['introduction'] = Utility.read_file(folder_path + 'Introduction.md')
+    config_dict['introduction'] = Utility.read_file(os.path.join(folder_path, 'Introduction.md'))
 
     return config_dict
 
@@ -24,12 +24,12 @@ def load_config(folder_path, config_dict, extension='.yaml'):
 def get_story_config(folder: str):
     from _includes import config
 
-    settings_folder = folder + '/Settings/'
-    config.folder_path = folder + '/'
+    settings_folder = os.path.join(folder, 'Settings/')
+    config.folder_path = os.path.join(folder, '/')
     config.interrupt_flag = False
 
     old_config = asdict(config)
-    new_config = Utility.read_yaml(settings_folder + 'Settings.md', convert_keys_to_snake_case=True)
+    new_config = Utility.read_yaml(os.path.join(settings_folder, 'Settings.md'), convert_keys_to_snake_case=True)
     old_config.update(new_config)
     new_config = load_config(settings_folder, old_config, ".md")
 

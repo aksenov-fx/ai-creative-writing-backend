@@ -1,5 +1,3 @@
-import os
-import time
 from .. import Utility
 
 class HistoryMixin:
@@ -55,24 +53,18 @@ class HistoryChanger(HistoryMixin):
     def join_and_write(self):
         self.update(self.parts)
         Utility.write_file(self.path, self.content)
-        self.update_timestamp()
 
     def append_history(self, content: str, update: bool = False) -> None:
         self.parts[-1] += content
         if update: self.update(self.parts)
         with open(self.path, 'a', encoding='utf-8') as f: f.write(content)
         
-    def update_timestamp(self):
-        time.sleep(0.3)
-        current_time = time.time()
-        os.utime(self.path, (current_time, current_time))
-
 # Change
 
     def fix_separator(self):
         if self.parts[-1] != "":
             self.append_history(f"\n{self.separator}\n")
-            self.update_timestamp()
+            Utility.update_timestamp(self.path)
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
@@ -103,6 +95,19 @@ class HistoryParser(HistoryMixin):
         return self
 
     def merge_with_summary(self, summary):
+        """
+        Replace full story parts with summarized parts.
+        
+        The summarized versions are read from the config.summary_yaml_path file.
+        The parts are matched by hash.
+        If some part of the story changed - it will not be replaced with summary.
+
+        If the number of story parts is equal to the number of summarized parts,
+        the last part is not summarized to preserve writing style.
+
+        For details on how summary is created, see update_from_story_parts method in Summary.py
+        And update_summary in Summarizer.py
+        """
 
         if not self.config.use_summary: return
         if not summary or not summary.yaml_data: return
@@ -110,11 +115,9 @@ class HistoryParser(HistoryMixin):
         self.update_hashes()
         if not self.hashes: return
 
-        # Keep the last part unsummarized when counts are equal
         hash_keys = list(self.hashes.keys())
         hashes_to_process = hash_keys[:-1] if len(self.hashes) == len(summary.yaml_data) else hash_keys
         
-        # Replace story parts with summarized versions for matching hashes
         for i, part_hash in enumerate(hashes_to_process):
             if part_hash in summary.yaml_data:
                 self.parts[i] = summary.yaml_data[part_hash]['part_text']
@@ -146,7 +149,7 @@ class HistoryParser(HistoryMixin):
 # Trim
 
     def estimate_tokens(self) -> int:
-        return len(self.parsed) // 4
+        return len(self.parsed) // config.TOKEN_ESTIMATION_DIVISOR
         
     def trim_content(self) -> str:
         current_tokens = self.estimate_tokens()

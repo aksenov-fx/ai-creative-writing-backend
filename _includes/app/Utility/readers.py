@@ -34,6 +34,13 @@ def read_yaml(file_path: str, convert_keys_to_snake_case: bool = False) -> dict:
     return yaml_data
 
 def read_instructions(instructions: str):
+    """
+    Read custom instructions from a file.
+    
+    If the custom instructions section in md file has text like {Questions},
+    it will look for a file named Questions.md in the _instructions directory.
+    Otherwise - return the original section text.
+    """
     if not instructions.startswith("{"):
         return instructions
     

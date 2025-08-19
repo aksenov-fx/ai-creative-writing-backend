@@ -1,3 +1,4 @@
+import os
 from dataclasses import asdict
 from pathlib import Path
 
@@ -11,11 +12,11 @@ def get_story_path(file, current_config, default_config):
     parent_directory = Path(file).parent.parent
     
     # Get story config to get history and summary paths
-    story_config = Utility.read_yaml(str(parent_directory / 'Settings' / 'Settings.md'))
+    story_config = Utility.read_yaml(os.path.join(parent_directory, 'Settings', 'Settings.md'))
     story_config = {**default_config, **story_config}
 
-    story_path = parent_directory / story_config["history_path"]
-    summary_path = parent_directory / story_config["summary_md_path"]
+    story_path = os.path.join(parent_directory, story_config["history_path"])
+    summary_path = os.path.join(parent_directory, story_config["summary_md_path"])
 
     file_path = summary_path if current_config['use_summary'] else story_path
 
@@ -26,7 +27,7 @@ def get_chat_config(file):
     from ...config import config, default_config
 
     current_config = asdict(config)
-    default_chat_config = Utility.read_yaml(config.settings_folder + 'Chat Settings.yaml')
+    default_chat_config = Utility.read_yaml(os.path.join(config.settings_folder, 'Chat Settings.yaml'))
     new_config = Utility.read_yaml(file, convert_keys_to_snake_case=True)
     
     current_config.update(default_chat_config)
