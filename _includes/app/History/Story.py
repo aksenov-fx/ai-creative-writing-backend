@@ -1,6 +1,10 @@
 from .. import Utility
 
-class HistoryMixin:
+from .Mixins.ParserMixin import ParserMixin
+from .Mixins.ChangerMixin import ChangerMixin
+from .Mixins.TrimMixin import TrimMixin
+
+class StoryMixin:
     
     def __init__(self, path):
         from ...config import config
@@ -15,8 +19,10 @@ class HistoryMixin:
         self.count = len(self.parts)
         self.assistant_response = ""
         self.part_number_content = ""
-        self.removed_parts = 0
         self.hashes = {}
+
+        self.parts_to_trim = 1
+        self.removed_parts = 0
 
     def update(self, parts):
         self.parts = parts
@@ -46,19 +52,8 @@ class HistoryMixin:
 
         self.hashes = hashes
 
-class HistoryChanger(HistoryMixin):
+class StoryChanger(StoryMixin, ChangerMixin, TrimMixin):
 
-# Write
-
-    def join_and_write(self):
-        self.update(self.parts)
-        Utility.write_file(self.path, self.content)
-
-    def append_history(self, content: str, update: bool = False) -> None:
-        self.parts[-1] += content
-        if update: self.update(self.parts)
-        with open(self.path, 'a', encoding='utf-8') as f: f.write(content)
-        
 # Change
 
     def fix_separator(self):
@@ -82,7 +77,7 @@ class HistoryChanger(HistoryMixin):
         self.parts.insert(part_number, new_part.strip())
         self.join_and_write()
 
-class HistoryParser(HistoryMixin):
+class StoryParser(StoryMixin, ParserMixin, TrimMixin):
 
 # Split
 
@@ -123,44 +118,6 @@ class HistoryParser(HistoryMixin):
                 self.parts[i] = summary.yaml_data[part_hash]['part_text']
             
         self.update(self.parts)
-        return self
-
-    def cut_history_to_part_number(self, part_number):
-        self.update(self.parts[:part_number])
-        return self
-
-    def set_part_number_content(self, part_number):
-        self.part_number_content = self.parts[part_number-1]
-        return self
-
-    def set_to_previous_part(self):
-        self.update(self.parts[-2:-1])
-        return self
-
-    def cut(self, part_number, include_previous_part):
-        if include_previous_part: 
-            (self
-            .cut_history_to_part_number(part_number)
-            .set_part_number_content(part_number)
-            .set_to_previous_part())
-        else:
-            self.content = ""
-
-# Trim
-
-    def estimate_tokens(self) -> int:
-        return len(self.parsed) // config.TOKEN_ESTIMATION_DIVISOR
-        
-    def trim_content(self) -> str:
-        current_tokens = self.estimate_tokens()
-        
-        while current_tokens > self.config.max_tokens and self.count > 0:
-            self.parts.pop(0)
-            self.update(self.parts)
-            self.removed_parts += 1
-            current_tokens = self.estimate_tokens()
-
-        if self.removed_parts: print(f"\nRemoved {self.removed_parts} text parts to fit the token limit.")
         return self
 
 # Process 

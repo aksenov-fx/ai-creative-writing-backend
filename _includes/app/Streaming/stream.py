@@ -1,9 +1,8 @@
 from _includes import config
 from .Streamer import Streamer
 from .TokenHandler import TokenHandler
-from ..History.History import HistoryChanger
 
-def stream(history_object: HistoryChanger,
+def stream(history_object,
            messages,
            rewrite: bool = False,
            write_history: bool = True,

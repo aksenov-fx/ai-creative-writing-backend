@@ -6,7 +6,8 @@ class Chatter:
     
     @staticmethod
     def chat(file_path: str) -> None:
-
+        """Chat method for conversations - not for story writing"""
+        
         history, history_parsed = Factory.get_chat_objects(file_path)
         history_parsed.process()
         messages = ApiComposer.compose_chat_messages(history_parsed)

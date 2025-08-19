@@ -2,7 +2,6 @@ import re
 
 from _includes import config
 from .ApiComposer import ApiComposer
-from ..History.History import HistoryParser
 
 def validate(include_introduction: bool, validate_user_prompt: bool = True) -> None:
 
@@ -15,7 +14,7 @@ def validate(include_introduction: bool, validate_user_prompt: bool = True) -> N
     if validate_user_prompt and not config.variables['#user_prompt']:
         raise ValueError(user_prompt_error)
     
-def compose_prompt(method: str, history_parsed: HistoryParser, include_introduction = True):
+def compose_prompt(method: str, history_parsed, include_introduction = True):
 
     if method == "Summarize part":
         validate(include_introduction, validate_user_prompt=False)

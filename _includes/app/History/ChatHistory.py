@@ -1,4 +1,6 @@
 from .. import Utility
+from .Mixins.ChangerMixin import ChangerMixin
+from .Mixins.TrimMixin import TrimMixin
 
 class ChatHistoryMixin:
     
@@ -19,6 +21,8 @@ class ChatHistoryMixin:
         self.parts = self.all_parts[2:]
         self.parts_even = False
         self.count = 0
+
+        self.parts_to_trim = 2
         self.removed_parts = 0
 
         self.update(self.parts)
@@ -41,17 +45,7 @@ class ChatHistoryMixin:
     def join_parts(self, content):
         return f"\n{self.separator}\n".join(content)
 
-class ChatHistoryChanger(ChatHistoryMixin):
-
-# Write
-
-    def join_and_write(self):
-        self.update(self.parts)
-        Utility.write_file(self.path, self.content)
-        
-    def append_history(self, content: str) -> None:
-        self.parts[-1] += content
-        with open(self.path, 'a', encoding='utf-8') as f: f.write(content)
+class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
 
 # Change
 
@@ -76,7 +70,7 @@ class ChatHistoryChanger(ChatHistoryMixin):
         self.join_and_write()
         return self
 
-class ChatHistoryParser(ChatHistoryMixin):
+class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
 
     def split_conversation(self):   
         if not self.splitter in self.content: return
@@ -123,22 +117,6 @@ class ChatHistoryParser(ChatHistoryMixin):
         Parse the instructions from the custom instructions section of md file.
         """
         return Utility.read_instructions(self.custom_instructions)
-
-# Trim
-
-    def estimate_tokens(self) -> int:
-        return len(self.content) // config.TOKEN_ESTIMATION_DIVISOR
-        
-    def trim_content(self) -> str:
-        current_tokens = self.estimate_tokens()
-        
-        while current_tokens > self.config.max_tokens and self.count > 1:
-            self.parts = self.parts[2:]
-            self.update(self.parts)
-            self.removed_parts += 2
-            current_tokens = self.estimate_tokens()
-        
-        return self
 
 # Process
     def process(self):

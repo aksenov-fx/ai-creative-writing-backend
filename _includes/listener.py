@@ -2,6 +2,7 @@ import os
 import socketserver
 from .dispatcher import dispatch
 from _includes import config
+import traceback
 
 class RequestHandler(socketserver.BaseRequestHandler):
 
@@ -46,14 +47,13 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 if result: self.request.sendall(result.encode('utf-8'))
                 
             except ValueError as e:
-                error_msg = f"Input validation error: {e}"
+                error_msg = f"Input validation error: {traceback.format_exc()}"
                 print(error_msg)
                 self.request.sendall(error_msg.encode('utf-8'))
             except Exception as e:
-                error_msg = f"Processing error: {e}"
+                error_msg = f"Processing error: {traceback.format_exc()}"
                 print(error_msg)
                 self.request.sendall(error_msg.encode('utf-8'))
-            
             break
 
 # -------------------------------- #

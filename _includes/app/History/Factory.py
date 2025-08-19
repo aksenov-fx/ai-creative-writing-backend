@@ -1,8 +1,8 @@
 import os
 from _includes import config
 
-from .History import HistoryChanger
-from .History import HistoryParser
+from .Story import StoryChanger
+from .Story import StoryParser
 
 from .ChatHistory import ChatHistoryChanger
 from .ChatHistory import ChatHistoryParser
@@ -13,16 +13,16 @@ from .Summary import SummaryParser
 class Factory:
     
     @staticmethod
-    def get_story() -> HistoryChanger:
-        return HistoryChanger(os.path.join(config.folder_path, config.history_path))
+    def get_story() -> StoryChanger:
+        return StoryChanger(os.path.join(config.folder_path, config.history_path))
 
     @staticmethod
-    def get_prompts() -> HistoryChanger:
-        return HistoryChanger(os.path.join(config.folder_path, config.prompts_path))
+    def get_prompts() -> StoryChanger:
+        return StoryChanger(os.path.join(config.folder_path, config.prompts_path))
 
     @staticmethod
-    def get_story_parsed() -> HistoryParser:
-        return HistoryParser(os.path.join(config.folder_path, config.history_path))
+    def get_story_parsed() -> StoryParser:
+        return StoryParser(os.path.join(config.folder_path, config.history_path))
 
     @staticmethod
     def get_objects():

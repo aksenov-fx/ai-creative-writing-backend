@@ -6,7 +6,8 @@ class Generator:
 
     @staticmethod
     def write_scene() -> None:
-        
+        """Write next story part"""
+
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
@@ -17,7 +18,8 @@ class Generator:
 
     @staticmethod
     def custom_prompt() -> None:
-        
+        """Same as write_scene but does not append writing instructions"""
+
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.parse_assistant_response()
@@ -28,7 +30,8 @@ class Generator:
 
     @staticmethod
     def regenerate(part_number: int) -> None:
-        
+        """Same as write_scene but replaces the existing part instead of appending"""
+
         story, story_parsed, summary = Factory.get_objects()
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
@@ -39,7 +42,8 @@ class Generator:
 
     @staticmethod
     def add_part(part_number: int) -> None:
-        
+        """Same as write_scene but adds a part after the specified part instead of appending"""
+
         story, story_parsed, summary = Factory.get_objects()
 
         story.add_part("", part_number)

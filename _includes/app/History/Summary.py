@@ -1,6 +1,10 @@
 from collections import OrderedDict
 from .. import Utility
 
+from .Mixins.ParserMixin import ParserMixin
+from .Mixins.ChangerMixin import ChangerMixin
+from .Mixins.TrimMixin import TrimMixin
+
 class SummaryMixin:
     
     def __init__(self, path):
@@ -18,6 +22,9 @@ class SummaryMixin:
         self.part_number_content = ""
         self.assistant_response = ""
 
+        self.parts_to_trim = 1
+        self.removed_parts = 0
+
     def _extract_parts_from_yaml(self):
         return [part['part_text'].strip() for part in self.yaml_data.values()]
 
@@ -31,14 +38,11 @@ class SummaryMixin:
     def join_parts(self, content):
         return f"\n{self.separator}\n".join(content)
 
-class SummaryChanger(SummaryMixin):
+class SummaryChanger(SummaryMixin, ChangerMixin):
 
 # Write
 
-    def join_and_write(self):
-        self.update(self.parts)
-        Utility.write_yaml(self.path, self.yaml_data)
-
+    def write_summary(self):
         # Write human readable summary
         summary_md_path = self.config.folder_path + self.config.summary_md_path
         Utility.write_file(summary_md_path, self.parsed)
@@ -80,31 +84,5 @@ class SummaryChanger(SummaryMixin):
         self.parts = self._extract_parts_from_yaml()
         self.join_and_write()
 
-class SummaryParser(SummaryMixin):
-
-# Split
-
-    def cut_history_to_part_number(self, part_number):
-        self.update(self.parts[:part_number])
-        return self
-
-    def set_part_number_content(self, part_number):
-        self.part_number_content = self.parts[part_number-1]
-        return self
-
-    def set_to_previous_part(self):
-        self.update(self.parts[-2:-1])
-        return self
-
-    def cut(self, part_number, include_previous_part):
-        if include_previous_part: 
-            (self
-            .cut_history_to_part_number(part_number)
-            .set_part_number_content(part_number)
-            .set_to_previous_part())
-        else:
-            self.parts = []
-            self.parsed = ""
-
-    def trim_content(self):
-        return self
+class SummaryParser(SummaryMixin, ParserMixin, TrimMixin):
+    pass

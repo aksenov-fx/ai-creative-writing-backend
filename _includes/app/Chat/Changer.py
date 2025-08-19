@@ -7,7 +7,8 @@ class Changer:
 
     @staticmethod
     def change_part(part_number: int) -> None:
-        
+        """Sends the part text to model for rewriting"""
+
         story = Factory.get_story()
         story_parsed = Factory.get_story_parsed()
         story_parsed.cut(part_number, include_previous_part=config.include_previous_part_when_rewriting)
@@ -18,6 +19,8 @@ class Changer:
 
     @staticmethod
     def change_parts(part_number: int) -> None:
+        """Same as change_part but rewrites all parts after the specified part"""
+        
         story = Factory.get_story()
         print(f"Rewriting part {part_number}/{story.count-1}")
 

@@ -2,13 +2,12 @@ import time
 import threading
 from typing import Callable
 
-from ..History.History import HistoryChanger
 from _includes import config
 
 class TokenHandler:
     
     def __init__(self, 
-                 history_object: HistoryChanger = None,
+                 history_object,
                  rewriting: bool = False,
                  write_history: bool = True,
                  part_number: int = 0):
@@ -50,7 +49,7 @@ class TokenHandler:
                 return
             
             self.token_buffer += content
-            if time.time() - self.last_write_time < config.write_interval:
+            if time.time() - self.last_write_time < config.WRITE_INTERVAL:
                 return
                 
             self.write_file(self.token_buffer)
