@@ -1,0 +1,1 @@
+The specs are not meant for documentation but for spec-driven development with AI.

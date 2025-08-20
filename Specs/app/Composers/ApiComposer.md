@@ -21,6 +21,11 @@ Appends a message to the messages list if content is provided.
 - Strips whitespace from content before adding
 - Modifies the messages list in-place
 
+**Example Usage:**
+```python
+append_message(messages, "user", "Hello")
+```
+
 #### `compose_messages(user_prompt, assistant_response) -> List[Dict[str, str]]`
 Composes standard API messages for story generation and chat interactions.
 
@@ -31,6 +36,11 @@ Composes standard API messages for story generation and chat interactions.
 
 **Debug Output:**
 - If config.print_messages is True, prints formatted messages using Utility.print_with_newlines()
+
+**Example Usage:**
+```python
+messages = compose_messages("Hello, AI", "Hello, User")
+```
 
 #### `compose_chat_messages(history) -> List[Dict[str, str]]`
 Composes API messages for chat-style conversations with alternating roles.
@@ -43,6 +53,11 @@ Composes API messages for chat-style conversations with alternating roles.
 
 **Debug Output:**
 - If config.print_messages is True, prints formatted messages using Utility.print_with_newlines()
+
+**Example Usage:**
+```python
+messages = compose_chat_messages(history_parsed)
+```
 
 ## Configuration Usage
 

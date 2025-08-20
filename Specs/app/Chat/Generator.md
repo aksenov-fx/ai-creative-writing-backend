@@ -13,6 +13,36 @@ Writes the next story part by generating new content based on existing story con
   - Composes prompt for scene writing
   - Streams the generated content
 
+- **Code flow**:
+
+  Generator.write_scene()
+    ├── Factory.get_objects() → (story, story_parsed, summary)
+    │   ├── Factory.get_story() → StoryChanger
+    │   ├── Factory.get_story_parsed() → StoryParser
+    │   └── Factory.get_summary() → SummaryChanger
+    │
+    ├── story_parsed.merge_with_summary(summary)
+    ├── story_parsed.parse_assistant_response()
+    │
+    ├── compose_prompt("Write scene", story_parsed) → messages
+    │   ├── validate(include_introduction=True)
+    │   ├── expand_abbreviations(prompt_structure, config.variables)
+    │   ├── history_parsed.trim_content() [if config.trim_history]
+    │   ├── expand_abbreviations(config.introduction)
+    │   └── ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)
+    │       ├── append_message(messages, "system", config.system_prompt)
+    │       ├── append_message(messages, "user", user_prompt)
+    │       └── append_message(messages, "assistant", assistant_response)
+    │
+    └── stream(story, messages)
+        ├── TokenHandler(story, rewrite=False, write_history=True, part_number=0)
+        ├── Streamer(token_handler.get_token_callback())
+        └── streamer.stream_response(messages)
+            ├── openai.OpenAI.chat.completions.create()
+            ├── for chunk in response:
+            │   └── token_handler.handle_token(delta.content)
+            └── token_handler.finalize()
+
 #### `custom_prompt() -> None`
 Similar to `write_scene()` but without automatic writing instructions appended to the prompt  
 

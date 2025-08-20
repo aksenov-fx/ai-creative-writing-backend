@@ -6,7 +6,7 @@
         {
             "label": "ammend",
             "type": "shell",
-            "command": "git add . && git commit --amend --no-edit",
+            "command": "$tags = git tag --points-at HEAD; git add .; git commit --amend --no-edit; if ($tags) { foreach ($tag in $tags) { git tag -f $tag } }",
             "problemMatcher": [],
             "presentation": {
                 "reveal": "silent"
