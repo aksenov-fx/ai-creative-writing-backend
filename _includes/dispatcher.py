@@ -1,4 +1,4 @@
-from _includes import config
+from .config import config, default_config
 from .app.History.Factory import Factory
 from .app import ConfigManager
 from .app import Chat
@@ -12,7 +12,7 @@ def dispatch(folder, file, mode, method, part_number, selected_text):
 
 def dispatch_story(folder: str, method: str, part_number: str):
 
-    new_config = ConfigManager.get_story_config(folder)
+    new_config = ConfigManager.get_story_config(folder, config)
     with ConfigManager.override_config(config, **new_config):
         if method == "write_scene":         
             return Chat.Generator.write_scene()
@@ -35,7 +35,7 @@ def dispatch_story(folder: str, method: str, part_number: str):
 
 def dispatch_chat(file: str, method: str):
 
-    new_config = ConfigManager.get_chat_config(file)
+    new_config = ConfigManager.get_chat_config(file, config, default_config)
     with ConfigManager.override_config(config, **new_config):
         if method == "chat":              
             return Chat.Chatter.chat(file)
@@ -63,7 +63,7 @@ def dispatch_global(method: str, folder: str, part_number: int):
         print(f"Debug mode is {config.debug}") 
     
     elif method == "set_prompt":
-        new_config = ConfigManager.get_story_config(folder)
+        new_config = ConfigManager.get_story_config(folder, config)
         
         prompts = Factory.get_prompts()
         prompt = prompts.get_user_prompt(part_number, new_config['abbreviations'])

@@ -24,12 +24,6 @@ class StoryMixin:
         self.parts_to_trim = 1
         self.removed_parts = 0
 
-    def update(self, parts):
-        self.parts = parts
-        self.content = self.join_parts(self.parts)
-        self.parsed = "\n\n".join(self.parts)
-        self.count = len(self.parts)
-
 # Return
 
     def split_history(self):

@@ -16,7 +16,7 @@ Handles general chat conversations that are not related to story writing
   - Insert seaprator to chat history
   - Streams chat response
 
-- **Workflow**:
+- **Code flow**:
 
   Chatter.chat(file_path)
     ├── Factory.get_chat_objects(file_path)

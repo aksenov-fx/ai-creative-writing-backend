@@ -23,9 +23,8 @@ def get_story_path(file, current_config, default_config):
     return file_path
 
 
-def get_chat_config(file):
-    from ...config import config, default_config
-
+def get_chat_config(file, config, default_config):
+    
     current_config = asdict(config)
     default_chat_config = Utility.read_yaml(os.path.join(config.settings_folder, 'Chat Settings.yaml'))
     new_config = Utility.read_yaml(file, convert_keys_to_snake_case=True)

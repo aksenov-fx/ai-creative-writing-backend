@@ -4,16 +4,12 @@ import time
 import os
 
 
-def update_timestamp(path: str) -> None:
-    from _includes import config
-    
+def update_timestamp(path: str, config) -> None:
     time.sleep(config.TIMESTAMP_UPDATE_DELAY)
     current_time = time.time()
     os.utime(path, (current_time, current_time))
 
-def write_file(path: str, content: str) -> None:
-    from _includes import config
-
+def write_file(path: str, content: str, config) -> None:
     # Create parent directories if they don't exist
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     
@@ -28,9 +24,9 @@ def write_file(path: str, content: str) -> None:
                 raise
             time.sleep(config.RETRY_BASE_DELAY * (2 ** attempt))  # Exponential backoff
     
-    update_timestamp(path)
+    update_timestamp(path, config)
 
-def write_yaml(path: str, content: dict) -> None:
+def write_yaml(path: str, content: dict, config) -> None:
     """
     Write a YAML file with the given content.
     
@@ -41,4 +37,4 @@ def write_yaml(path: str, content: dict) -> None:
         content = dict(content)
         
     yaml_data = yaml.dump(content, default_flow_style=False, allow_unicode=True, sort_keys=False)
-    write_file(path, yaml_data)
+    write_file(path, yaml_data, config)

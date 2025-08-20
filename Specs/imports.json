@@ -1,0 +1,336 @@
+{
+    "__main__": {
+        "bacon": 0,
+        "imports": [
+            "_includes",
+            "_includes.app",
+            "_includes.app.Chat",
+            "_includes.app.Chat.Changer",
+            "_includes.app.Chat.Chatter",
+            "_includes.app.Chat.Generator",
+            "_includes.app.Chat.Helpers",
+            "_includes.app.Chat.Summarizer",
+            "_includes.app.ConfigManager",
+            "_includes.app.ConfigManager.ConfigDataClass",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.ConfigManager.override_config",
+            "_includes.app.ConfigManager.story_config",
+            "_includes.app.Utility",
+            "_includes.app.Utility.other_utils",
+            "_includes.app.Utility.readers",
+            "_includes.app.Utility.writers",
+            "_includes.config",
+            "_includes.dispatcher",
+            "_includes.listener",
+            "_includes.main"
+        ],
+        "name": "__main__",
+        "path": null
+    },
+    "_includes": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat.Changer",
+            "_includes.app.Chat.Summarizer",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.ConfigManager.story_config",
+            "_includes.listener"
+        ],
+        "imports": [
+            "_includes.config"
+        ],
+        "name": "_includes",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\__init__.py"
+    },
+    "_includes.app": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.ConfigManager.story_config",
+            "_includes.config",
+            "_includes.dispatcher"
+        ],
+        "name": "_includes.app",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\__init__.py"
+    },
+    "_includes.app.Chat": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.dispatcher"
+        ],
+        "imports": [
+            "_includes.app.Chat.Changer",
+            "_includes.app.Chat.Chatter",
+            "_includes.app.Chat.Generator",
+            "_includes.app.Chat.Helpers",
+            "_includes.app.Chat.Summarizer"
+        ],
+        "name": "_includes.app.Chat",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\__init__.py"
+    },
+    "_includes.app.Chat.Changer": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.config"
+        ],
+        "name": "_includes.app.Chat.Changer",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\Changer.py"
+    },
+    "_includes.app.Chat.Chatter": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat"
+        ],
+        "name": "_includes.app.Chat.Chatter",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\Chatter.py"
+    },
+    "_includes.app.Chat.Generator": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat"
+        ],
+        "name": "_includes.app.Chat.Generator",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\Generator.py"
+    },
+    "_includes.app.Chat.Helpers": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat"
+        ],
+        "name": "_includes.app.Chat.Helpers",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\Helpers.py"
+    },
+    "_includes.app.Chat.Summarizer": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Chat"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.config"
+        ],
+        "name": "_includes.app.Chat.Summarizer",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Chat\\Summarizer.py"
+    },
+    "_includes.app.ConfigManager": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.config",
+            "_includes.dispatcher"
+        ],
+        "imports": [
+            "_includes.app.ConfigManager.ConfigDataClass",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.ConfigManager.override_config",
+            "_includes.app.ConfigManager.story_config"
+        ],
+        "name": "_includes.app.ConfigManager",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\__init__.py"
+    },
+    "_includes.app.ConfigManager.ConfigDataClass": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager",
+            "_includes.app.ConfigManager.override_config",
+            "_includes.config"
+        ],
+        "name": "_includes.app.ConfigManager.ConfigDataClass",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\ConfigDataClass.py"
+    },
+    "_includes.app.ConfigManager.chat_config": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.app",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.Utility"
+        ],
+        "name": "_includes.app.ConfigManager.chat_config",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\chat_config.py"
+    },
+    "_includes.app.ConfigManager.commons": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.story_config"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.app",
+            "_includes.app.Utility"
+        ],
+        "name": "_includes.app.ConfigManager.commons",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\commons.py"
+    },
+    "_includes.app.ConfigManager.override_config": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager"
+        ],
+        "imports": [
+            "_includes.app.ConfigManager.ConfigDataClass"
+        ],
+        "name": "_includes.app.ConfigManager.override_config",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\override_config.py"
+    },
+    "_includes.app.ConfigManager.story_config": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.app",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.Utility"
+        ],
+        "name": "_includes.app.ConfigManager.story_config",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\ConfigManager\\story_config.py"
+    },
+    "_includes.app.Utility": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.ConfigManager.chat_config",
+            "_includes.app.ConfigManager.commons",
+            "_includes.app.ConfigManager.story_config",
+            "_includes.config"
+        ],
+        "imports": [
+            "_includes.app.Utility.other_utils",
+            "_includes.app.Utility.readers",
+            "_includes.app.Utility.writers"
+        ],
+        "name": "_includes.app.Utility",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Utility\\__init__.py"
+    },
+    "_includes.app.Utility.other_utils": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Utility"
+        ],
+        "name": "_includes.app.Utility.other_utils",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Utility\\other_utils.py"
+    },
+    "_includes.app.Utility.readers": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Utility",
+            "_includes.config"
+        ],
+        "imports": [
+            "yaml"
+        ],
+        "name": "_includes.app.Utility.readers",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Utility\\readers.py"
+    },
+    "_includes.app.Utility.writers": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.app.Utility"
+        ],
+        "imports": [
+            "yaml"
+        ],
+        "name": "_includes.app.Utility.writers",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\app\\Utility\\writers.py"
+    },
+    "_includes.config": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes",
+            "_includes.app.Chat.Changer",
+            "_includes.app.Chat.Summarizer",
+            "_includes.dispatcher",
+            "_includes.listener"
+        ],
+        "imports": [
+            "_includes.app",
+            "_includes.app.ConfigManager",
+            "_includes.app.ConfigManager.ConfigDataClass",
+            "_includes.app.Utility",
+            "_includes.app.Utility.readers"
+        ],
+        "name": "_includes.config",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\config.py"
+    },
+    "_includes.dispatcher": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.listener"
+        ],
+        "imports": [
+            "_includes.app",
+            "_includes.app.Chat",
+            "_includes.app.ConfigManager",
+            "_includes.config"
+        ],
+        "name": "_includes.dispatcher",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\dispatcher.py"
+    },
+    "_includes.listener": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__",
+            "_includes.main"
+        ],
+        "imports": [
+            "_includes",
+            "_includes.config",
+            "_includes.dispatcher"
+        ],
+        "name": "_includes.listener",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\listener.py"
+    },
+    "_includes.main": {
+        "bacon": 1,
+        "imported_by": [
+            "__main__"
+        ],
+        "imports": [
+            "_includes.listener"
+        ],
+        "name": "_includes.main",
+        "path": "D:\\MEGAsync\\Work\\Code Repo\\story-writer\\python-backend\\_includes\\main.py"
+    },
+    "yaml": {
+        "bacon": 2,
+        "imported_by": [
+            "_includes.app.Utility.readers",
+            "_includes.app.Utility.writers"
+        ],
+        "name": "yaml",
+        "path": "C:\\Users\\User\\AppData\\Roaming\\Python\\Python313\\site-packages\\yaml\\__init__.py"
+    }
+}

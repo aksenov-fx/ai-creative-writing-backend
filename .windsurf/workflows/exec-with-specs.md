@@ -4,8 +4,8 @@ auto_execution_mode: 1
 ---
 
 Please look at the follwing files to get acquainted with the project:
-Specs\project_specs.md
-Specs\project_tree.md
+Specs\specs.md
+Specs\tree.md
 
 After that, please look at the following files with particular modules specs.
 

@@ -21,9 +21,7 @@ def load_config(folder_path, config_dict, extension='.yaml'):
     return config_dict
 
 
-def get_story_config(folder: str):
-    from _includes import config
-
+def get_story_config(folder: str, config):
     settings_folder = os.path.join(folder, 'Settings/')
     config.folder_path = os.path.join(folder + "/")
     config.interrupt_flag = False
