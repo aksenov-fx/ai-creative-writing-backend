@@ -21,6 +21,7 @@
 │      ├── 📄 Generator.py
 │      ├── 📄 Helpers.py
 │      ├── 📄 Summarizer.py
+│      ├── 📄 Prompts.py
 │    └── 📂 Composers/
 │      ├── 📄 ApiComposer.py
 │      ├── 📄 PromptComposer.py

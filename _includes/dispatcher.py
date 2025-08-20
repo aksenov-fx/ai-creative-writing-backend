@@ -1,5 +1,4 @@
 from _includes import config
-from .app.Composers.PromptComposer import set_prompt
 from .app.History.Factory import Factory
 from .app import ConfigManager
 from .app import Chat
@@ -65,4 +64,8 @@ def dispatch_global(method: str, folder: str, part_number: int):
     
     elif method == "set_prompt":
         new_config = ConfigManager.get_story_config(folder)
-        set_prompt(part_number, new_config['abbreviations'])
+        
+        prompts = Factory.get_prompts()
+        prompt = prompts.get_user_prompt(part_number, new_config['abbreviations'])
+
+        config.variables['#user_prompt'] = prompt

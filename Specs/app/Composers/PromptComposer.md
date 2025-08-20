@@ -42,26 +42,6 @@ Composes prompts for helper operations like translation or editing.
 **Special Handling:**
 - For "Translate" key: Appends translation language from config.translation_language
 
-[AS IS]
-#### `set_prompt(part_value: int, abbreviations: dict) -> None`
-Sets the user prompt from historical story parts.
-
-**Parameters:**
-- `part_value` (int): The part number to retrieve prompt from
-- `abbreviations` (dict): Abbreviation mappings for prompt expansion
-
-**Process:**
-1. Retrieves prompts from Factory
-2. Gets prompt from part_value - 1
-3. Expands abbreviations in the prompt
-4. Sets config.variables['#user_prompt'] with the expanded prompt
-5. Prints the prompt to console
-6. Calls prompts.fix_separator() for cleanup
-
-[TO BE]
-Instead of setting prompts in promptComposer, create a new Prompt class in History folder
-The class should be similar to Story class, but should only contain methods necessary for setting prompts
-
 ### Text Processing Functions
 
 #### `expand_abbreviations(text: str, abbreviations: dict = None) -> str`

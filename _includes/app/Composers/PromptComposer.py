@@ -51,18 +51,6 @@ def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
     combined_prompt = f"{prompt.strip()}\n{selected_text}"
     return ApiComposer.compose_messages(combined_prompt, None)
 
-def set_prompt(part_value: int, abbreviations: dict) -> None:
-    from ..History.Factory import Factory
-
-    prompts = Factory.get_prompts()
-
-    prompt = prompts.return_part(part_value -1)
-    prompt = expand_abbreviations(prompt, abbreviations)
-    config.variables['#user_prompt'] = prompt
-    print(prompt)
-
-    prompts.fix_separator()
-
 def expand_abbreviations(text: str, abbreviations: dict = None) -> str:
     r"""
     Replaces abbreviations in the text with their corresponding values.
