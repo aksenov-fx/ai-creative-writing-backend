@@ -23,7 +23,7 @@ class PromptChanger(ChangerMixin):
     def fix_separator(self):
         if self.parts[-1] != "":
             self.append_history(f"\n{self.separator}\n")
-            Utility.update_timestamp(self.path)
+            Utility.update_timestamp(self.path, self.config)
 
     def get_user_prompt(self, part_value: int, abbreviations: dict) -> str:
         from ..Composers.PromptComposer import expand_abbreviations

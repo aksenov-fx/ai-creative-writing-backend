@@ -57,7 +57,7 @@ class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
         self.update(self.parts)
 
         if not self.parts_even and self.config.add_header: self.append_history("# ")
-        Utility.update_timestamp(self.path)
+        Utility.update_timestamp(self.path, self.config)
 
         return self
 

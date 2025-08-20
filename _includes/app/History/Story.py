@@ -53,7 +53,7 @@ class StoryChanger(StoryMixin, ChangerMixin, TrimMixin):
     def fix_separator(self):
         if self.parts[-1] != "":
             self.append_history(f"\n{self.separator}\n")
-            Utility.update_timestamp(self.path)
+            Utility.update_timestamp(self.path, self.config)
 
     def remove_last_response(self) -> None:
         self.config.interrupt_flag = True
