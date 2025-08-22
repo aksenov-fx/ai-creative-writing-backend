@@ -23,14 +23,14 @@ def chat_test(prompt_type, story_file, callback, module, should_pass):
 
     new_config = get_story_config(setup.story_folder_path, config)
     new_config['history_path'] = story_file
-    part_number = 2
+    argument = 4
     
     if not should_pass:
 
         with pytest.raises(ValueError) as exc_info:
             with patch(f'_includes.app.Chat.{module}.stream') as mock_stream:
                 with override_config(config, **new_config):
-                    callback(part_number)
+                    callback(argument)
 
         assert str(exc_info.value) == expected_content.strip()
 
@@ -38,7 +38,7 @@ def chat_test(prompt_type, story_file, callback, module, should_pass):
 
         with patch(f'_includes.app.Chat.{module}.stream') as mock_stream:
             with override_config(config, **new_config):
-                callback(part_number)
+                callback(argument)
     
         args, kwargs = mock_stream.call_args
         story_obj, messages = args

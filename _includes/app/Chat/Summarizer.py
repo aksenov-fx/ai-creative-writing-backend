@@ -9,9 +9,9 @@ class Summarizer:
     def summarize_part(part_number: int) -> None:
 
         summary_parsed = Factory.get_summary_parsed()
-        summary_parsed.cut(part_number, config.include_previous_part_when_summarizing)
-
         print(f"Summarizing part {part_number}/{summary_parsed.count}")
+
+        summary_parsed.cut(part_number, config.include_previous_part_when_summarizing)
 
         messages = compose_prompt("Summarize part", summary_parsed, include_introduction=False)
         return stream(None, messages, write_history=False)

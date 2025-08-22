@@ -1,5 +1,5 @@
 ---
 model: 
 debug: true
-history_path: Story 2 parts.md
+translation_language: testing translation_language
 ---

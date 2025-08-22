@@ -1,8 +1,10 @@
 **Previous text parts for reference:**
-Part 1 summary
+Part 3 text
 
 testing instructions_preprompt
 
-testing summarize_preprompt
+testing user_prompt
 
-Part 2 summary
+testing rewrite_postprompt
+
+Part 4 text

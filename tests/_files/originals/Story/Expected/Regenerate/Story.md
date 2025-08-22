@@ -1,9 +1,11 @@
 testing introduction
 
 **Previous text parts for reference:**
-Part 1 text
+Part 1 text unsummarized
 
-Part 2 text
+Part 2 summary
+
+Part 3 text
 
 testing guidelines
 

@@ -1,9 +1,13 @@
-debug response
+Part 1 text unsummarized
 
 ----
 
-debug response
+Part 2 summary
 
 ----
 
-debug response
+Part 3 summary
+
+----
+
+Part 4 summary
