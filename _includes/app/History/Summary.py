@@ -3,8 +3,9 @@ from .. import Utility
 
 from .Mixins.ParserMixin import ParserMixin
 from .Mixins.TrimMixin import TrimMixin
+from .Mixins.CommonMixin import CommonMixin
 
-class SummaryMixin:
+class SummaryMixin(CommonMixin):
     
     def __init__(self, path):
         from ...config import config
@@ -26,9 +27,6 @@ class SummaryMixin:
         self.removed_parts = 0
 
         self.update_from_yaml()
-
-    def join_parts(self, content):
-        return f"\n{self.separator}\n".join(content)
 
     def _extract_parts_from_yaml(self):
         return [part['part_text'].strip() for part in self.yaml_data.values()]

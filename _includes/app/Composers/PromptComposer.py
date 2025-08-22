@@ -14,6 +14,10 @@ def validate(include_introduction: bool, validate_user_prompt: bool = True) -> N
     if validate_user_prompt and not config.variables['#user_prompt']:
         raise ValueError(user_prompt_error)
     
+def validate_part_number(parts_count, part_number: int) -> None:
+    if parts_count < part_number:
+        raise ValueError("Story has less parts than the specified part number")
+
 def compose_prompt(method: str, history_parsed, include_introduction = True):
 
     if method == "Summarize part":
@@ -31,10 +35,10 @@ def compose_prompt(method: str, history_parsed, include_introduction = True):
 
     # Prepare introduction
     introduction = expand_abbreviations(config.introduction)
-    introduction += "\n\n" if include_introduction else ""
+    introduction = f"{introduction}\n\n" if include_introduction else ""
 
     # Combine introduction, history and user prompt
-    combined_prompt = f"{introduction}{history}\n\n{prompt}\n\n{history_parsed.part_number_content}"
+    combined_prompt = f"{introduction}{history.strip()}\n\n{prompt}\n\n{history_parsed.part_number_content}"
     combined_prompt = combined_prompt.replace("\n\n\n", "\n\n").strip()
 
     messages = ApiComposer.compose_messages(combined_prompt, history_parsed.assistant_response)

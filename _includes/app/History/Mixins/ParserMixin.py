@@ -1,12 +1,6 @@
 class ParserMixin:
     """Common parsing methods for History and Summary parsers."""
     
-    def update(self, parts):
-        self.parts = parts
-        self.content = self.join_parts(self.parts)
-        self.parsed = "\n\n".join(self.parts)
-        self.count = len(self.parts)
-
     def cut_history_to_part_number(self, part_number):
         self.update(self.parts[:part_number])
         return self

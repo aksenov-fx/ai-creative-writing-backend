@@ -1,11 +1,12 @@
 from ..Composers.PromptComposer import compose_prompt
+from ..Composers.PromptComposer import validate_part_number
 from ..History.Factory import Factory
 from ..Streaming.stream import stream
 
 class Generator:
 
     @staticmethod
-    def write_scene() -> None:
+    def write_scene(part_number = None) -> None:
         """Write next story part"""
 
         story, story_parsed, summary = Factory.get_objects()
@@ -17,7 +18,7 @@ class Generator:
         stream(story, messages)
 
     @staticmethod
-    def custom_prompt() -> None:
+    def custom_prompt(part_number = None) -> None:
         """Same as write_scene but does not append writing instructions"""
 
         story, story_parsed, summary = Factory.get_objects()
@@ -33,6 +34,8 @@ class Generator:
         """Same as write_scene but replaces the existing part instead of appending"""
 
         story, story_parsed, summary = Factory.get_objects()
+
+        validate_part_number(story.count, part_number)
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number-1)
 
@@ -46,7 +49,8 @@ class Generator:
 
         story, story_parsed, summary = Factory.get_objects()
 
-        story.add_part("", part_number)
+        validate_part_number(story.count, part_number)
+        story.add_part("added part", part_number)
 
         story_parsed.merge_with_summary(summary)
         story_parsed.cut_history_to_part_number(part_number)

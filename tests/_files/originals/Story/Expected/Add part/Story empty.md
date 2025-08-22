@@ -1,0 +1,1 @@
+Story has less parts than the specified part number

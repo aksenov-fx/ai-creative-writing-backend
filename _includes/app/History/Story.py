@@ -3,8 +3,9 @@ from .. import Utility
 from .Mixins.ParserMixin import ParserMixin
 from .Mixins.ChangerMixin import ChangerMixin
 from .Mixins.TrimMixin import TrimMixin
+from .Mixins.CommonMixin import CommonMixin
 
-class StoryMixin:
+class StoryMixin(CommonMixin):
     
     def __init__(self, path):
         from ...config import config

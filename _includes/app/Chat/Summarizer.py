@@ -6,7 +6,7 @@ from _includes import config
 class Summarizer:
 
     @staticmethod
-    def summarize_parts(part_number: int) -> None:
+    def summarize_part(part_number: int) -> None:
 
         summary_parsed = Factory.get_summary_parsed()
         summary_parsed.cut(part_number, config.include_previous_part_when_summarizing)
@@ -32,6 +32,6 @@ class Summarizer:
         for part_number, hash_key in enumerate(summary.keys):
             if summary.yaml_data[hash_key]['summarized']: continue
             
-            result = Summarizer.summarize_parts(part_number+1)
+            result = Summarizer.summarize_part(part_number+1)
             summary.yaml_data[hash_key]['summarized'] = True
             summary.replace_history_part(result, hash_key)
