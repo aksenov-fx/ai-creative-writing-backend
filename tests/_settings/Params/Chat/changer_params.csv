@@ -1,0 +1,3 @@
+prompt_type,story_file,function_name,should_pass,arg
+Change part,Story.md,change_part,true,4
+Change part,Story empty.md,change_part,false,4

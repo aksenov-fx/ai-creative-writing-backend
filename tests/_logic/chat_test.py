@@ -14,7 +14,7 @@ def run_setup():
     setup_temp_folder(tests_conf)
     return tests_conf
 
-def chat_test(prompt_type, story_file, callback, module, should_pass):
+def chat_test(prompt_type, story_file, callback, module, should_pass, argument):
 
     setup = run_setup()
 
@@ -22,7 +22,6 @@ def chat_test(prompt_type, story_file, callback, module, should_pass):
 
     new_config = get_story_config(setup.story_folder_path, config)
     new_config['history_path'] = story_file
-    argument = 4
     
     if not should_pass:
 

@@ -1,0 +1,2 @@
+prompt_type,story_file,function_name,should_pass,arg
+Summarize part,Story.md,summarize_part,true,4

@@ -1,5 +1,7 @@
 import os
+import csv
 from dataclasses import dataclass
+from typing import List, Tuple, Any
 
 from tests._logic.utils import read_yaml
 
@@ -17,42 +19,56 @@ class TestsConfig:
 
 def get_tests_config(path: str):
     yaml_data = read_yaml(path)
-    tests_config = TestsConfig(**yaml_data)
+    conf = TestsConfig(**yaml_data)
 
-    tests_config.story_folder_path = os.path.join(tests_config.temp_dir, tests_config.story_folder)
+    conf.story_folder_path = os.path.join(conf.temp_dir, conf.story_folder)
 
-    return tests_config
+    return conf
 
-generator_params = [
+FUNCTION_MAPPING = {
+    'write_scene': Generator.write_scene,
+    'custom_prompt': Generator.custom_prompt,
+    'regenerate': Generator.regenerate,
+    'add_part': Generator.add_part,
+    'continue_response': Generator.continue_response,
+    'change_part': Changer.change_part,
+    'summarize_part': Summarizer.summarize_part,
+    'rewrite_selection': Helpers.rewrite_selection,
+    'translate': Helpers.translate,
+    'explain': Helpers.explain,
+}
 
-    ["Write scene",          "Story empty.md",     Generator.write_scene,       True],
-    ["Write scene",          "Story.md",           Generator.write_scene,       True],
+def get_function(function_name: str):
+    return FUNCTION_MAPPING[function_name]
 
-    ["Custom prompt",        "Story empty.md",     Generator.custom_prompt,     True],
-    ["Custom prompt",        "Story.md",           Generator.custom_prompt,     True],
+def try_parse_int(value: str) -> int | str:
+    try:
+        return int(value)
+    except ValueError:
+        return value
+
+def load_params(csv_file: str) -> List[Tuple[str, str, Any, bool, int | str]]:
+    """Load test parameters from CSV file and return as list of tuples."""
+
+    params = []
+    csv_path = os.path.join('tests', '_settings', 'Params', 'Chat', csv_file)
     
-    ["Regenerate",           "Story.md",           Generator.regenerate,        True],
-    ["Regenerate",           "Story empty.md",     Generator.regenerate,        False],
+    with open(csv_path, 'r', newline='', encoding='utf-8') as file:
 
-    ["Add part",             "Story.md",           Generator.add_part,          True],
-    ["Add part",             "Story empty.md",     Generator.add_part,          False],
+        reader = csv.DictReader(file)
 
-    ["Continue response",    "Story.md",           Generator.continue_response, True],
-    ["Continue response",    "Story empty.md",     Generator.continue_response, False],
+        for row in reader:
+            prompt_type =   row['prompt_type']
+            story_file =    row['story_file']
+            callback =      get_function(row['function_name'])
+            should_pass =   row['should_pass'].lower() == 'true'
+            arg =           try_parse_int(row['arg'])
 
-]
+            params.append([prompt_type, story_file, callback, should_pass, arg])
+    
+    return params
 
-changer_params = [
-    ["Change part",          "Story.md",           Changer.change_part,         True],
-    ["Change part",          "Story empty.md",     Changer.change_part,         False],
-]
-
-summarizer_params = [
-    ["Summarize part",       "Story.md",           Summarizer.summarize_part,   True],
-]
-
-helper_params = [
-    ["Rewrite selection",    "Story empty.md",     Helpers.rewrite_selection,   True],
-    ["Translate",            "Story empty.md",     Helpers.translate,           True],
-    ["Explain",              "Story empty.md",     Helpers.explain,             True],
-]
+generator_params =    load_params('generator_params.csv')
+changer_params =      load_params('changer_params.csv')
+summarizer_params =   load_params('summarizer_params.csv')
+helper_params =       load_params('helper_params.csv')

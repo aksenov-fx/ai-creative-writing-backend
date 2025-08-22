@@ -1,4 +1,4 @@
 testing user_prompt
 
 testing rewrite_selection_postprompt
-4
+text to rewrite

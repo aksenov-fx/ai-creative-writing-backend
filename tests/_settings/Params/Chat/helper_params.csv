@@ -1,0 +1,4 @@
+prompt_type,story_file,function_name,should_pass,arg
+Rewrite selection,Story empty.md,rewrite_selection,true,text to rewrite
+Translate,Story empty.md,translate,true,text to translate
+Explain,Story empty.md,explain,true,text to explain
