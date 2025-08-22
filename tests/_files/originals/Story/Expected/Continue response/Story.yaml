@@ -1,0 +1,23 @@
+- role: user
+  content: |
+    testing introduction
+
+    **Previous text parts for reference:**
+    Part 1 text unsummarized
+    
+    Part 2 summary
+    
+    Part 3 text
+    
+    testing guidelines
+    
+    testing instructions_preprompt
+    
+    testing user_preprompt
+    
+    testing user_prompt
+    
+    testing user_postprompt
+- role: assistant
+  content: |
+    Part 4 text

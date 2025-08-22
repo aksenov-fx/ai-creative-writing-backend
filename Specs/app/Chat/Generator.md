@@ -9,8 +9,6 @@ Writes the next story part by generating new content based on existing story con
 - **Process**: 
   - Retrieves story objects from Factory
   - Merges story with summary for context
-  [AS IS:] - Parses assistant response
-  [TO BE:] - Does not parse assistant response
   - Composes prompt for scene writing
   - Streams the generated content
 
@@ -50,13 +48,16 @@ Similar to `write_scene()` but without automatic writing instructions appended t
 - **Process**:  
 Same as `write_scene()` but uses "Custom prompt" prompt type
 
-[TO BE:]
 #### `continue_response(part_number: int) -> None`
-Similar to `write_scene()`
-But puts the specified part number in as assistant response
+Similar to `write_scene()` but puts the specified part number as assistant response
 
 - **Process**:  
-Same as `write_scene()` but uses "Custom prompt" prompt type
+  - Retrieves story objects from Factory
+  - Validates part number
+  - Sets specified part as assistant response and removes it from parts
+  - Merges story with summary for context
+  - Composes prompt using "Custom prompt" type
+  - Streams the generated content
 
 #### `regenerate(part_number: int) -> None`
 Regenerates an existing story part by replacing it with new content

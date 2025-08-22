@@ -33,11 +33,14 @@ def handle_remove_readonly(func, path, exc):
         os.chmod(path, stat.S_IWRITE)
         func(path)
 
-def read_expected_file(story_folder_path: str, prompt_type: str, file_name: str) -> str:
+def read_expected_file(story_folder_path: str, prompt_type: str, file_name: str, yaml_response: bool = False) -> str:
+    
+    if yaml_response:
+        file_name = file_name.replace(".md", ".yaml")
 
     file_path = os.path.join(story_folder_path, "Expected", prompt_type, file_name)
 
     try:
-        return read_file(file_path)
+        return read_file(file_path) if not yaml_response else read_yaml(file_path)
     except FileNotFoundError:
         raise FileNotFoundError(f"File not found: {file_path}")

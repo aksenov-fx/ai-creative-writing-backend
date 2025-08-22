@@ -14,12 +14,12 @@ def run_setup():
     setup_temp_folder(tests_conf)
     return tests_conf
 
-def chat_test(prompt_type, story_file, callback, module, should_pass):
+def chat_test(prompt_type, story_file, callback, module, should_pass, yaml_response):
 
     setup = run_setup()
 
-    expected_content = read_expected_file(setup.story_folder_path, prompt_type, story_file)
-    expected_messages = [{"role": "user", "content": expected_content}]
+    expected_content = read_expected_file(setup.story_folder_path, prompt_type, story_file, yaml_response)
+    if not yaml_response: expected_messages = [{"role": "user", "content": expected_content}]
 
     new_config = get_story_config(setup.story_folder_path, config)
     new_config['history_path'] = story_file
