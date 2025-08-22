@@ -5,6 +5,7 @@ class CommonMixin:
         self.content = self.join_parts(self.parts)
         self.parsed = "\n\n".join(self.parts)
         self.count = len(self.parts)
+        self.hashes = self.update_hashes()
 
     def join_parts(self, content):
         return f"\n{self.separator}\n".join(content)

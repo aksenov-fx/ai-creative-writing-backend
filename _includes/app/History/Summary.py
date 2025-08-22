@@ -36,6 +36,9 @@ class SummaryMixin(CommonMixin):
         self.parts = self._extract_parts_from_yaml()
         self.parsed = self.join_parts(self.parts)
         self.count = len(self.parts)
+        
+    def update_hashes(self):
+        return #dummy method
 
 class SummaryChanger(SummaryMixin):
 

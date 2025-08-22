@@ -106,7 +106,7 @@ class StoryParser(StoryMixin, ParserMixin, TrimMixin):
         if not self.hashes: return
 
         hash_keys = list(self.hashes.keys())
-        hashes_to_process = hash_keys[:-1] if len(self.hashes) == len(summary.yaml_data) else hash_keys
+        hashes_to_process = hash_keys[:-1] if len(self.hashes) <= len(summary.yaml_data) else hash_keys
         
         for i, part_hash in enumerate(hashes_to_process):
             if part_hash in summary.yaml_data:
@@ -114,14 +114,3 @@ class StoryParser(StoryMixin, ParserMixin, TrimMixin):
             
         self.update(self.parts)
         return self
-
-# Process 
-
-# Order of operations
-
-# self.merge_with_summary(summary_object)
-# self.parse_assistant_response()
-# set_part_number_content
-# cut_history_to_part_number
-# return_last_part
-# self.trim_content() 
