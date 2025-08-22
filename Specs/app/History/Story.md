@@ -105,17 +105,23 @@ Removes the last AI response from story.
 story_changer.remove_last_response()
 ```
 
-#### `replace_history_part(new_part: str, part_number: int) -> None`
-Replaces specific story part with new content.
+#### `change_history_part(content: str, part_number: int, append: bool = False) -> None`
+Changes specific story part with new content.
 
 **Behavior:**
-- Replaces part at specified position (1-based)
-- Strips whitespace from new content
-- Writes changes to file
+If not append:
+    - Replaces part at specified position (1-based)
+    - Strips whitespace from new content
+    - Writes changes to file
+
+If append:
+    - Appends content to part text
+    - Write changes to file
 
 **Example Usage:**
 ```python
-story_changer.replace_history_part("New content", 1)
+story_changer.change_history_part("New content", 1)
+story_changer.change_history_part("Additional text", 1, append=True)
 ```
 
 #### `add_part(new_part: str, part_number: int) -> None`
@@ -133,17 +139,16 @@ story_changer.add_part("New part", 2)
 
 ### StoryParser Functions
 
-#### `parse_assistant_response() -> StoryParser`
+#### `set_assistant_response() -> StoryParser`
 Extracts and removes the last assistant response.
 
 **Behavior:**
-- Returns early if last part is empty
 - Pops last part as assistant response
 - Updates internal state
 
 **Example Usage:**
 ```python
-parser = story_parser.parse_assistant_response()
+story_parsed.set_assistant_response()
 ```
 
 #### `merge_with_summary(summary) -> StoryParser`

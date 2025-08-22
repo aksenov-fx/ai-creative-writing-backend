@@ -10,7 +10,6 @@ class Generator:
         """Write next story part"""
 
         story, story_parsed, summary = Factory.get_objects()
-        story_parsed.parse_assistant_response()
         story_parsed.merge_with_summary(summary)
 
         messages = compose_prompt("Write scene", story_parsed)
@@ -22,7 +21,6 @@ class Generator:
         """Same as write_scene but does not append writing instructions"""
 
         story, story_parsed, summary = Factory.get_objects()
-        story_parsed.parse_assistant_response()
         story_parsed.merge_with_summary(summary)
 
         messages = compose_prompt("Custom prompt", story_parsed)
@@ -58,3 +56,18 @@ class Generator:
 
         messages = compose_prompt("Write scene", story_parsed)
         stream(story, messages, rewrite=True, part_number=part_number)
+
+    @staticmethod
+    def continue_response(part_number: int) -> None:
+        """Similar to write_scene but puts the specified part number as assistant response"""
+
+        story, story_parsed, summary = Factory.get_objects()
+
+        validate_part_number(story.count, part_number)
+        story_parsed.cut_history_to_part_number(part_number)
+        story_parsed.set_assistant_response(part_number)
+        story_parsed.merge_with_summary(summary)
+
+        messages = compose_prompt("Write scene", story_parsed)
+
+        stream(story, messages, rewrite=True, part_number=part_number, append=True)

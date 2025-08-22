@@ -14,12 +14,11 @@ def run_setup():
     setup_temp_folder(tests_conf)
     return tests_conf
 
-def chat_test(prompt_type, story_file, callback, module, should_pass, yaml_response):
+def chat_test(prompt_type, story_file, callback, module, should_pass):
 
     setup = run_setup()
 
-    expected_content = read_expected_file(setup.story_folder_path, prompt_type, story_file, yaml_response)
-    if not yaml_response: expected_messages = [{"role": "user", "content": expected_content}]
+    expected_content = read_expected_file(setup.story_folder_path, prompt_type, story_file)
 
     new_config = get_story_config(setup.story_folder_path, config)
     new_config['history_path'] = story_file
@@ -32,9 +31,12 @@ def chat_test(prompt_type, story_file, callback, module, should_pass, yaml_respo
                 with override_config(config, **new_config):
                     callback(argument)
 
-        assert str(exc_info.value) == expected_content.strip()
+        assert str(exc_info.value) == expected_content
 
     if should_pass:
+
+        if isinstance(expected_content, str):
+            expected_content = [{"role": "user", "content": expected_content}]
 
         with patch(f'_includes.app.Chat.{module}.stream') as mock_stream:
             with override_config(config, **new_config):
@@ -44,4 +46,4 @@ def chat_test(prompt_type, story_file, callback, module, should_pass, yaml_respo
         story_obj, messages = args
         
         mock_stream.assert_called_once()
-        assert messages == expected_messages
+        assert messages == expected_content

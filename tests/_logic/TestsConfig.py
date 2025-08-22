@@ -37,7 +37,7 @@ generator_params = [
     ["Add part",             "Story.md",           Generator.add_part,          True],
     ["Add part",             "Story empty.md",     Generator.add_part,          False],
 
-    ["Continue response",    "Story.md",           Generator.continue_response, True,    True],
+    ["Continue response",    "Story.md",           Generator.continue_response, True],
     ["Continue response",    "Story empty.md",     Generator.continue_response, False],
 
 ]

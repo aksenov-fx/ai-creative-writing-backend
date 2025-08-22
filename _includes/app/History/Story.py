@@ -64,8 +64,11 @@ class StoryChanger(StoryMixin, ChangerMixin, TrimMixin):
 
         self.join_and_write()
 
-    def replace_history_part(self, new_part, part_number) -> None:
-        self.parts[part_number-1] = new_part.strip()
+    def change_history_part(self, content, part_number, append=False) -> None:
+        if append:
+            self.parts[part_number-1] += content
+        else:
+            self.parts[part_number-1] = content.strip()
         self.join_and_write()
 
     def add_part(self, new_part, part_number) -> None:
@@ -76,12 +79,9 @@ class StoryParser(StoryMixin, ParserMixin, TrimMixin):
 
 # Split
 
-    def parse_assistant_response(self) -> None:
-
-        if self.parts[-1] == '': return
+    def set_assistant_response(self, part_number: int) -> None:
         self.assistant_response = self.parts.pop()
         self.update(self.parts)
-
         return self
 
     def merge_with_summary(self, summary):

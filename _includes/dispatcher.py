@@ -25,7 +25,9 @@ def dispatch_story(folder: str, method: str, part_number: str):
         elif method == "rewrite_part":
             return Chat.Changer.change_part(part_number)
         elif method == "rewrite_parts":
-            return Chat.Changer.change_parts(part_number)
+            return Chat.Generator.add_part(part_number)
+        elif method == "continue_response":
+            return Chat.Generator.continue_response(part_number)
         elif method == "update_summary":
             return Chat.Summarizer.update_summary()
         elif method == "remove_last_response":

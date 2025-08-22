@@ -82,7 +82,6 @@ Common utility functions and helper methods
     │   └── Factory.get_summary() → SummaryChanger
     │
     ├── story_parsed.merge_with_summary(summary)
-    ├── story_parsed.parse_assistant_response()
     │
     ├── compose_prompt("Write scene", story_parsed) → messages
     │   ├── validate(include_introduction=True)

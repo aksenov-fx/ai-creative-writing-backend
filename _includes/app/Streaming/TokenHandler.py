@@ -10,12 +10,14 @@ class TokenHandler:
                  history_object,
                  rewriting: bool = False,
                  write_history: bool = True,
-                 part_number: int = 0):
+                 part_number: int = 0,
+                 append: bool = False):
         
         self.history = history_object
         self.rewriting = rewriting
         self.write_history = write_history
         self.part_number = part_number
+        self.append = append
 
         self.token_buffer = ""
         self.complete_response = ""
@@ -28,7 +30,7 @@ class TokenHandler:
             return
             
         elif self.rewriting:
-            self.history.replace_history_part(self.complete_response, self.part_number)
+            self.history.change_history_part(self.complete_response, self.part_number, self.append)
 
         else:
             self.history.append_history(content)
