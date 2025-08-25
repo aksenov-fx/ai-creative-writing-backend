@@ -1,41 +1,59 @@
+# Prompt variables
 system_prompt: null
-variables: {}
 introduction: ""
+variables: {}
 prompts_structure: {}
 abbreviations: {}
+translation_language: "English"
+history_prefix: "**Previous text parts for reference:**"
+
+# Story parsing settings
+separator: "\n----\n"
+
+# Endpoints settings
 endpoints: {}
 default_endpoint: "openrouter"
 endpoint: null
+
+# Models settings
 models: {}
-default_model: "Deepseek V3"
-summary_model: "Deepseek V3"
+default_model: "Deepseek V3.1"
+summary_model: "Deepseek V3.1"
 model: ""
-temperature: 0.8
+
+# Context length settings
 max_tokens: 100000
 trim_history: false
 use_summary: true
 include_previous_part_when_summarizing: True
 include_previous_part_when_rewriting: True
+
+# API settings
+temperature: 0.8
+
+# Output settings
+print_messages: true
+include_reasoning: true
+print_reasoning: true
+
+# Paths
 history_path: "Story.md"
 summary_yaml_path: "Data/Summary YAML.yaml"
 summary_md_path: "Story Summary.md"
 prompts_path: "Prompts.md"
 folder_path: ""
-separator: "\n----\n"
+settings_folder: "./_includes/settings/"
+
+# Runtime flags
 interrupt_flag: false
 debug: false
-print_messages: true
-include_reasoning: true
-history_prefix: "**Previous text parts for reference:**"
-print_reasoning: true
-translation_language: "Russian"
-settings_folder: "./_includes/settings/"
 
 # Chat settings that are not used in story mode
 splitter: ""
 add_header: true
 chat_with_story: false
 include_file: ""
+custom_instructions_folder: ""
 
 # Constants
 WRITE_INTERVAL: 1.0

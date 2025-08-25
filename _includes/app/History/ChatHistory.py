@@ -52,11 +52,8 @@ class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
     def fix_separator(self):
         if self.parts[-1] == "" or self.parts[-1].strip() == "#": return
 
-        self.parts.append("")
-        self.append_history(f"\n{self.separator}\n")
-        self.update(self.parts)
-
-        if not self.parts_even and self.config.add_header: self.append_history("# ")
+        self.append_separator()
+        if self.config.add_header and not self.parts_even: self.append_history("# ")
         Utility.update_timestamp(self.path, self.config)
 
         return self
@@ -116,7 +113,7 @@ class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
         """
         Parse the instructions from the custom instructions section of md file.
         """
-        return Utility.read_instructions(self.custom_instructions)
+        return Utility.read_instructions(self.custom_instructions, self.config.custom_instructions_folder)
 
 # Process
     def process(self):

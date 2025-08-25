@@ -1,7 +1,12 @@
 class ParserMixin:
     """Common parsing methods for History and Summary parsers."""
     
+    def validate_part_number(self, part_number: int) -> None:
+        if self.count < part_number:
+            raise ValueError("Story has less parts than the specified part number")
+        
     def cut_history_to_part_number(self, part_number):
+        self.validate_part_number(part_number)
         self.update(self.parts[:part_number])
         return self
 

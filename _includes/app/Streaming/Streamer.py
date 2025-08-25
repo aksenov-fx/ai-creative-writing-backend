@@ -30,7 +30,6 @@ class Streamer:
                 delta = chunk.choices[0].delta
                 
                 if config.interrupt_flag:
-                    config.interrupt_flag = False
                     break
 
                 # Handle reasoning content if present

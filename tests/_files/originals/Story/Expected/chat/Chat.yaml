@@ -1,0 +1,6 @@
+- role: system
+  content: |-
+    I am a helpful assistant.
+- role: user
+  content: |-
+    Hello

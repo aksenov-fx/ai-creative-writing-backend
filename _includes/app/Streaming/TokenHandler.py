@@ -30,7 +30,10 @@ class TokenHandler:
             return
             
         elif self.rewriting:
-            self.history.change_history_part(self.complete_response, self.part_number, self.append)
+            self.history.replace_history_part(self.complete_response, self.part_number)
+
+        elif self.append:
+            self.history.append_to_history_part(content, self.part_number)
 
         else:
             self.history.append_history(content)
@@ -46,7 +49,7 @@ class TokenHandler:
         with self.buffer_lock:
             self.complete_response += content
             
-            if not self.rewriting:
+            if not self.rewriting and not self.append:
                 self.write_file(content)
                 return
             

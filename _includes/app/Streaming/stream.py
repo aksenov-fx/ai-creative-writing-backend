@@ -14,6 +14,9 @@ def stream(history_object,
         print("\nDebug mode is on")
         return "debug response"
 
+    if not append and not rewrite and write_history:
+        history_object.fix_separator()
+
     token_handler = TokenHandler(history_object, rewrite, write_history, part_number, append)
     streamer = Streamer(token_handler.get_token_callback())
     streamer.stream_response(messages)

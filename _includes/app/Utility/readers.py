@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import yaml
-from importlib import resources
 
 def read_file(file_path):
     path = Path(file_path)
@@ -33,7 +32,7 @@ def read_yaml(file_path: str, convert_keys_to_snake_case: bool = False) -> dict:
     
     return yaml_data
 
-def read_instructions(instructions: str):
+def read_instructions(instructions: str, custom_instructions_folder: str):
     """
     Read custom instructions from a file.
     
@@ -41,13 +40,10 @@ def read_instructions(instructions: str):
     it will look for a file named Questions.md in the _instructions directory.
     Otherwise - return the original section text.
     """
+
     if not instructions.startswith("{"):
         return instructions
     
     instructions_file = instructions.replace('{', '').replace('}', '')
-    instructions_file += '.md'
-
-    with resources.files('_includes.settings._instructions').joinpath(instructions_file).open('r') as file:
-        content = file.read()
-        return content
-    
+    instructions_file = custom_instructions_folder + instructions_file + '.md'
+    return read_file(instructions_file)

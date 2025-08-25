@@ -1,8 +1,10 @@
 import pytest
 
 from tests._logic.chat_test import chat_test
-from tests._logic.TestsConfig import summarizer_params
+from tests._logic.ConfigManager.ParamManager import load_params
 
-@pytest.mark.parametrize("prompt_type,story_file,callback,should_pass,arg", summarizer_params)
-def test_module(prompt_type, story_file, callback, should_pass, arg):
-    chat_test(prompt_type, story_file, callback, "Summarizer", should_pass, arg)
+params = load_params('Chat', 'Summarizer')
+
+@pytest.mark.parametrize("app_config,expected_content,callback,class_name,should_pass,arg,overrides", params)
+def test_module(app_config, expected_content, callback, class_name, should_pass, arg, overrides):
+    chat_test(app_config, expected_content, callback, class_name, should_pass, arg, overrides)

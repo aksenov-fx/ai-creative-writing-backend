@@ -1,0 +1,7 @@
+parameters:
+  - test_file: "Story.md"
+    method: "change_part"
+    
+  - test_file: "Story empty.md" 
+    method: "change_part"
+    should_pass: false

@@ -30,6 +30,7 @@ class Summarizer:
         config.model = config.models[config.summary_model]['name']
 
         for part_number, hash_key in enumerate(summary.keys):
+            if config.interrupt_flag: break
             if summary.yaml_data[hash_key]['summarized']: continue
             
             result = Summarizer.summarize_part(part_number+1)

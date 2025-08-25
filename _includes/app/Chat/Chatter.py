@@ -5,12 +5,11 @@ from ..Composers.ApiComposer import ApiComposer
 class Chatter:
     
     @staticmethod
-    def chat(file_path: str) -> None:
+    def chat() -> None:
         """Chat method for conversations - not for story writing"""
         
-        history, history_parsed = Factory.get_chat_objects(file_path)
+        history, history_parsed = Factory.get_chat_objects()
         history_parsed.process()
-        messages = ApiComposer.compose_chat_messages(history_parsed)
+        messages = ApiComposer.compose_messages(history_parsed.custom_instructions, history_parsed.parts)
 
-        history.fix_separator()
         stream(history, messages)

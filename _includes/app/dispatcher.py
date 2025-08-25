@@ -1,7 +1,7 @@
-from .config import config, default_config
-from .app.History.Factory import Factory
-from .app import ConfigManager
-from .app import Chat
+from ..config import config, default_config
+from .History.Factory import Factory
+from . import ConfigManager
+from . import Chat
 
 def dispatch(folder, file, mode, method, part_number, selected_text):
 
@@ -15,9 +15,9 @@ def dispatch_story(folder: str, method: str, part_number: str):
     new_config = ConfigManager.get_story_config(folder, config)
     with ConfigManager.override_config(config, **new_config):
         if method == "write_scene":
-            return Chat.Generator.write_scene(part_number)
+            return Chat.Generator.write_scene()
         elif method == "custom_prompt":     
-            return Chat.Generator.custom_prompt(part_number)
+            return Chat.Generator.custom_prompt()
         elif method == "regenerate":
             return Chat.Generator.regenerate(part_number)
         elif method == "add_part":
@@ -40,9 +40,9 @@ def dispatch_chat(file: str, method: str):
     new_config = ConfigManager.get_chat_config(file, config, default_config)
     with ConfigManager.override_config(config, **new_config):
         if method == "chat":
-            return Chat.Chatter.chat(file)
+            return Chat.Chatter.chat()
         elif method == "remove_last_response":
-            Factory.get_chat_history(file).remove_last_response()
+            Factory.get_chat_history().remove_last_response()
         else:
             raise Exception(f"Chat does not have a {method} method")
 

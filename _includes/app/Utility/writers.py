@@ -9,14 +9,14 @@ def update_timestamp(path: str, config) -> None:
     current_time = time.time()
     os.utime(path, (current_time, current_time))
 
-def write_file(path: str, content: str, config) -> None:
+def write_file(path: str, content: str, config, mode="a") -> None:
     # Create parent directories if they don't exist
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            with open(path, 'w', encoding='utf-8') as f: 
+            with open(path, mode, encoding='utf-8') as f: 
                 f.write(content)
             break
         except (OSError, IOError) as e:
@@ -24,7 +24,7 @@ def write_file(path: str, content: str, config) -> None:
                 raise
             time.sleep(config.RETRY_BASE_DELAY * (2 ** attempt))  # Exponential backoff
     
-    update_timestamp(path, config)
+    if mode == "w": update_timestamp(path, config)
 
 def write_yaml(path: str, content: dict, config) -> None:
     """

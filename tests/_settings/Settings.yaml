@@ -1,5 +1,6 @@
 temp_dir: "tests/_files/temp"
 originals_dir: "tests/_files/originals"
+params_dir: "tests/_settings/Params"
 
 story_folder: "Story"
 story_folder_path: ""

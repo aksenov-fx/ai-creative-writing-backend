@@ -45,13 +45,13 @@ class Factory:
 # Chat
 
     @staticmethod
-    def get_chat_history(file_path) -> ChatHistoryChanger:
-        return ChatHistoryChanger(file_path)
+    def get_chat_history() -> ChatHistoryChanger:
+        return ChatHistoryChanger(config.history_path)
 
     @staticmethod
-    def get_chat_history_parsed(file_path) -> ChatHistoryParser:
-        return ChatHistoryParser(file_path)
+    def get_chat_history_parsed() -> ChatHistoryParser:
+        return ChatHistoryParser(config.history_path)
 
     @staticmethod
-    def get_chat_objects(file_path):
-        return Factory.get_chat_history(file_path), Factory.get_chat_history_parsed(file_path)
+    def get_chat_objects():
+        return Factory.get_chat_history(), Factory.get_chat_history_parsed()

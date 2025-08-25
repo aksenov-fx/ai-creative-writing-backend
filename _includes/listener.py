@@ -1,6 +1,6 @@
 import os
 import socketserver
-from .dispatcher import dispatch
+from .app.dispatcher import dispatch
 from _includes import config
 import traceback
 

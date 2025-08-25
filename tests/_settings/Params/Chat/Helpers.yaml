@@ -1,0 +1,12 @@
+parameters:
+  - test_file: "Story empty.md"
+    method: "rewrite_selection"
+    arg: "text to rewrite"
+    
+  - test_file: "Story empty.md"
+    method: "translate"
+    arg: "text to translate"
+
+  - test_file: "Story empty.md"
+    method: "explain"
+    arg: "text to explain"

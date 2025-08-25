@@ -1,19 +1,19 @@
 # ApiComposer Module Specification
 
 ## Overview
-Constructs message arrays in the format expected by OpenAI-compatible APIs, handling system prompts, user messages, and assistant responses.
+Constructs message arrays in the format expected by OpenAI-compatible APIs, handling system prompts and alternating user/assistant messages.
 
 ---
 
 ## Dependencies
-- `_includes.config` - For configuration access (system_prompt, print_messages)
+- `_includes.config` - For configuration access (print_messages)
 - `..Utility` - For message printing utilities
 
 ## Core Functions
 
 ### Message Composition Functions
 
-#### `append_message(messages: List[Dict[str, str]], role: str, content: Optional[str]) -> None`
+#### `append_message(messages: List, role: str, content: str) -> None`
 Appends a message to the messages list if content is provided.
 
 **Behavior:**
@@ -26,28 +26,16 @@ Appends a message to the messages list if content is provided.
 append_message(messages, "user", "Hello")
 ```
 
-#### `compose_messages(user_prompt, assistant_response) -> List[Dict[str, str]]`
-Composes standard API messages for story generation and chat interactions.
+#### `compose_messages(system_prompt, parts) -> List`
+Composes API messages with a system prompt and alternating user/assistant conversation parts.
+
+**Parameters:**
+- `system_prompt`: The system message content
+- `parts`: List of conversation parts that alternate between user and assistant messages
 
 **Message Structure:**
-1. System message with config.system_prompt
-2. User message with provided user_prompt
-3. Assistant message with provided assistant_response (if any)
-
-**Debug Output:**
-- If config.print_messages is True, prints formatted messages using Utility.print_with_newlines()
-
-**Example Usage:**
-```python
-messages = compose_messages("Hello, AI", "Hello, User")
-```
-
-#### `compose_chat_messages(history) -> List[Dict[str, str]]`
-Composes API messages for chat-style conversations with alternating roles.
-
-**Message Structure:**
-1. System message with history.custom_instructions
-2. Alternating user/assistant messages from history.parts
+1. System message with provided system_prompt
+2. Alternating user/assistant messages from parts array
    - Even indices (0, 2, 4...) are user messages
    - Odd indices (1, 3, 5...) are assistant messages
 
@@ -56,27 +44,21 @@ Composes API messages for chat-style conversations with alternating roles.
 
 **Example Usage:**
 ```python
-messages = compose_chat_messages(history_parsed)
+messages = compose_messages("You are a helpful assistant", ["Hello", "Hi there", "How are you?"])
 ```
 
 ## Configuration Usage
 
 ### Primary Configuration Sources:
-- `config.system_prompt`: Default system prompt for story generation
 - `config.print_messages`: Boolean flag to enable message debugging output
 
 ## Usage Patterns
 
-### Standard Message Flow:
-- Used by PromptComposer.compose_prompt() for story generation
-- Creates 3-message structure: system → user → assistant
-- Assistant response is optional (None for new generations)
-
-### Chat Message Flow:
-- Used for conversational interactions
-- Creates dynamic message arrays based on conversation history
-- Alternates roles based on message position in history
-- Includes custom system instructions per conversation
+### Message Flow:
+- Used for composing API messages with alternating user/assistant conversation parts
+- Creates dynamic message arrays based on provided parts
+- Alternates roles based on message position in parts array
+- Includes system prompt as first message
 
 ### Message Format:
 All returned messages follow the OpenAI API format:
@@ -84,13 +66,13 @@ All returned messages follow the OpenAI API format:
 [
     {"role": "system", "content": "system prompt"},
     {"role": "user", "content": "user message"},
-    {"role": "assistant", "content": "assistant response"}
+    {"role": "assistant", "content": "assistant response"},
+    {"role": "user", "content": "next user message"}
 ]
 ```
 
 ## Integration Points
 
 - **PromptComposer**: Uses compose_messages() for final message formatting
-- **Chat Module**: Uses compose_chat_messages() for conversational interfaces
+- **Chat Module**: Uses compose_messages() for conversational interfaces
 - **Streaming Module**: Receives composed messages for API transmission
-- **History Module**: Provides history objects for chat message composition

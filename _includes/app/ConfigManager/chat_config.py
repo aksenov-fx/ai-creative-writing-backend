@@ -32,6 +32,8 @@ def get_chat_config(file, config, default_config):
     current_config.update(default_chat_config)
     current_config.update(new_config)
     
+    current_config['interrupt_flag'] = False
+    current_config['history_path'] = file
     current_config['model'] = get_model(current_config)
 
     # Get story path if chat_with_story is True

@@ -1,5 +1,4 @@
 from ..Composers.PromptComposer import compose_prompt
-from ..Composers.PromptComposer import validate_part_number
 from ..History.Factory import Factory
 from ..Streaming.stream import stream
 
@@ -10,6 +9,7 @@ class Generator:
         """Write next story part"""
 
         story, story_parsed, summary = Factory.get_objects()
+
         story_parsed.merge_with_summary(summary)
 
         messages = compose_prompt("Write scene", story_parsed)
@@ -21,6 +21,7 @@ class Generator:
         """Same as write_scene but does not append writing instructions"""
 
         story, story_parsed, summary = Factory.get_objects()
+
         story_parsed.merge_with_summary(summary)
 
         messages = compose_prompt("Custom prompt", story_parsed)
@@ -29,11 +30,10 @@ class Generator:
 
     @staticmethod
     def regenerate(part_number: int) -> None:
-        """Same as write_scene but replaces the existing part instead of appending"""
+        """Same as write_scene but replaces the existing part instead of appending to the end of the file"""
 
         story, story_parsed, summary = Factory.get_objects()
 
-        validate_part_number(story.count, part_number)
         story_parsed.cut_history_to_part_number(part_number-1)
         story_parsed.merge_with_summary(summary)
 
@@ -43,18 +43,19 @@ class Generator:
 
     @staticmethod
     def add_part(part_number: int) -> None:
-        """Same as write_scene but adds a part after the specified part instead of appending"""
+        """Same as write_scene but adds a part after the specified part instead of appending to the end of the file"""
 
         story, story_parsed, summary = Factory.get_objects()
 
-        validate_part_number(story.count, part_number)
         story.add_part("added part", part_number)
 
         story_parsed.cut_history_to_part_number(part_number)
         story_parsed.merge_with_summary(summary)
+
         part_number += 1
 
         messages = compose_prompt("Write scene", story_parsed)
+
         stream(story, messages, rewrite=True, part_number=part_number)
 
     @staticmethod
@@ -63,11 +64,12 @@ class Generator:
 
         story, story_parsed, summary = Factory.get_objects()
 
-        validate_part_number(story.count, part_number)
         story_parsed.cut_history_to_part_number(part_number)
         story_parsed.set_assistant_response(part_number)
         story_parsed.merge_with_summary(summary)
 
         messages = compose_prompt("Write scene", story_parsed)
 
-        stream(story, messages, rewrite=True, part_number=part_number, append=True)
+        story.append_to_history_part("\n\n", part_number)
+        
+        stream(story, messages, append=True, part_number=part_number)

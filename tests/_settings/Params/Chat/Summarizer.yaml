@@ -1,0 +1,6 @@
+parameters:
+  - test_file: "Story.md"
+    method: "summarize_part"
+    should_pass: true
+    arg: 4
+    overrides: {}

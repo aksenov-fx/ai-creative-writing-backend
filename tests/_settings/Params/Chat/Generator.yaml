@@ -1,0 +1,33 @@
+parameters:
+  - test_file: "Story empty.md"
+    method: "write_scene"
+
+  - test_file: "Story.md"
+    method: "write_scene"
+
+  - test_file: "Story empty.md"
+    method: "custom_prompt"
+
+  - test_file: "Story.md"
+    method: "custom_prompt"
+
+  - test_file: "Story.md"
+    method: "regenerate"
+
+  - test_file: "Story empty.md"
+    method: "regenerate"
+    should_pass: false
+
+  - test_file: "Story.md"
+    method: "add_part"
+
+  - test_file: "Story empty.md"
+    method: "add_part"
+    should_pass: false
+
+  - test_file: "Story.md"
+    method: "continue_response"
+    
+  - test_file: "Story empty.md"
+    method: "continue_response"
+    should_pass: false

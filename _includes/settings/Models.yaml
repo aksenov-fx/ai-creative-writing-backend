@@ -4,8 +4,8 @@ Deepseek R1:
 Kimi K2:
   name: "moonshotai/kimi-k2"
 
-Deepseek V3:
-  name: "deepseek/deepseek-chat-v3-0324"
+Deepseek V3.1:
+  name: "deepseek/deepseek-chat-v3.1"
 
 Claude 4:
   name: "anthropic/claude-sonnet-4"

@@ -4,33 +4,45 @@ from pathlib import Path
 
 @dataclass
 class ConfigDataClass:
+    # Prompt variables
     system_prompt: str
     introduction: str
     variables: dict
     prompts_structure: dict
     abbreviations: str
     translation_language: str
+    history_prefix: str
 
+    # Story parsing settings
+    separator: str
+
+    # Endpoints settings
     endpoints: dict
     default_endpoint: str
     endpoint: dict
 
+    # Models settings
     models: dict
     default_model: str
     summary_model: str
     model: dict
 
-    temperature: float
+    # Context length settings
     max_tokens: int
     trim_history: bool
-    history_prefix: str
     use_summary: bool
+    include_previous_part_when_summarizing: bool
+    include_previous_part_when_rewriting: bool
 
+    # API settings
+    temperature: float
+
+    # Output settings
     print_messages: bool
     include_reasoning: bool
     print_reasoning: bool
-    separator: str
 
+    # Paths
     history_path: Path
     summary_yaml_path: Path
     summary_md_path: Path
@@ -38,13 +50,12 @@ class ConfigDataClass:
     folder_path: Path
     settings_folder: Path
 
-    include_previous_part_when_summarizing: bool
-    include_previous_part_when_rewriting: bool
-
+    # Runtime flags
     interrupt_flag: bool
     debug: bool
 
-    # Chat settings
+    # Chat settings that are not used in story mode
+    custom_instructions_folder: Path
     splitter: str
     add_header: bool
     chat_with_story: bool
