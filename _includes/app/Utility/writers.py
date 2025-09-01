@@ -5,6 +5,13 @@ import os
 
 
 def update_timestamp(path: str, config) -> None:
+    """
+    Updates the timestamp of the file.
+    Update helps the apps like Obsidian to detect changes in the md file.
+
+    Used by write_file and fix_separator methods.
+    """
+    
     time.sleep(config.TIMESTAMP_UPDATE_DELAY)
     current_time = time.time()
     os.utime(path, (current_time, current_time))

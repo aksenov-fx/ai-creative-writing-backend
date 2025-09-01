@@ -2,6 +2,15 @@ from .. import Utility
 
 
 def get_model(config_dict):
+    """
+    Gets the model name from config by number.
+    If input is not a number, returns the model name as is.
+
+    1 -> First model
+    "deepseek" -> "deepseek"
+
+    Used by get_chat_config() and story_config.load_config()
+    """
 
     model = config_dict['model']
     

@@ -2,6 +2,11 @@ from .. import Utility
 from .Mixins.ChangerMixin import ChangerMixin
 
 class PromptChanger(ChangerMixin):
+    """
+    A class that represents a prompts md file.
+    Handles file reading and changes.
+    """
+    
     def __init__(self, path):
         from ...config import config
         

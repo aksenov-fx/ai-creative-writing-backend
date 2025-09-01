@@ -6,7 +6,12 @@ from .ConfigDataClass import ConfigDataClass
 
 @contextmanager
 def override_config(config: ConfigDataClass, **overrides: Any):
+    """
+    Changes config values temporarily and then sets them back.
 
+    Used by dispatcher.
+    """
+    
     original_values = {}
 
     for key, value in overrides.items():

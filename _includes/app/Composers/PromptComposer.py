@@ -15,6 +15,14 @@ def validate(include_introduction: bool, validate_user_prompt: bool = True) -> N
         raise ValueError(user_prompt_error)
     
 def compose_prompt(method: str, history_parsed, include_introduction = True):
+    """
+    Composes a complete prompt for story generation.
+    Prompt is composed from the following parts:
+    introduction + story content + user prompt + part number content
+    Each part is optional depending on the method (prompt type).
+
+    Used by Chat module.
+    """
 
     if method == "Summarize part":
         validate(include_introduction, validate_user_prompt=False)
@@ -42,6 +50,11 @@ def compose_prompt(method: str, history_parsed, include_introduction = True):
     return messages
 
 def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
+    """
+    Composes a prompt for helper operations like translation or editing.
+
+    Used by Chat.Helpers
+    """
     prompt_structure = config.prompts_structure[prompt_key]
     prompt = expand_abbreviations(prompt_structure, config.variables)
 

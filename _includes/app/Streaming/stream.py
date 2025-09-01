@@ -9,6 +9,12 @@ def stream(history_object,
            part_number: int = 0,
            append: bool = False) -> None:
 
+    """
+    A wrapper for streamer and token handler.
+    Handles pre-execution and post-execution logic.
+    Used by Chat module.
+    """
+
     print(f"\nModel: {config.model}")
     if config.debug:
         print("\nDebug mode is on")

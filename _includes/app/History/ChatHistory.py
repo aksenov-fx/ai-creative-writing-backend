@@ -46,6 +46,11 @@ class ChatHistoryMixin:
         return f"\n{self.separator}\n".join(content)
 
 class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
+    """
+    A class that represents a chat md file.
+    Handles file changes.
+    """
+
 
 # Change
 
@@ -68,6 +73,11 @@ class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
         return self
 
 class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
+    """
+    A class that represents a chat md file.
+    Handles file parsing for composing API request.
+    Can not change the file.
+    """
 
     def split_conversation(self):   
         if not self.splitter in self.content: return

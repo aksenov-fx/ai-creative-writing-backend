@@ -41,7 +41,11 @@ class SummaryMixin(CommonMixin):
         return #dummy method
 
 class SummaryChanger(SummaryMixin):
-
+    """
+    A class that represents a summary yaml file.
+    Handles file changes.
+    """
+    
     def write_summary(self):
         Utility.write_yaml(self.path, self.yaml_data, self.config)
 
@@ -85,4 +89,9 @@ class SummaryChanger(SummaryMixin):
         self.write_summary()
 
 class SummaryParser(SummaryMixin, ParserMixin, TrimMixin):
+    """
+    A class that represents a summary yaml file.
+    Handles file parsing for composing API request.
+    Can not change the file.
+    """
     pass

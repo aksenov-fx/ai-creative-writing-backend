@@ -6,6 +6,11 @@ from .commons import get_endpoint, get_model
 
 
 def load_config(folder_path, config_dict, extension='.yaml'):
+    """
+    Updates config from files listed in keys.
+    Used by config.py when initiating config 
+    And by get_story_config when loading story-specific config.
+    """
 
     keys = ['Variables', 'Abbreviations', 'Prompts Structure', 'Models', 'Endpoints']
     
@@ -22,6 +27,10 @@ def load_config(folder_path, config_dict, extension='.yaml'):
 
 
 def get_story_config(folder: str, config):
+    """
+    Merges story-specific settings from settings.md with current config.
+    """
+    
     settings_folder = os.path.join(folder, 'Settings/')
     config.folder_path = os.path.join(folder + "/")
     config.interrupt_flag = False

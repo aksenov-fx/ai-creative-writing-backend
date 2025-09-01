@@ -4,6 +4,12 @@ from pathlib import Path
 
 @dataclass
 class ConfigDataClass:
+    """
+    A primary configuration container.
+    Instantiated by config.py
+    Passed to override_config() for temporary modification
+    """
+    
     # Prompt variables
     system_prompt: str
     introduction: str
@@ -62,9 +68,9 @@ class ConfigDataClass:
     include_file: str
 
     # Constants
-    WRITE_INTERVAL: float
     PORT: int
-    TOKEN_ESTIMATION_DIVISOR: int
     BUFFER_SIZE: int
-    TIMESTAMP_UPDATE_DELAY: float
+    TOKEN_ESTIMATION_DIVISOR: int
+    WRITE_INTERVAL: float
     RETRY_BASE_DELAY: float
+    TIMESTAMP_UPDATE_DELAY: float

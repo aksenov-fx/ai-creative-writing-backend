@@ -3,7 +3,11 @@ from _includes import config
 from .. import Utility
 
 class ApiComposer:
-
+    """
+    Constructs message arrays in the format expected by OpenAI-compatible APIs
+    Used by PromptComposer and Chatter.
+    """
+    
     @staticmethod
     def append_message(messages: List, role: str, content: str) -> None:
         if content:

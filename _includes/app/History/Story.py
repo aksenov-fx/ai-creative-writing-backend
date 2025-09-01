@@ -48,6 +48,10 @@ class StoryMixin(CommonMixin):
         self.hashes = hashes
 
 class StoryChanger(StoryMixin, ChangerMixin, TrimMixin):
+    """
+    A class that represents a story md file.
+    Handles file changes.
+    """
 
 # Change
 
@@ -77,6 +81,11 @@ class StoryChanger(StoryMixin, ChangerMixin, TrimMixin):
         self.join_and_write()
 
 class StoryParser(StoryMixin, ParserMixin, TrimMixin):
+    """
+    A class that represents a story md file.
+    Handles file parsing for composing API request.
+    Can not change the file.
+    """
 
 # Split
 
