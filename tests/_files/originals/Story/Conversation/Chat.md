@@ -13,6 +13,3 @@ Custom instructions: {Default}
 ----
 
 #  Hello
-
-----
-

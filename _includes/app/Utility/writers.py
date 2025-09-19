@@ -44,4 +44,4 @@ def write_yaml(path: str, content: dict, config) -> None:
         content = dict(content)
         
     yaml_data = yaml.dump(content, default_flow_style=False, allow_unicode=True, sort_keys=False)
-    write_file(path, yaml_data, config)
+    write_file(path, yaml_data, config, mode="w")

@@ -51,7 +51,7 @@ class SummaryChanger(SummaryMixin):
 
         # Write human readable summary
         summary_md_path = self.config.folder_path + self.config.summary_md_path
-        Utility.write_file(summary_md_path, self.parsed, self.config)
+        Utility.write_file(summary_md_path, self.parsed, self.config, mode="w")
 
     def update_from_story_parts(self, story):
         """
