@@ -1,4 +1,4 @@
-default_model: "Claude 4"
+default_model: "Claude 4.5"
 model: ""
 temperature: 0.8
 splitter: "\n****\n"    # Conversation splitter for excluding previous parts
