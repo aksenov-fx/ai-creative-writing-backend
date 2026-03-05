@@ -28,6 +28,9 @@ class Streamer:
             )
 
             for chunk in response:
+                if not chunk.choices:
+                    continue
+
                 delta = chunk.choices[0].delta
                 
                 if config.interrupt_flag:
