@@ -1,5 +1,6 @@
 default_model: "Claude 4.5"
 model: ""
+#max_tokens: 10000
 temperature: 0.8
 splitter: "\n****\n"    # Conversation splitter for excluding previous parts
 history_path: "chat.md"

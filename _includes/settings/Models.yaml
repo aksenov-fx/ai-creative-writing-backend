@@ -1,11 +1,13 @@
 Deepseek R1:
-  name: "deepseek/deepseek-r1"
+  name: "deepseek/deepseek-r1-0528"
 
 Kimi K2:
-  name: "moonshotai/kimi-k2"
+  name: "moonshotai/kimi-k2.5"
 
 Deepseek V3.2:
-  name: "deepseek/deepseek-v3.2-exp"
+  name: "deepseek/deepseek-chat-v3.1"
+
+#  name: "deepseek/deepseek-v3.2-exp"
 
 Claude 4.5:
   name: "anthropic/claude-sonnet-4.5"

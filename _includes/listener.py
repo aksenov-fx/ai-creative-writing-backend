@@ -13,7 +13,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         if not data or not isinstance(data, str):
             raise ValueError("Invalid input data")
         
-        args = data.split(',', 5)
+        args = data.split('|', 5)
         if len(args) != 6:
             raise ValueError(f"Expected 6 comma-separated values, got {len(args)}")
         

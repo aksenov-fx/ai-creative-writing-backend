@@ -20,6 +20,7 @@ class Streamer:
 
             response = client.chat.completions.create(
                 model=config.model,
+                max_tokens=config.max_tokens,
                 messages=messages,
                 stream=True,
                 temperature=config.temperature,
