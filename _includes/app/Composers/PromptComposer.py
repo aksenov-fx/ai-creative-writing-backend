@@ -3,7 +3,7 @@ import re
 from _includes import config
 from .ApiComposer import ApiComposer
 
-def validate(include_introduction: bool, validate_user_prompt: bool = True) -> None:
+def validate(include_introduction: bool, variables: dict, validate_user_prompt: bool = True) -> None:
 
     introduction_error = "config.introduction is not set. Please set it before beginning a story."
     user_prompt_error = "User prompt is not set. Please set it before writing a scene."
@@ -11,7 +11,7 @@ def validate(include_introduction: bool, validate_user_prompt: bool = True) -> N
     if include_introduction and not config.introduction:
         raise ValueError(introduction_error)
 
-    if validate_user_prompt and ('#user_prompt' not in config.variables or not config.variables['#user_prompt']):
+    if validate_user_prompt and ('#user_prompt' not in variables or not variables['#user_prompt']):
         raise ValueError(user_prompt_error)
     
 def compose_prompt(method: str, history_parsed, include_introduction = True):
@@ -24,18 +24,20 @@ def compose_prompt(method: str, history_parsed, include_introduction = True):
     Used by Chat module.
     """
 
+    variables = config.variables
+
     if method == "Summarize part":
-        validate(include_introduction, validate_user_prompt=False)
+        validate(include_introduction, variables, validate_user_prompt=False)
     else:
-        validate(include_introduction)
+        validate(include_introduction, variables)
 
     # Prepare user prompt
     prompt_structure = config.prompts_structure[method] # Get structure defined in prompts_structure.yaml
-    prompt = expand_abbreviations(prompt_structure, config.variables) # Compose prompt according to structure
+    prompt = expand_abbreviations(prompt_structure, variables) # Compose prompt according to structure
 
     # Prepare history
     if config.trim_history: history_parsed.trim_content()
-    history = f"{config.history_prefix}\n{history_parsed.parsed}" if history_parsed.parsed else ""
+    history = f"{variables['#history_prefix']}\n{history_parsed.parsed}" if history_parsed.parsed else ""
 
     # Prepare introduction
     introduction = expand_abbreviations(config.introduction)
@@ -55,8 +57,11 @@ def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
 
     Used by Chat.Helpers
     """
+
+    variables = config.variables
+
     prompt_structure = config.prompts_structure[prompt_key]
-    prompt = expand_abbreviations(prompt_structure, config.variables)
+    prompt = expand_abbreviations(prompt_structure, variables)
 
     if prompt_key == 'Translate':
         prompt = f"{prompt.strip()} {config.translation_language}:"
@@ -88,7 +93,7 @@ def expand_abbreviations(text: str, abbreviations: dict = None) -> str:
     if not abbreviations or not text: return text
     
     case_insensitive_mapping = {k.lower(): v for k, v in abbreviations.items()}
-    pattern = r"(^|\s|#)([a-zA-Z_]+)(?=[:, .?!''\s]|$)"
+    pattern = r"(^|\s|#)([^\W\d]+)(?=[:, .?!''\s]|$)"
     
     def replace_match(match):
         prefix = match.group(1)

@@ -1,11 +1,12 @@
 # Prompt variables
 system_prompt: null
 introduction: ""
+all_variables: {}
 variables: {}
 prompts_structure: {}
 abbreviations: {}
 translation_language: "English"
-history_prefix: "**Previous text parts for reference:**"
+language: "English"
 
 # Story parsing settings
 separator: "\n----\n"
@@ -17,8 +18,8 @@ endpoint: null
 
 # Models settings
 models: {}
-default_model: "Deepseek V3.2"
-summary_model: "Deepseek V3.2"
+default_model: "Deepseek V3.1"
+summary_model: "Deepseek V3.1"
 model: ""
 
 # Context length settings
@@ -48,13 +49,6 @@ settings_folder: "./_includes/settings/"
 interrupt_flag: false
 debug: false
 
-# Chat settings that are not used in story mode
-splitter: ""
-add_header: true
-chat_with_story: false
-include_file: ""
-custom_instructions_folder: ""
-
 # Constants
 PORT: 9993
 BUFFER_SIZE: 1024
@@ -62,3 +56,10 @@ TOKEN_ESTIMATION_DIVISOR: 4
 WRITE_INTERVAL: 1.0
 RETRY_BASE_DELAY: 0.1
 TIMESTAMP_UPDATE_DELAY: 0.3
+
+# Chat settings that are not used in story mode
+splitter: ""
+add_header: true
+chat_with_story: false
+include_file: ""
+custom_instructions_folder: ""

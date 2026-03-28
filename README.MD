@@ -84,7 +84,6 @@ Common utility functions and helper methods
 **prompts_structure:** A text for each prompt type that will be used to compose prompts, like Write scene or Custom prompt. Can use variables  
 **abbreviations:** abbreviations used in user prompts, like #O -> Oliver  
 **translation_language:** language to translate text into  
-**history_prefix:** story text prefix in API request  
 
 ### Story parsing settings
 **separator:** separator for story parts in md file  
