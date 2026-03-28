@@ -12,7 +12,7 @@ def load_config(folder_path, config_dict, extension='.yaml'):
     And by get_story_config when loading story-specific config.
     """
 
-    keys = ['Variables', 'Abbreviations', 'Prompts Structure', 'Models', 'Endpoints']
+    keys = ['All Variables', 'Abbreviations', 'Prompts Structure', 'Models', 'Endpoints']
     
     for key in keys:
         path = os.path.join(folder_path, key + extension)
@@ -22,6 +22,11 @@ def load_config(folder_path, config_dict, extension='.yaml'):
     config_dict['endpoint'] = get_endpoint(config_dict)
     config_dict['model'] = get_model(config_dict)
     config_dict['introduction'] = Utility.read_file(os.path.join(folder_path, 'Introduction.md'))
+
+    default_variables = config_dict['all_variables'][config_dict['language']]
+    new_variables = Utility.read_yaml(os.path.join(folder_path, 'Variables' + extension))
+    merged_variables = {**default_variables, **new_variables}
+    config_dict['variables'].update(merged_variables)
 
     return config_dict
 

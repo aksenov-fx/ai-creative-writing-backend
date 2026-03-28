@@ -13,11 +13,12 @@ class ConfigDataClass:
     # Prompt variables
     system_prompt: str
     introduction: str
+    all_variables: dict
     variables: dict
     prompts_structure: dict
     abbreviations: str
     translation_language: str
-    history_prefix: str
+    language: str
 
     # Story parsing settings
     separator: str

@@ -1,0 +1,102 @@
+English:
+
+  '#history_prefix': |
+    "**Previous text parts for reference:**"
+
+  '#instructions_preprompt': |
+    **Instructions**
+
+  '#guidelines': |
+    **Guidelines:**
+    Make your writing verbose
+    Fill in the gaps to make smooth transitions between scenes
+    Employ fresh metaphors drawn from uncommon domains
+    Describe sensations, thoughts, experiences, associations, emotions
+    Include dialogues and direct speech
+    Maintain a high literary standard of true classic literature
+    Prioritize originality over convention
+    Vary sentence structure
+    Create vivid settings through specific, unexpected details
+
+    Avoid cliches and sentimental terms like responsibility, trust, care, accomplishment etc.
+    Avoid purple prose and florid descriptions
+    Avoid filler sentences like: "The room held its breath"
+    Avoid atmospheric descriptions disconnected from character experience, like: "Somewhere, a creek churned with tomorrow's silt."
+    Avoid exagarration and dramatizing
+
+  '#user_preprompt': |
+    Write the next part of the story based on the below events:
+
+  '#user_postprompt': |
+    Stop here
+    Do not describe any further events after this point
+
+  '#rewrite_postprompt': | 
+    Text:
+
+  '#rewrite_selection_postprompt': | 
+    Return the rewritten text only without any comments.
+
+    Text:
+
+  '#translate_preprompt': | 
+    Translate the following text into
+
+  '#explain_preprompt': |
+    Please explain what this word means:
+
+  '#summarize_preprompt': |
+    Make a summary of the following story part.
+    Keep the part heading if it's present.
+    Exclude events, details and descriptions that are not relevant to the plot
+    Do not insert summary introductions or conclusions - just the summary text
+
+    Part text:
+
+
+Russian:
+
+  '#history_prefix': |
+    "**Текст предыдущих частей для контекста:**"
+
+  '#instructions_preprompt': |
+    **Инструкции**
+
+  '#guidelines': |
+    **Памятка:**
+    Пиши в стиле серьезной классической литературы
+    Передай атмосферу сцены через конкретные специфические детали
+
+    Избегай избитых тропов, риторических приемов и речевых оборотов
+    Избегай абстрактных сентиментальных понятий вроде "ответственность", "доверие", "забота", "достижение" и т.д.
+    Избегай не связанных с историей предложений-междометий, вроде: "Где-то вдалеке каркнула ворона"
+    Избегай преувеличений и драматизма
+
+  '#user_preprompt': |
+    Продолжи рассказ на основе следующих событий:
+
+  '#user_postprompt': |
+    Закончи часть на этом событии
+
+  '#rewrite_postprompt': | 
+    Текст:
+
+  '#rewrite_selection_postprompt': | 
+    Верни только переписанный текст, не добавляй от себя введения/резюме/комментариев к самой задаче
+
+    Текст:
+
+  '#translate_preprompt': | 
+    Переведи следующий текст на
+
+  '#explain_preprompt': |
+    Дай определение слову:
+
+  '#summarize_preprompt': |
+    Составь краткое содержание текста.
+    Оставь заголовок, если он есть.
+    Исключи из краткого содержания несущественные с точки зрения общего сюжета события, детали и описания
+    Верни только краткое содержание
+    Не добавляй от себя введения/резюме/комментариев к краткому содержанию
+
+    Текст:

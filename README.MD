@@ -80,11 +80,12 @@ Common utility functions and helper methods
 ### Prompt variables
 **system_prompt:** custom instructions  
 **introduction:** story introduction  
-**variables:** variables for composing prompts, like writing guidelines  
+**all_variables:** variables for composing prompts, like writing guidelines in all languages  
+**variables:** variables for composing prompts in a selected language  
 **prompts_structure:** A text for each prompt type that will be used to compose prompts, like Write scene or Custom prompt. Can use variables  
 **abbreviations:** abbreviations used in user prompts, like #O -> Oliver  
-**translation_language:** language to translate text into  
-**history_prefix:** story text prefix in API request  
+**language:** language of instructions to use from all_variables
+**translation_language:** language to translate text into
 
 ### Story parsing settings
 **separator:** separator for story parts in md file  
