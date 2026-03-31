@@ -36,6 +36,7 @@ temperature: 0.8
 print_messages: true
 include_reasoning: true
 print_reasoning: true
+print_response: true
 
 # Paths
 history_path: "Story.md"

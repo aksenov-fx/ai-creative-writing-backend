@@ -43,6 +43,8 @@ class Streamer:
 
                 # Handle regular content
                 if hasattr(delta, 'content') and delta.content:
+                    if config.print_response: 
+                        print(delta.content, end='', flush=True)
                     self.token_callback(delta.content)
             
         except KeyboardInterrupt:

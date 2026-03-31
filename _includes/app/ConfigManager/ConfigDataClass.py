@@ -48,6 +48,7 @@ class ConfigDataClass:
     print_messages: bool
     include_reasoning: bool
     print_reasoning: bool
+    print_response: bool
 
     # Paths
     history_path: Path
