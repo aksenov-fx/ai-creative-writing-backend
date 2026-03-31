@@ -72,4 +72,4 @@ class Generator:
 
         story.append_to_history_part("\n\n", part_number)
         
-        stream(story, messages, append=True, part_number=part_number)
+        stream(story, messages, continue_response=True, part_number=part_number)

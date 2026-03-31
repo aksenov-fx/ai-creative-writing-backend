@@ -11,13 +11,13 @@ class TokenHandler:
                  rewriting: bool = False,
                  write_history: bool = True,
                  part_number: int = 0,
-                 append: bool = False):
+                 continue_response: bool = False):
         
         self.history = history_object
         self.rewriting = rewriting
         self.write_history = write_history
         self.part_number = part_number
-        self.append = append
+        self.continue_response = continue_response
 
         self.token_buffer = ""
         self.complete_response = ""
@@ -32,7 +32,7 @@ class TokenHandler:
         elif self.rewriting:
             self.history.replace_history_part(self.complete_response, self.part_number)
 
-        elif self.append:
+        elif self.continue_response:
             self.history.append_to_history_part(content, self.part_number)
 
         else:
@@ -49,7 +49,7 @@ class TokenHandler:
         with self.buffer_lock:
             self.complete_response += content
             
-            if not self.rewriting and not self.append:
+            if not self.rewriting and not self.continue_response:
                 self.write_file(content)
                 return
             
