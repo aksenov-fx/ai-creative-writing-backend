@@ -26,5 +26,9 @@ def get_model(config_dict):
 
 def get_endpoint(config_dict):
     endpoint = config_dict['endpoints'][config_dict['default_endpoint']]
-    endpoint['api_key'] = Utility.read_file(endpoint['api_key_file']).strip()
+    if 'api_key' in endpoint:
+        endpoint['api_key'] = Utility.read_file(endpoint['api_key_file']).strip()
+    else:
+        endpoint['api_key'] = ''
+        
     return endpoint

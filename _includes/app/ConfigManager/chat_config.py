@@ -3,7 +3,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from .. import Utility
-from .commons import get_model
+from .commons import get_endpoint, get_model
 
 
 def get_story_path(file, current_config, default_config):
@@ -45,6 +45,7 @@ def get_chat_config(file, config, default_config):
     
     current_config['interrupt_flag'] = False
     current_config['history_path'] = file
+    current_config['endpoint'] = get_endpoint(current_config)
     current_config['model'] = get_model(current_config)
 
     # Get story path if chat_with_story is True

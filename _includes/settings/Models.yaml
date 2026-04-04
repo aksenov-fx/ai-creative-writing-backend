@@ -1,7 +1,7 @@
 Deepseek R1:
   name: "deepseek/deepseek-r1-0528"
 
-Kimi K2:
+Kimi K2.5:
   name: "moonshotai/kimi-k2.5"
 
 Deepseek V3.1:
@@ -10,5 +10,5 @@ Deepseek V3.1:
 Claude 4.5:
   name: "anthropic/claude-sonnet-4.5"
 
-Gemini 2.5 Flash:
-  name: "google/gemini-2.5-flash"
+Gemma 4:
+  name: google/gemma-4-31b-it

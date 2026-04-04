@@ -47,8 +47,5 @@ class Streamer:
                         print(delta.content, end='', flush=True)
                     self.token_callback(delta.content)
             
-        except KeyboardInterrupt:
-            print('\nProgram terminated by user')
-            sys.exit(0)
         except Exception as e:
             raise
