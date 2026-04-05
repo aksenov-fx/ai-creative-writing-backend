@@ -3,6 +3,7 @@ import re
 from _includes import config
 from .ApiComposer import ApiComposer
 
+
 def validate(include_introduction: bool, variables: dict, validate_user_prompt: bool = True) -> None:
 
     introduction_error = "config.introduction is not set. Please set it before beginning a story."
@@ -14,6 +15,7 @@ def validate(include_introduction: bool, variables: dict, validate_user_prompt: 
     if validate_user_prompt and ('#user_prompt' not in variables or not variables['#user_prompt']):
         raise ValueError(user_prompt_error)
     
+
 def compose_prompt(method: str, history_parsed, include_introduction = True):
     """
     Composes a complete prompt for story generation.
@@ -51,6 +53,7 @@ def compose_prompt(method: str, history_parsed, include_introduction = True):
     
     return messages
 
+
 def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
     """
     Composes a prompt for helper operations like translation or editing.
@@ -68,6 +71,7 @@ def compose_helper_prompt(prompt_key: str, selected_text: str) -> list:
     
     combined_prompt = f"{prompt.strip()}\n{selected_text}"
     return ApiComposer.compose_messages(config.system_prompt, [combined_prompt])
+
 
 def expand_abbreviations(text: str, abbreviations: dict = None) -> str:
     r"""

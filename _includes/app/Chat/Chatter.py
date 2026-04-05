@@ -5,7 +5,7 @@ from ..Composers.ApiComposer import ApiComposer
 class Chatter:
     
     @staticmethod
-    def chat() -> None:
+    def chat(arg) -> None:
         """Chat method for conversations - not for story writing"""
         
         history, history_parsed = Factory.get_chat_objects()

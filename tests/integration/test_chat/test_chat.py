@@ -1,6 +1,5 @@
 import pytest
 
-
 from tests._logic.chat_test import chat_test
 from tests._logic.ConfigManager.ParamManager import load_params
 

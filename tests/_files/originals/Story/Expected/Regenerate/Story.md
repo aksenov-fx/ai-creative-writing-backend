@@ -1,6 +1,7 @@
 testing introduction
 
 **Previous text parts for reference:**
+
 Part 1 text unsummarized
 
 Part 2 summary

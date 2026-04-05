@@ -1,4 +1,3 @@
 parameters:
   - test_file: "Chat.md"
     method: "chat"
-    arg: "testing chat"

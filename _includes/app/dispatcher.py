@@ -40,7 +40,7 @@ def dispatch_chat(file: str, method: str):
     new_config = ConfigManager.get_chat_config(file, config, default_config)
     with ConfigManager.override_config(config, **new_config):
         if method == "chat":
-            return Chat.Chatter.chat()
+            return Chat.Chatter.chat(None)
         elif method == "remove_last_response":
             Factory.get_chat_history().remove_last_response()
         else:
