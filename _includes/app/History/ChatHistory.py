@@ -2,6 +2,7 @@ from .. import Utility
 from .Mixins.ChangerMixin import ChangerMixin
 from .Mixins.TrimMixin import TrimMixin
 
+
 class ChatHistoryMixin:
     
     def __init__(self, path):
@@ -45,14 +46,12 @@ class ChatHistoryMixin:
     def join_parts(self, content):
         return f"\n{self.separator}\n".join(content)
 
+
 class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
     """
     A class that represents a chat md file.
     Handles file changes.
     """
-
-
-# Change
 
     def fix_separator(self):
         if self.parts[-1] == "" or self.parts[-1].strip() == "#": return
@@ -72,6 +71,7 @@ class ChatHistoryChanger(ChatHistoryMixin, ChangerMixin):
         self.join_and_write()
         return self
 
+
 class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
     """
     A class that represents a chat md file.
@@ -79,7 +79,11 @@ class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
     Can not change the file.
     """
 
-    def split_conversation(self):   
+    def split_conversation(self):
+        """
+        Exclude messages from history that come before the splitter.
+        """
+
         if not self.splitter in self.content: return
 
         content = self.join_parts(self.parts)
@@ -100,23 +104,27 @@ class ChatHistoryParser(ChatHistoryMixin, TrimMixin):
 
     def include_file(self):
         """
-        Include the content of the file specified in config.include_file.
+        Append the content of the file specified in config.include_file
+        to the first user message.
         
         The content is appended to the first user message.
         config.include_file is set in get_chat_config method, 
-        if chat_with_story or chat_with_summary is True.
+        if chat_with_story or chat_with_summary is True
+        or is set manually.
         """
 
         if not self.config.include_file: return
 
-        if not Utility.read_file(self.config.include_file): 
-            raise FileNotFoundError(f"File is empty or not found: {self.config.include_file}")
-
-        included_content = Utility.read_file(self.config.include_file)
-        included_parts = self.split_parts(included_content)
-        included_content = "\n\n".join(included_parts)
-
-        self.parts[0] = f"{self.parts[0]}\n\n{included_content}" 
+        if Utility.is_chat(self.config.include_file):
+            history_object = ChatHistoryParser(self.config.include_file)
+            history_object.clean_header()
+            history_parsed = "\n\n---\n\n".join(history_object.parts[:-1])
+        else:
+            from .Story import StoryParser
+            history_object = StoryParser(self.config.include_file)
+            history_parsed = history_object.parsed
+        
+        self.parts[0] = f"{self.parts[0]}\n\n{history_parsed}" 
         self.update(self.parts)
 
     def parse_instructions(self):

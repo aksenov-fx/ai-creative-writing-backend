@@ -133,8 +133,8 @@ Common utility functions and helper methods
 **splitter:** text line used to exclude previous conversation history from API request  
 **add_header:** make first line of user prompts into headers in md file for readability  
 **chat_with_story:** append story text to the first user message in chat  
-**use_summary:** Append summary text instead of full story to the first user message in chat to reduce token usage.  
-**include_file:** actual file path to include in API request depending on chat_with_story and use_summary setting.  
+**use_summary:** append summary text instead of full story to the first user message in chat to reduce token usage.  
+**include_file:** actual file path to include in API request depending on chat_with_story and use_summary setting. Can be set manually in Obsidian frontmatter to include the content of another md file. The contents of the file is appended to the end of the first user message. If it's a chat file, the frontmatter and custom instruction sectiones are removed from the content.  
 
 ### Constants
 **PORT:** port for listener.py  

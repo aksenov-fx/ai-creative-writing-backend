@@ -1,6 +1,7 @@
 import os
-from pathlib import Path
 import yaml
+from pathlib import Path
+
 
 def read_file(file_path):
     path = Path(file_path)
@@ -19,6 +20,7 @@ def read_file(file_path):
     
     return ""
 
+
 def read_yaml(file_path: str, convert_keys_to_snake_case: bool = False) -> dict:
     if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
         return {}
@@ -31,6 +33,7 @@ def read_yaml(file_path: str, convert_keys_to_snake_case: bool = False) -> dict:
         yaml_data = {k.lower().replace(" ", "_"): v for k, v in yaml_data.items()}
     
     return yaml_data
+
 
 def read_instructions(instructions: str, custom_instructions_folder: str):
     """
@@ -47,3 +50,16 @@ def read_instructions(instructions: str, custom_instructions_folder: str):
     instructions_file = instructions.replace('{', '').replace('}', '')
     instructions_file = custom_instructions_folder + instructions_file + '.md'
     return read_file(instructions_file)
+
+
+def is_chat(file_path: str):
+    """
+    Check if the file is a chat history file.
+    """
+
+    content = read_file(file_path)
+
+    if not content: 
+        raise FileNotFoundError(f"File is empty or not found: {file_path}")
+
+    return content.startswith('---')

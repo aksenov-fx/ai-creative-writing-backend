@@ -13,7 +13,7 @@ def get_story_path(file, current_config, default_config):
     Used by get_chat_config.
     """
     
-    if not current_config['chat_with_story']: return ""
+    if not current_config['chat_with_story']: return current_config['include_file']
 
     parent_directory = Path(file).parent.parent
     
