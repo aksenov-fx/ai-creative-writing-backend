@@ -18,8 +18,11 @@ endpoint: null
 
 # Models settings
 models: {}
-default_model: "Deepseek V3.1"
-summary_model: "Deepseek V3.1"
+default_model: &default_model "Deepseek V3.1" 
+summary_model: *default_model
+translation_model: *default_model
+rewrite_model: *default_model
+explain_model: *default_model
 model: ""
 
 # Context length settings

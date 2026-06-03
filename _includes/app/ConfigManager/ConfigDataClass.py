@@ -32,6 +32,10 @@ class ConfigDataClass:
     models: dict
     default_model: str
     summary_model: str
+    rewrite_model: str
+    translation_model: str
+    explain_model: str
+
     model: dict
 
     # Context length settings

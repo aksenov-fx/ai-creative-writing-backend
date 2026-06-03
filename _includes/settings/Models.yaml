@@ -1,8 +1,8 @@
 Deepseek R1:
   name: "deepseek/deepseek-r1-0528"
 
-Kimi K2.5:
-  name: "moonshotai/kimi-k2.5"
+Deepseek V4 Pro:
+  name: "deepseek/deepseek-v4-pro"
 
 Deepseek V3.1:
   name: "deepseek/deepseek-chat-v3.1"
@@ -10,5 +10,5 @@ Deepseek V3.1:
 Claude 4.5:
   name: "anthropic/claude-sonnet-4.5"
 
-Gemma 4:
-  name: google/gemma-4-31b-it
+Claude Opus:
+  name: "anthropic/claude-opus-latest"
