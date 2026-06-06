@@ -10,5 +10,5 @@ Deepseek V3.1:
 Claude 4.5:
   name: "anthropic/claude-sonnet-4.5"
 
-Claude Opus:
-  name: "anthropic/claude-opus-latest"
+Claude Opus Latest:
+  name: "~anthropic/claude-opus-latest"
