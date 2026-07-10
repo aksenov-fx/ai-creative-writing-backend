@@ -15,11 +15,11 @@ def get_model(config_dict):
     model = config_dict['model']
     
     if not model:
-        return config_dict['models'][config_dict['default_model']]['name']
+        return config_dict['models'][config_dict['default_model']][config_dict['default_endpoint']]
     
     try:
         model_number = int(model)
-        return list(config_dict['models'].values())[model_number - 1]['name']
+        return list(config_dict['models'].values())[model_number - 1][config_dict['default_endpoint']]
     except ValueError:
         return model
 
