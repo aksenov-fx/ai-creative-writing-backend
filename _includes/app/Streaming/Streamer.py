@@ -12,6 +12,7 @@ class Streamer:
         self.token_callback = token_callback
         self.endpoint = config.endpoint['url']
         self.api_key = config.endpoint['api_key']
+        self.reasoning = config.endpoint['reasoning_attribute']
     
     def stream_response(self, messages: List[Dict[str, str]]) -> None:
 
@@ -37,8 +38,8 @@ class Streamer:
                     break
 
                 # Handle reasoning content if present
-                if hasattr(delta, 'reasoning') and delta.reasoning and config.print_reasoning:
-                    print(delta.reasoning, end='', flush=True)
+                if hasattr(delta, self.reasoning) and getattr(delta, self.reasoning) and config.print_reasoning:
+                    print(getattr(delta, self.reasoning), end='', flush=True)
                     sys.stdout.flush()
 
                 # Handle regular content
