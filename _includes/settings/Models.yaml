@@ -1,23 +1,29 @@
 Deepseek R1:
   openrouter: "deepseek/deepseek-r1-0528"
-  requesty: "deepinfra/deepseek-ai/DeepSeek-R1"
+  requesty:   "deepinfra/deepseek-ai/DeepSeek-R1"
+  vercel:     "deepseek/deepseek-r1"
 
 Deepseek V4 Pro:
   openrouter: "deepseek/deepseek-v4-pro"
-  requesty: "deepseek/deepseek-v4-pro"
+  requesty:   "deepseek/deepseek-v4-pro"
+  vercel:     "deepseek/deepseek-v4-pro"
 
 Deepseek V3.1:
   openrouter: "deepseek/deepseek-chat-v3.1"
-  requesty: "deepinfra/deepseek-ai/DeepSeek-V3.1"
+  requesty:   "deepinfra/deepseek-ai/DeepSeek-V3.1"
+  vercel:     "deepseek/deepseek-v3.1"
 
 Claude 4.5:
   openrouter: "anthropic/claude-sonnet-4.5"
-  requesty: "anthropic/claude-sonnet-4-5"
+  requesty:   "anthropic/claude-sonnet-4-5"
+  vercel:     "anthropic/claude-sonnet-4.5"
 
 GLM 5.2:
   openrouter: "z-ai/glm-5.2"
-  requesty: "nebius/glm-5.2"
+  requesty:   "nebius/glm-5.2"
+  vercel:     "zai/glm-5.2"
 
 Kimi K2.6:
   openrouter: "moonshotai/kimi-k2.6"
-  requesty: "deepinfra/moonshotai/Kimi-K2.6"
+  requesty:   "deepinfra/moonshotai/Kimi-K2.6"
+  vercel:     "moonshotai/kimi-k2.6"

@@ -7,3 +7,8 @@ requesty:
   'url': 'https://router.requesty.ai/v1'
   'api_key_file': './_includes/Settings/api_keys/requesty.txt'
   'reasoning_attribute': reasoning_content
+
+vercel:
+  'url': 'https://ai-gateway.vercel.sh/v1'
+  'api_key_file': './_includes/Settings/api_keys/vercel.txt'
+  'reasoning_attribute': reasoning
