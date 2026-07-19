@@ -47,7 +47,7 @@ summary_yaml_path: "Data/Summary YAML.yaml"
 summary_md_path: "Story Summary.md"
 prompts_path: "Prompts.md"
 folder_path: ""
-settings_folder: "./_includes/settings/"
+settings_folder: ""
 
 # Runtime flags
 interrupt_flag: false
