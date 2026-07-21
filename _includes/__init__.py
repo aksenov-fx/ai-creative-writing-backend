@@ -1,1 +1,1 @@
-from .config import config, default_config
+from .config import config, default_config, default_chat_config
