@@ -27,7 +27,7 @@ class Summarizer:
         story.update_hashes()
         summary = Factory.get_summary().update_from_story_parts(story)
 
-        config.model = config.models[config.summary_model]['name']
+        config.model = config.models[config.summary_model][config.default_endpoint]
 
         for part_number, hash_key in enumerate(summary.keys):
             if config.interrupt_flag: break

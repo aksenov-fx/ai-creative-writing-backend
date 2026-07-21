@@ -5,3 +5,7 @@ Tasks
 story.md
 story.ipynb
 story_writer_python_backend.egg-info
+.pytest_cache
+
+custom_settings
+start_custom.bat

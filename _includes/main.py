@@ -1,11 +1,23 @@
 import threading
 import code
 import signal
-from .listener import start_server
+import argparse
 import sys
+from .listener import start_server
 
 
 def main():
+
+    parser = argparse.ArgumentParser(
+        description='Story Writer backend server.',
+    )
+    parser.add_argument(
+        '--settings', '-s',
+        dest='settings_folder',
+        default=None,
+        help='Path to the settings folder (default: ./_includes/settings/).',
+    )
+    parser.parse_args()
 
     # Handle Ctrl+C gracefully in code.interact mode and exit the application forcefully
     def handle_sigint(signum, frame):

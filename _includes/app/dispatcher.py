@@ -1,8 +1,9 @@
-from ..config import config, default_config
+from ..config import config, default_config, default_chat_config
 from .History.Factory import Factory
 from . import ConfigManager
 from . import Chat
 from . import Utility
+
 
 def dispatch(folder, file, mode, method, part_number, selected_text):
 
@@ -10,6 +11,7 @@ def dispatch(folder, file, mode, method, part_number, selected_text):
     elif mode == "chat":   return dispatch_chat(file, method)
     elif mode == "global": return dispatch_global(method, folder, part_number)
     elif mode == "helper": return dispatch_helper(folder, file, method, selected_text)
+
 
 def dispatch_story(folder: str, method: str, part_number: str):
 
@@ -36,9 +38,10 @@ def dispatch_story(folder: str, method: str, part_number: str):
         else:
             raise Exception(f"Story does not have a {method} method")
 
+
 def dispatch_chat(file: str, method: str):
 
-    new_config = ConfigManager.get_chat_config(file, config, default_config)
+    new_config = ConfigManager.get_chat_config(file, config, default_config, default_chat_config)
     with ConfigManager.override_config(config, **new_config):
         if method == "chat":
             return Chat.Chatter.chat(None)
@@ -47,10 +50,11 @@ def dispatch_chat(file: str, method: str):
         else:
             raise Exception(f"Chat does not have a {method} method")
 
+
 def dispatch_helper(folder: str, file: str, method: str, selected_text: str):
 
     if Utility.is_chat(file):
-        new_config = ConfigManager.get_chat_config(file, config, default_config)
+        new_config = ConfigManager.get_chat_config(file, config, default_config, default_chat_config)
     else:
         new_config = ConfigManager.get_story_config(folder, config)
 
@@ -61,6 +65,7 @@ def dispatch_helper(folder: str, file: str, method: str, selected_text: str):
             return Chat.Helpers.translate(selected_text)
         elif method == "explain":
             return Chat.Helpers.explain(selected_text)
+
 
 def dispatch_global(method: str, folder: str, part_number: int):
 
